@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>용사에게 한 장 더 줘 v1 — Blessing Spike</title>
+<title>용사에게 한 장 더 줘 v1B — Party Blackjack</title>
 <style>
 :root{
   --abyss:#131120; --altar:#1e1a30; --panel:#262040; --line:#3a3260;
@@ -137,6 +137,19 @@ body{
   opacity:0;pointer-events:none;
 }
 #blockBanner.show{animation:blockIn .9s ease-out forwards;}
+/* ===== ✦ 파티 블랙잭 배너 (v1B) ===== */
+#pbBanner{
+  position:absolute;top:30%;left:50%;transform:translate(-50%,-50%) scale(.5);z-index:6;
+  font-weight:900;letter-spacing:1px;color:var(--divine);
+  text-shadow:0 0 18px rgba(240,201,106,.9), 0 2px 4px rgba(0,0,0,.8);
+  opacity:0;pointer-events:none;white-space:nowrap;
+}
+#pbBanner.show{animation:pbIn .55s cubic-bezier(.2,1.6,.4,1) forwards;}
+#pbBanner.pb2{font-size:17px;}
+#pbBanner.pb3{font-size:22px;}
+#pbBanner.pb4{font-size:26px;color:#ffe9ae;animation:pbIn .55s cubic-bezier(.2,1.6,.4,1) forwards, pbHue .9s linear infinite;}
+@keyframes pbIn{from{opacity:0;transform:translate(-50%,-50%) scale(.4)}30%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes pbHue{0%,100%{text-shadow:0 0 18px rgba(240,201,106,.9),0 2px 4px rgba(0,0,0,.8)}50%{text-shadow:0 0 30px rgba(255,130,130,.95),0 2px 4px rgba(0,0,0,.8)}}
 @keyframes blockIn{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}70%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
 .healWave{
   position:absolute;left:50%;top:62%;width:20px;height:20px;border-radius:50%;
@@ -150,6 +163,7 @@ body{
 @keyframes fltUp{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-24px)}}
 .f-dmg{color:#ff8d7a;} .f-heal{color:var(--heal);} .f-block{color:var(--shield);} .f-gold{color:var(--burst);font-size:18px;}
 .f-bless{color:#ffd98a;font-size:12px;text-shadow:0 0 8px rgba(255,217,138,.6);}
+.f-pb{color:#8fe3ff;font-size:13px;font-weight:900;text-shadow:0 0 8px rgba(143,227,255,.7);}
 
 /* ===== ③ 하단 상부: 아군 타깃 패널 ===== */
 #allies{
@@ -367,8 +381,8 @@ body{
 .hidden{display:none !important;}
 /* ===== R&D 검증 시드 (디버그) ===== */
 #dbgWrap{margin-top:2px;display:flex;flex-direction:column;gap:5px;align-items:center;flex:none;}
-#dbgTitle,#dbgTitle2{font-size:9px;color:#5a5478;letter-spacing:1px;}
-#dbgRow,#dbgRow2{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:340px;}
+#dbgTitle,#dbgTitle2,#dbgTitle3{font-size:9px;color:#5a5478;letter-spacing:1px;}
+#dbgRow,#dbgRow2,#dbgRow3{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:340px;}
 .dbg{border:1px solid var(--line);background:var(--panel);color:var(--dim);border-radius:8px;padding:5px 8px;font-size:9px;line-height:1.35;font-family:inherit;}
 .dbg:active{transform:scale(.95);}
 #seedTag{font-size:8.5px;color:#5a5478;}
@@ -425,6 +439,7 @@ body{
     <div class="sfig" id="sf_mage">🔮</div>
     <div class="sfig" id="sf_cleric">✨</div>
     <div id="blockBanner">BLOCK</div>
+    <div id="pbBanner"></div>
   </div>
 
   <!-- ③ 하단 상부: 아군 타깃 패널 -->
@@ -487,6 +502,12 @@ body{
         <button class="dbg" data-s="19" data-b="0" data-g="w2">🛡 반격의 성좌<br>[5]→전사 21, 반사 7</button>
         <button class="dbg" data-s="8" data-b="0" data-g="m2">🔮 과충전<br>[8]→마법사 23 폭주</button>
         <button class="dbg" data-s="24" data-b="0" data-g="c2">✨ 징벌 신성<br>성직자 21 → 신성 24</button>
+      </div>
+      <div id="dbgTitle3">— v1B 파티 블랙잭 검증 —</div>
+      <div id="dbgRow3">
+        <button class="dbg" data-s="12" data-b="0">✦ 2블랙잭<br>[7]→전사</button>
+        <button class="dbg" data-s="6" data-b="0">✦✦ 3블랙잭<br>[4]→전사 · [J]→용사</button>
+        <button class="dbg" data-s="91" data-b="0">✦✦✦✦ 4블랙잭<br>[3]→용사 · [4]→전사</button>
       </div>
       <div id="seedTag"></div>
     </div>
@@ -585,6 +606,7 @@ const S = {
   allies:{},
   god:[], sel:-1, assigns:[], vaultGivenTo:[], linkedGive:null,
   taunt:false, perfectGuard:false, block:0, armorCrack:false, warTotal:0,
+  pbCount:0, pbMult:1,
   bless:[], chainMagic:0, oathCharge:false,
   stats:{
     m21:0, turns:0, saves:0,
@@ -595,6 +617,7 @@ const S = {
     blessProcs:0, blessDmg:0, blessSup:0, blessVal:{},
     maxHit:0, maxTurnDmg:0, hero21Max:0, mage21Max:0,
     reflectTotal:0, overhealConv:0,
+    pbTimes:0, pbMax:0, pb2:0, pb3:0, pb4:0, pbDmg:0, pbSup:0,
   },
   onb:{faith:false, reroll:false, vhint:false},
   busy:false, over:false,
@@ -866,6 +889,7 @@ const SFX = {
   heal(){ tone(620,.12,"sine",.09); tone(830,.16,"sine",.07,.08); },
   miracle(){ [523,659,784,1047].forEach((f,i)=>tone(f,.22,"triangle",.1,i*.07)); },
   bust(){ tone(300,.12,"sawtooth",.1); tone(150,.25,"sawtooth",.1,.08); },
+  pb(i){ tone(560+i*160,.14,"triangle",.12); tone(1120+i*160,.1,"sine",.06,.05); },
   win(){ [523,659,784,1047,1319].forEach((f,i)=>tone(f,.3,"triangle",.11,i*.09)); },
   lose(){ [330,262,196,131].forEach((f,i)=>tone(f,.35,"sine",.11,i*.14)); },
 };
@@ -890,7 +914,19 @@ function showOracles(){
     const id = el.dataset.id;
     el.classList.toggle("targetable", canGive && !S.allies[id].dead);
   });
-  if(gi<0) $("guide").textContent = "카드를 고르면, 각 아군의 미래가 보인다";
+  /* ✦ 파티 블랙잭 후보 — 가장 강한 후보만 짧게 (v1B) */
+  const cur21 = UI_ORDER.filter(id=>{ const a=S.allies[id]; return !a.dead && a.cards.length && bestTotal(a.cards)===21; }).length;
+  let pbCand = cur21;
+  if(gi>=0){
+    for(const id of UI_ORDER){
+      const a = S.allies[id];
+      if(a.dead || !a.cards.length || bestTotal(a.cards)===21) continue;
+      if(bestTotal(a.cards.concat([S.god[gi].face]))===21){ pbCand = cur21+1; break; }
+    }
+  }
+  if(gi>=0 && pbCand>cur21 && pbCand>=2) $("guide").textContent = pbCand>=4? "⚡ 전원 블랙잭 후보!!" : `⚡ 파티 블랙잭 ${pbCand} 후보!`;
+  else if(cur21>=2) $("guide").textContent = `✦ 파티 블랙잭 ${cur21} 대기 — 운명을 확정하라`;
+  else if(gi<0) $("guide").textContent = "카드를 고르면, 각 아군의 미래가 보인다";
   else if(canGive) $("guide").textContent = S.god[gi].fromVault ? "성물함 카드 — 강림 제한 없이 줄 수 있다" : "빛나는 아군을 눌러 강림 (남은 강림 "+S.givesLeft+")";
   else $("guide").textContent = "강림 소진! 이 카드는 📦보관 / 🔥태우기 / 흘리기";
 }
@@ -1125,6 +1161,35 @@ function healAlly(id, n, single){
   return n - got;                    /* 초과 회복량 반환 */
 }
 
+/* ══ ✦ 파티 블랙잭 연출 (v1B) ══ */
+function pbTag(){ return S.pbCount>=4? "×4" : S.pbCount===3? "×2" : "×1.25"; }
+async function pbAnnounce(n){
+  const b = $("pbBanner");
+  if(n>=4){
+    /* 팡! 쾅! 콰앙! 촤아악! — 순차 폭발 후 대형 배너 */
+    let k=0;
+    for(const id of UI_ORDER){
+      const a = S.allies[id];
+      if(!a.dead && a.cards.length && bestTotal(a.cards)===21){
+        figFx(id,"miracle21",800); flt(id,"21!","f-gold"); SFX.pb(k++);
+        await wait(220);
+      }
+    }
+    flash("gold"); shake();
+    b.textContent = "✦ 전원 블랙잭! ×4 ✦";
+    b.className = "show pb4";
+    SFX.win();
+    await wait(850);
+  } else {
+    b.textContent = `✦ 파티 블랙잭 ${n} ${n===3? "×2":"×1.25"} ✦`;
+    b.className = "show pb"+n;
+    if(n===3) shake();
+    SFX.miracle();
+    await wait(n===3? 650 : 500);
+  }
+  b.className = "";
+}
+
 async function resolveTurn(){
   S.busy=true; S.stats.turns++; S._turnDmg=0;
   /* 예고 연계 판정 1: 17+ 도달이면 즉시 인정 (처치 기여는 아래 피해 처리에서) */
@@ -1141,6 +1206,16 @@ async function resolveTurn(){
     acts[id] = CLASSES[id].act(bestTotal(a.cards));
   }
   S.warTotal = S.allies.war.dead ? 0 : bestTotal(S.allies.war.cards);
+
+  /* ══ ✦ 파티 블랙잭 판정 (v1B) — 동시 21 인원 = 이번 턴의 배율 ══ */
+  S.pbCount = UI_ORDER.filter(id=>!S.allies[id].dead && acts[id] && acts[id].k==="m").length;
+  S.pbMult  = S.pbCount>=4? 4 : S.pbCount===3? 2 : S.pbCount===2? 1.25 : 1;
+  if(S.pbCount>=2){
+    S.stats.pbTimes++;
+    S.stats["pb"+Math.min(4,S.pbCount)]++;
+    if(S.pbCount>S.stats.pbMax) S.stats.pbMax = S.pbCount;
+    await pbAnnounce(S.pbCount);
+  }
 
   for(const id of ORDER){
     const a = S.allies[id];
@@ -1202,11 +1277,13 @@ async function resolveTurn(){
       if(id==="mage" && S.chainMagic>0){ d += S.chainMagic; procB("m3","d",S.chainMagic,"연쇄 +"+S.chainMagic,id); }
       if(id==="hero" && act.k==="m"){
         if(has("h1")){ d += 20; procB("h1","d",20,"성검 +20",id); }
+        if(S.pbMult>1){ const nd=Math.round(d*S.pbMult); S.stats.pbDmg += nd-d; d=nd; flt(id,"✦"+pbTag(),"f-pb"); }
         if(S.oathCharge){ const inc=d; d*=2; S.oathCharge=false; procB("w3","d",inc,"맹세 ×2",id); }
         if(has("h2")){ const inc=d; d*=2; procB("h2","d",inc,"용맹 ×2",id); }
         if(d > S.stats.hero21Max) S.stats.hero21Max = d;
       }
       if(id==="mage" && act.k==="m"){
+        if(S.pbMult>1){ const nd=Math.round(d*S.pbMult); S.stats.pbDmg += nd-d; d=nd; flt(id,"✦"+pbTag(),"f-pb"); }
         if(has("m1")){ const inc=d; d*=2; procB("m1","d",inc,"비전 ×2",id); }
         if(d > S.stats.mage21Max) S.stats.mage21Max = d;
       }
@@ -1228,6 +1305,7 @@ async function resolveTurn(){
 
     if(act.heal!==undefined){
       let h = act.heal;
+      if(act.k==="m" && S.pbMult>1){ const nh=Math.round(h*S.pbMult); S.stats.pbSup += (nh-h)*aliveIds().length; h=nh; flt(id,"✦"+pbTag(),"f-pb"); }
       if(act.k==="m"){
         S.stats.m21++; flash("gold"); SFX.miracle();
         figFx(id,"miracle21",950);
@@ -1278,7 +1356,8 @@ async function resolveTurn(){
     log(`완벽 방어! ${S.enemy.name} 의 ${it.n} 이(가) 무효화됐다!`, "l-gold");
     const negated = (it.dmg||0) * ((it.type==="aoe"||it.type==="doom") ? aliveIds().length : 1);
     if(has("w2") && negated>0){        /* 반격의 성좌: 막은 총 피해의 50% 반사 */
-      const refl = Math.ceil(negated/2);
+      let refl = Math.ceil(negated/2);
+      if(S.pbMult>1){ const nr=Math.round(refl*S.pbMult); S.stats.pbDmg += nr-refl; refl=nr; flt("war","✦"+pbTag(),"f-pb"); }
       S.stats.reflectTotal += refl;
       procB("w2","d",refl,"반격 "+refl+"!","war");
       await wait(260); SFX.hit();
@@ -1423,6 +1502,11 @@ function reportHtml(){
     <div class="rline"><span>용사 21 최대 / 마법사 21 최대</span><b>${st.hero21Max||"—"} / ${st.mage21Max||"—"}</b></div>
     <div class="rline"><span>전사 반격 총합 / 초과회복 전환</span><b>${st.reflectTotal} / ${st.overhealConv}</b></div>
     <div class="rline"><span>MVP 축복</span><b>${mvp}</b></div>
+    <div class="rsep">— ✦ 파티 블랙잭 —</div>
+    <div class="rline"><span>발동 / 최대 인원</span><b>${st.pbTimes}회 / ${st.pbMax||"—"}</b></div>
+    <div class="rline"><span>2인 / 3인 / 4인</span><b>${st.pb2} / ${st.pb3} / ${st.pb4}</b></div>
+    <div class="rline"><span class="hlt">블랙잭 추가 피해 / 증폭 지원</span><b class="hlt">${st.pbDmg} / ${st.pbSup}</b></div>
+    ${st.pb4>0? `<div class="rbless">🎉 전원 블랙잭 달성!</div>` : ""}
   </div>`;
 }
 async function onVictory(){
