@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>용사에게 한 장 더 줘 v1D — Battle Action Feedback (실험판)</title>
+<title>용사에게 한 장 더 줘 v1D1 — Action Grammar Polish (실험판)</title>
 <style>
 :root{
   --abyss:#131120; --altar:#1e1a30; --panel:#262040; --line:#3a3260;
@@ -143,14 +143,22 @@ body{
 /* 돌진 */
 .sfig.lunge{animation:sLunge .3s cubic-bezier(.3,1.3,.5,1);z-index:3;}
 @keyframes sLunge{0%{transform:translateX(-50%)}45%{transform:translateX(calc(-50% + var(--lx,16px))) translateY(-10px) scale(1.08)}100%{transform:translateX(-50%)}}
-/* 용사 — 베기선 */
-.fxSlash{position:absolute;width:44px;height:3px;border-radius:2px;pointer-events:none;z-index:6;
-  background:linear-gradient(90deg,transparent,#fff 30%,var(--burst) 60%,transparent);
+/* 용사 — 베기선 (✦ v1D1: 궤적 선명화 — 하얀 심 + 금빛 광, 잔상 고스트) */
+.fxSlash{position:absolute;width:52px;height:3px;border-radius:2px;pointer-events:none;z-index:6;
+  background:linear-gradient(90deg,transparent,#fff 32%,#fff 48%,var(--burst) 66%,transparent);
   transform:translate(-50%,-50%) rotate(var(--ang,-30deg)) scaleX(.2);opacity:0;
-  animation:slashIn .2s ease-out forwards;box-shadow:0 0 8px rgba(255,222,138,.7);}
-.fxSlash.big{width:96px;height:5px;animation:slashInBig .3s ease-out forwards;box-shadow:0 0 16px rgba(255,232,160,.95);}
+  animation:slashIn .2s ease-out forwards;box-shadow:0 0 6px #fff,0 0 14px rgba(255,222,138,.85);}
+.fxSlash.gh{width:44px;height:2px;opacity:0;animation:slashIn .26s ease-out .05s forwards;box-shadow:0 0 8px rgba(255,222,138,.5);}
+.fxSlash.mid{width:70px;height:4px;box-shadow:0 0 8px #fff,0 0 18px rgba(255,232,160,.9);}
+.fxSlash.big{width:106px;height:5px;animation:slashInBig .3s ease-out forwards;box-shadow:0 0 10px #fff,0 0 22px rgba(255,232,160,1);}
 @keyframes slashIn{0%{opacity:0;transform:translate(-50%,-50%) rotate(var(--ang)) scaleX(.2)}30%{opacity:1;transform:translate(-50%,-50%) rotate(var(--ang)) scaleX(1.15)}100%{opacity:0;transform:translate(-50%,-50%) rotate(var(--ang)) scaleX(1)}}
 @keyframes slashInBig{0%{opacity:0;transform:translate(-50%,-50%) rotate(var(--ang)) scaleX(.1)}22%{opacity:1;transform:translate(-50%,-50%) rotate(var(--ang)) scaleX(1.25)}60%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) rotate(var(--ang)) scaleX(1.05)}}
+/* ✦ v1D1: 돌진 잔광 트레일 — 용사의 이동이 궤적으로 남는다 */
+.fxTrail{position:absolute;height:3px;border-radius:2px;pointer-events:none;z-index:5;
+  background:linear-gradient(90deg,transparent,rgba(255,232,170,.85),transparent);
+  transform:translate(-50%,-50%) rotate(var(--ang,0deg));width:var(--len,60px);
+  opacity:0;animation:trailFade .3s ease-out forwards;box-shadow:0 0 8px rgba(255,222,138,.5);}
+@keyframes trailFade{0%{opacity:0}25%{opacity:.95}100%{opacity:0}}
 /* 용사 2장 블랙잭 — 슝~(모으기) */
 .sfig.bjCharge{animation:sBjCharge .38s ease-in;z-index:3;}
 @keyframes sBjCharge{0%{transform:translateX(-50%)}70%{transform:translateX(-50%) translateY(3px) scale(.9);filter:brightness(1.5)}100%{transform:translateX(-50%) scale(1)}}
@@ -167,7 +175,18 @@ body{
   background:radial-gradient(circle at 40% 30%,#fff,var(--arcane));
   box-shadow:0 0 12px var(--arcane),0 -14px 10px -4px rgba(157,130,242,.5),0 -26px 14px -6px rgba(157,130,242,.3);
   left:var(--x0);top:-6%;animation:meteorDrop var(--fd,.3s) cubic-bezier(.5,0,.9,.4) forwards;}
+.fxMeteor.big{width:16px;height:16px;box-shadow:0 0 18px var(--arcane),0 -18px 14px -4px rgba(157,130,242,.6),0 -34px 18px -6px rgba(157,130,242,.35);}
 @keyframes meteorDrop{from{top:-6%;opacity:1}to{top:var(--y1);opacity:1}}
+/* ✦ v1D1: 적 중심 조준 링 — 메테오 범위 예고 (얇고 짧게, 160ms) */
+.fxAim{position:absolute;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--arcane);pointer-events:none;z-index:5;
+  transform:translate(-50%,-50%);opacity:0;animation:aimIn .24s ease-out forwards;box-shadow:0 0 10px rgba(157,130,242,.5);}
+@keyframes aimIn{0%{opacity:0;width:70px;height:70px}45%{opacity:.95;width:58px;height:58px}100%{opacity:0;width:56px;height:56px}}
+/* ✦ v1D1: 2장 BJ 마법진 응축 — 회전하며 조여든다 */
+.fxCircle{position:absolute;width:60px;height:60px;border-radius:50%;border:2px dashed var(--arcane);pointer-events:none;z-index:5;
+  transform:translate(-50%,-50%) rotate(0deg) scale(1.25);opacity:0;animation:circleCond .34s ease-in forwards;
+  box-shadow:0 0 14px rgba(157,130,242,.6),inset 0 0 10px rgba(157,130,242,.3);}
+@keyframes circleCond{0%{opacity:0;transform:translate(-50%,-50%) rotate(0) scale(1.3)}35%{opacity:1}100%{opacity:.9;transform:translate(-50%,-50%) rotate(140deg) scale(.4)}}
+.fxGather.holy{border-color:var(--heal);box-shadow:0 0 14px rgba(111,211,160,.6);}
 .fxPop{position:absolute;width:16px;height:16px;border-radius:50%;pointer-events:none;z-index:6;
   border:2px solid var(--arcane);transform:translate(-50%,-50%);animation:popOut .28s ease-out forwards;box-shadow:0 0 12px rgba(157,130,242,.7);}
 .fxPop.gold{border-color:var(--burst);box-shadow:0 0 14px rgba(255,222,138,.8);}
@@ -998,53 +1017,97 @@ function prepFx(id, act){
 }
 /* 용사 — 베기 (인덱스 기반 결정론 각도/오프셋, 난수 0) */
 const SLASH_PAT = [{a:-32,dx:-7,dy:-5},{a:24,dx:7,dy:3},{a:-14,dx:-3,dy:7},{a:40,dx:5,dy:-7}];
+/* ✦ v1D1: 적 DOM 실측 앵커 — 마법·베기의 기준점은 화면 좌표가 아니라 "적" */
+function monAnchor(){
+  try{
+    const st = $("stage").getBoundingClientRect(), m = $("sMon").getBoundingClientRect();
+    if(st.width>0 && st.height>0)
+      return { x:(m.left+m.width/2-st.left)/st.width*100, y:(m.top+m.height*0.6-st.top)/st.height*100 };
+  }catch(e){}
+  return { x:MON_X, y:MON_Y };
+}
 function slashFx(i, big){
-  const p = SLASH_PAT[i % SLASH_PAT.length];
-  fxEl("fxSlash"+(big?" big":""), MON_X+p.dx*0.8, MON_Y+p.dy*0.6, {"--ang":p.a+"deg"}, big?340:240);
-  fxEl("fxSpark"+(big?" big":""), MON_X+p.dx*0.5, MON_Y+p.dy*0.4, null, 320, "✦");
+  const p = SLASH_PAT[i % SLASH_PAT.length], A = monAnchor();
+  /* ✦ v1D1: 궤적 이중화 — 하얀 심 + 반 박자 늦은 금빛 고스트 */
+  fxEl("fxSlash"+(big?" big":""), A.x+p.dx*0.8, A.y+p.dy*0.6, {"--ang":p.a+"deg"}, big?340:240);
+  fxEl("fxSlash gh", A.x+p.dx*0.8+1, A.y+p.dy*0.6+1, {"--ang":(p.a+6)+"deg"}, 330);
+  fxEl("fxSpark"+(big?" big":""), A.x+p.dx*0.5, A.y+p.dy*0.4, null, 320, "✦");
 }
 function lungeFx(id){ const t=$("sf_"+id); if(t) t.style.setProperty("--lx", FX_DX[id]+"px"); figFx(id,"lunge",320); }
+function trailFx(id){
+  /* ✦ v1D1: 돌진 잔광 — 피규어 → 적 방향 궤적 */
+  fxEl("fxTrail", FIG_X[id]+(FX_DX[id]>0?4:-4), FIG_Y-6, {"--ang":(FX_DX[id]>0?-28:28)+"deg","--len":"56px"}, 320);
+}
 async function heroCombo(n, big){
-  lungeFx("hero");
+  lungeFx("hero"); trailFx("hero");
   await wait(120);
-  for(let i=0;i<n;i++){ slashFx(i, big && i===n-1); enemyRecoilFx(false); SFX.tap(); await wait(i===n-1?60:78); }
+  for(let i=0;i<n;i++){
+    const last = i===n-1;
+    slashFx(i, big && last);
+    if(!big && last && n>=4){ fxEl("fxSlash mid", monAnchor().x, monAnchor().y, {"--ang":"-24deg"}, 300); await wait(45); }  /* ✦ v1D1: 난무 마무리 미세 히트스탑 */
+    enemyRecoilFx(false); SFX.tap();
+    await wait(last?60:78);
+  }
 }
 async function heroBjFinisher(){
-  /* 슝~(모으기) … 솨삭!!(대각 일섬) — 2장 블랙잭 전용 */
+  /* 슝~(모으기) … 솨악!!(대각 일섬) — 2장 블랙잭 = 완벽한 한 수 (✦ v1D1: X자 잔상 + 히트스탑 90ms) */
   figFx("hero","bjCharge",400);
   fxEl("fxGather", FIG_X.hero, FIG_Y, null, 380);
   await wait(340);
-  lungeFx("hero");
+  lungeFx("hero"); trailFx("hero");
   await wait(110);
-  fxEl("fxSlash big", MON_X, MON_Y, {"--ang":"-38deg"}, 360);
-  fxEl("fxSpark big", MON_X, MON_Y-3, null, 340, "✦");
-  fxEl("fxPop gold big", MON_X, MON_Y, null, 420);
-  await wait(70);   /* 일섬 히트스탑 */
+  const A = monAnchor();
+  fxEl("fxSlash big", A.x, A.y, {"--ang":"-38deg"}, 360);
+  fxEl("fxSlash gh", A.x, A.y, {"--ang":"38deg"}, 380);      /* 역대각 잔상 — X자 일섬 */
+  fxEl("fxSpark big", A.x, A.y-3, null, 340, "✦");
+  fxEl("fxPop gold big", A.x, A.y, null, 420);
+  shake("sm");
+  await wait(90);   /* 일섬 히트스탑 */
 }
-/* 마법사 — 투사체/메테오 */
+/* 마법사 — 투사체/메테오 (✦ v1D1: 적 중심 앵커 + 원형 산개) */
+const BOLT_PAT = [{x:-4,y:-2},{x:4,y:2},{x:0,y:0}];
 async function mageBolt(n){
+  const A = monAnchor();
   for(let i=0;i<n;i++){
-    fxEl("fxProj", 0, 0, {"--x0":FIG_X.mage+"%","--y0":FIG_Y+"%","--x1":(MON_X+(i-1)*4)+"%","--y1":MON_Y+"%","--fd":".24s"}, 300);
-    setTimeout(()=>{ fxEl("fxPop", MON_X+(i-1)*4, MON_Y, null, 300); }, 240);
+    const p = BOLT_PAT[i % BOLT_PAT.length];
+    const tx = A.x+p.x, ty = A.y+p.y;
+    fxEl("fxProj", 0, 0, {"--x0":FIG_X.mage+"%","--y0":FIG_Y+"%","--x1":tx+"%","--y1":ty+"%","--fd":".24s"}, 300);
+    setTimeout(()=>{ fxEl("fxPop", tx, ty, null, 300); }, 240);
     SFX.tap();
     await wait(n>1?110:240);
   }
   if(n>1) await wait(150);
 }
-async function mageMeteor(){
-  /* 메테오 — 팡, 팡, 마지막 큰 폭발 */
-  const off = [-6, 6, 0];
-  for(let i=0;i<3;i++){
-    const last = i===2;
-    fxEl("fxMeteor", 0, 0, {"--x0":(MON_X+off[i])+"%","--y1":(MON_Y-2)+"%","--fd":last?".3s":".26s"}, 340);
-    setTimeout(()=>{
-      fxEl("fxPop"+(last?" big":""), MON_X+off[i], MON_Y-1, null, last?440:300);
-      if(!last) enemyRecoilFx(false);
-    }, last?290:250);
-    SFX.pb(i);
-    await wait(last?300:120);
+async function mageMeteor(twoCardBJ){
+  const A = monAnchor();
+  /* ✦ v1D1: 적 중심 조준 링 — 짧은 예고 (160ms) */
+  fxEl("fxAim", A.x, A.y, null, 260);
+  await wait(160);
+  if(twoCardBJ){
+    /* 2장 BJ: 마법진 응축 → 중앙 직격 대낙하 — "완벽하게 맞춘 기적" */
+    fxEl("fxCircle", A.x, A.y, null, 400);
+    SFX.vault();
+    await wait(320);
+    fxEl("fxMeteor big", 0, 0, {"--x0":A.x+"%","--y1":(A.y-1)+"%","--fd":".3s"}, 340);
+    setTimeout(()=>{ fxEl("fxPop gold big", A.x, A.y, null, 460); enemyRecoilFx(true); }, 290);
+    SFX.pb(3);
+    await wait(380);
+  } else {
+    /* 산개 낙하: 좌상 → 우하 → 좌하 → 중앙 피니시 (결정론 원형 패턴) */
+    const pts = [{x:-7,y:-4},{x:6,y:3},{x:-5,y:4},{x:0,y:0}];
+    for(let i=0;i<pts.length;i++){
+      const last = i===pts.length-1;
+      const tx = A.x+pts[i].x, ty = A.y+pts[i].y;
+      fxEl("fxMeteor"+(last?" big":""), 0, 0, {"--x0":tx+"%","--y1":(ty-1)+"%","--fd":last?".3s":".24s"}, 340);
+      setTimeout(()=>{
+        fxEl("fxPop"+(last?" big gold":""), tx, ty, null, last?440:300);
+        if(!last) enemyRecoilFx(false);
+      }, last?290:230);
+      SFX.pb(Math.min(3,i));
+      await wait(last?300:100);
+    }
+    await wait(110);
   }
-  await wait(120);
 }
 /* 전사 — 발구름/방패벽 */
 function stompFx(){ fxEl("fxStomp", FIG_X.war, FIG_Y+9, null, 380); }
@@ -1549,6 +1612,7 @@ async function resolveTurn(){
 
     if(id==="war"){
       if(act.txt==="완벽 방어"){
+        if(a.cards.length===2){ figFx(id,"bjCharge",320); await wait(280); }   /* ✦ v1D1: 2장 BJ = 숨 고름… 쾅!! */
         S.perfectGuard=true; flash("gold"); SFX.miracle(); S.stats.m21++;
         figFx(id,"miracle21",950);
         flt(id,"완벽 방어!","f-gold");
@@ -1577,7 +1641,7 @@ async function resolveTurn(){
         if(act.k==="m" && a.cards.length===2) await heroBjFinisher();
         else await heroCombo(n, act.k==="m");
       } else if(id==="mage"){
-        if(act.k==="m") await mageMeteor();
+        if(act.k==="m") await mageMeteor(a.cards.length===2);   /* ✦ v1D1: 2장 BJ = 마법진 응축 중앙 직격 */
         else await mageBolt(act.dmg>=14 ? 3 : 1);
       }
       /* ── 🌟 축복 피해 파이프라인: 가산 → 맹세 ×2 → 배율 ×2 ── */
@@ -1614,6 +1678,7 @@ async function resolveTurn(){
       let h = act.heal;
       if(act.k==="m" && S.pbMult>1){ const nh=Math.round(h*S.pbMult); S.stats.pbSup += (nh-h)*aliveIds().length; h=nh; flt(id,"✦"+pbTag(),"f-pb"); }
       if(act.k==="m"){
+        if(a.cards.length===2){ fxEl("fxGather holy", FIG_X.cleric, FIG_Y, null, 320); await wait(260); }   /* ✦ v1D1: 2장 BJ = 빛 응축… 개화 */
         S.stats.m21++; flash("gold"); SFX.miracle();
         figFx(id,"miracle21",950);
         fxEl("fxPillar", 0, 0, null, 900);   /* ✦ v1D: 성역 빛기둥 */
