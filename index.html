@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>용사에게 한 장 더 줘 v0D</title>
+<style>
+:root{
+  --abyss:#131120; --altar:#1e1a30; --panel:#262040; --line:#3a3260;
+  --ink:#eae6f4; --dim:#9a92b8;
+  --divine:#f0c96a; --divine-deep:#c99b2e;
+  --blood:#e2604f; --heal:#6fd3a0; --arcane:#9d82f2; --shield:#7fb4e8;
+  --burst:#ffde8a; --menace:#ff5a4a;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{
+  background:#0a0912; color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
+  display:flex;justify-content:center; overflow:hidden;
+  -webkit-user-select:none;user-select:none;
+}
+#app{
+  width:100%;max-width:420px;height:100dvh;max-height:100dvh;
+  display:flex;flex-direction:column;
+  background:
+    radial-gradient(120% 55% at 50% -10%, #2b1830 0%, transparent 60%),
+    radial-gradient(130% 60% at 50% 112%, #2a2410 0%, transparent 55%),
+    var(--abyss);
+  position:relative;overflow:hidden;
+}
+
+/* ===== ① 상단: 적 정보 (압축) ===== */
+#enemyZone{
+  flex:0 0 auto; padding:4px 10px 3px;
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg, rgba(120,40,60,.14), transparent);
+}
+#eTopRow{display:flex;align-items:center;gap:8px;}
+#turnTag{font-size:10px;color:var(--dim);letter-spacing:1px;flex:0 0 auto;}
+#enemyName{font-size:16.5px;font-weight:900;flex:0 0 auto;}
+#enemyHpWrap{flex:1;height:13px;background:#160e18;border:1px solid #532a3c;border-radius:6px;overflow:hidden;position:relative;}
+#enemyHpBar{height:100%;width:100%;background:linear-gradient(90deg,#c74b4b,#e2604f);transition:width .35s;}
+#enemyHpText{position:absolute;inset:0;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;color:#ffd9d2;text-shadow:0 1px 2px #000;}
+#intentBanner{
+  margin-top:3px;
+  background:linear-gradient(180deg,#3a1c2a,#2a1420);
+  border:1px solid #6b3050;border-radius:8px;
+  padding:3px 8px; font-size:12.5px; line-height:1.35; text-align:center;
+}
+#intentBanner b{color:#ff9d8a;font-size:15px;}
+#intentHint{color:var(--divine);font-size:10px;}
+#nextIntent{
+  margin-top:3px;
+  font-size:10px;color:var(--dim);text-align:center;line-height:1.4;
+  border:1px dashed #4a3a55;border-radius:6px;padding:2px 8px;
+  background:rgba(30,22,40,.5);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+#nextIntent b{color:#c9a0b0;font-weight:700;}
+
+/* ===== ② 중앙: 전장 스테이지 ===== */
+#stage{
+  flex:1 1 auto;min-height:150px;position:relative;overflow:hidden;
+  border-bottom:1px solid var(--line);
+  background:
+    radial-gradient(70% 55% at 50% 14%, rgba(120,55,90,.16), transparent 65%),
+    radial-gradient(60% 40% at 50% 82%, rgba(60,50,90,.25), transparent 70%);
+}
+#stage::before{ /* 무대 바닥 — 아군 발밑 지면감 */
+  content:"";position:absolute;left:50%;bottom:-16px;transform:translateX(-50%);
+  width:130%;height:70px;pointer-events:none;
+  background:radial-gradient(55% 100% at 50% 100%, rgba(95,85,150,.30), transparent 72%);
+}
+#threatSvg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;}
+.tline{stroke:var(--menace);stroke-width:1.6;stroke-linecap:round;opacity:0;stroke-dasharray:4 3;}
+.tline.on{opacity:.85;animation:tFlow 1.1s linear infinite;}
+.tline.soft{opacity:.4;}
+.tline.shattering{animation:tShatter .55s ease-out forwards;}
+@keyframes tFlow{from{stroke-dashoffset:14}to{stroke-dashoffset:0}}
+@keyframes tShatter{0%{opacity:.85;stroke-dasharray:4 3}50%{stroke-dasharray:2 9;opacity:.6}100%{stroke-dasharray:1 20;opacity:0}}
+#sMon{
+  position:absolute;top:11%;left:50%;transform:translateX(-50%);z-index:2;
+  width:66px;height:66px;border-radius:17px;
+  display:flex;align-items:center;justify-content:center;font-size:40px;
+  background:radial-gradient(circle at 35% 30%, #4a2438, #23101f 70%);
+  border:1px solid #6b3050; box-shadow:0 8px 24px rgba(160,40,80,.4), inset 0 0 14px rgba(0,0,0,.5);
+  animation:mIdle 3.2s ease-in-out infinite;
+}
+#sMon::after{ /* 몬스터 발밑 그림자 */
+  content:"";position:absolute;bottom:-12px;left:9px;right:9px;height:11px;
+  background:radial-gradient(50% 100% at 50% 0%, rgba(0,0,0,.55), transparent);border-radius:50%;
+}
+@keyframes mIdle{0%,100%{transform:translateX(-50%)}50%{transform:translateX(-50%) translateY(4px)}}
+#sMon.attacking{animation:mAtk .45s ease-out;}
+@keyframes mAtk{0%{transform:translateX(-50%)}30%{transform:translateX(-50%) translateY(14px) scale(1.1)}100%{transform:translateX(-50%)}}
+.sfig{
+  position:absolute;bottom:10px;z-index:2;transform:translateX(-50%);
+  width:40px;height:40px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  border:2px solid var(--line); background:radial-gradient(circle at 35% 30%, #35305a, #1a1730 75%);
+  transition:transform .15s, opacity .3s, filter .3s;
+}
+.sfig::after{ content:""; position:absolute; bottom:-7px; left:4px; right:4px; height:6px;
+  background:radial-gradient(50% 100% at 50% 0%, rgba(0,0,0,.5), transparent); border-radius:50%; }
+#sf_hero{left:14%;border-color:#d8a04a;} #sf_war{left:38%;border-color:var(--shield);}
+#sf_mage{left:62%;border-color:var(--arcane);} #sf_cleric{left:86%;border-color:var(--heal);}
+.sfig.dead{opacity:.3;filter:grayscale(1);}
+.sfig.menacedF{box-shadow:0 0 0 2px var(--menace), 0 0 12px rgba(255,90,74,.5);animation:menP 1.1s ease-in-out infinite;}
+.sfig.menacedF.softF{box-shadow:0 0 0 1px rgba(255,90,74,.5), 0 0 8px rgba(255,90,74,.3);}
+@keyframes menP{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.07)}}
+.sfig.recv{animation:sRecv .35s ease-out;}
+@keyframes sRecv{0%{transform:translateX(-50%)}40%{transform:translateX(-50%) translateY(-6px) scale(1.15)}100%{transform:translateX(-50%)}}
+.sfig.miracle21{animation:s21 .95s ease-out;z-index:3;}
+@keyframes s21{
+  0%{transform:translateX(-50%);box-shadow:none}
+  25%{transform:translateX(-50%) translateY(-10px) scale(1.35);box-shadow:0 0 0 3px var(--divine), 0 0 26px 8px rgba(240,201,106,.85)}
+  70%{transform:translateX(-50%) translateY(-5px) scale(1.18);box-shadow:0 0 0 2px var(--divine), 0 0 16px 4px rgba(240,201,106,.5)}
+  100%{transform:translateX(-50%);box-shadow:none}
+}
+.sfig.bustFx{animation:sBust .55s ease-out;}
+@keyframes sBust{
+  0%,100%{transform:translateX(-50%)}
+  20%{transform:translateX(-52%) rotate(-7deg);filter:drop-shadow(0 0 7px var(--blood))}
+  40%{transform:translateX(-48%) rotate(6deg);filter:drop-shadow(0 0 9px var(--blood))}
+  60%{transform:translateX(-51%) rotate(-4deg)}
+  80%{transform:translateX(-49%) rotate(3deg)}
+}
+.sfig .crack{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--blood);pointer-events:none;animation:crackFx .6s ease-out forwards;text-shadow:0 0 8px var(--blood);}
+@keyframes crackFx{0%{opacity:0;transform:scale(.4)}30%{opacity:1;transform:scale(1.2)}100%{opacity:0;transform:scale(1)}}
+.sfig .impulse{position:absolute;inset:-6px;border-radius:50%;border:2.5px solid var(--heal);pointer-events:none;animation:impOut .7s ease-out forwards;box-shadow:0 0 12px rgba(111,211,160,.6);}
+@keyframes impOut{from{opacity:1;transform:scale(.6)}to{opacity:0;transform:scale(1.9)}}
+#blockBanner{
+  position:absolute;top:42%;left:50%;transform:translate(-50%,-50%) scale(.6);z-index:5;
+  font-size:29px;font-weight:900;letter-spacing:4px;color:var(--shield);
+  text-shadow:0 0 16px rgba(127,180,232,.9), 0 2px 4px #000;
+  opacity:0;pointer-events:none;
+}
+#blockBanner.show{animation:blockIn .9s ease-out forwards;}
+@keyframes blockIn{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}70%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
+.healWave{
+  position:absolute;left:50%;top:62%;width:20px;height:20px;border-radius:50%;
+  border:3px solid var(--heal);transform:translate(-50%,-50%);
+  pointer-events:none;z-index:4;animation:waveOut .9s ease-out forwards;
+  box-shadow:0 0 18px rgba(111,211,160,.6);
+}
+.healWave.grand{border-color:var(--burst);border-width:4px;box-shadow:0 0 26px rgba(255,222,138,.75);}
+@keyframes waveOut{from{opacity:.95;width:20px;height:20px}to{opacity:0;width:560px;height:560px}}
+.flt{position:absolute;left:50%;top:-4px;transform:translateX(-50%);font-size:15px;font-weight:900;pointer-events:none;z-index:6;animation:fltUp .9s ease-out forwards;text-shadow:0 1px 3px #000;white-space:nowrap;}
+@keyframes fltUp{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-24px)}}
+.f-dmg{color:#ff8d7a;} .f-heal{color:var(--heal);} .f-block{color:var(--shield);} .f-gold{color:var(--burst);font-size:18px;}
+
+/* ===== ③ 하단 상부: 아군 타깃 패널 ===== */
+#allies{
+  flex:0 0 auto;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:4px;
+  padding:4px 5px 3px;
+}
+.ally{
+  display:flex;flex-direction:column;align-items:center;
+  background:var(--altar);border:1px solid var(--line);border-radius:10px;
+  padding:8px 2px 4px; position:relative; transition:box-shadow .15s, border-color .15s, transform .1s;
+  overflow:hidden; min-height:106px;
+}
+.ally.targetable{border-color:var(--divine);box-shadow:0 0 0 1px var(--divine), 0 0 12px rgba(240,201,106,.25);cursor:pointer;}
+.ally.targetable:active{transform:scale(.97);}
+.ally.dead{opacity:.38;filter:grayscale(1);}
+.ally.menaced{border-top:2px solid var(--menace);}
+.ally.menaced.soft{border-top:2px solid rgba(255,90,74,.45);}
+.ally .mark{position:absolute;top:0;right:3px;font-size:8px;color:var(--menace);display:none;font-weight:900;}
+.ally.menaced .mark{display:block;animation:menP2 1.1s ease-in-out infinite;}
+@keyframes menP2{0%,100%{opacity:.55}50%{opacity:1}}
+.ally .nm{font-size:10.5px;font-weight:700;color:var(--ink);line-height:1.2;}
+.ally .hpW{width:90%;height:8px;background:#141021;border:1px solid #443c6c;border-radius:4px;overflow:hidden;margin:2px 0 1px;position:relative;}
+.ally .hpB{height:100%;background:linear-gradient(90deg,#4fae7f,#6fd3a0);transition:width .3s;}
+.ally .hpB.low{background:linear-gradient(90deg,#c9552e,#e2604f);}
+.ally .hpT{font-size:9px;color:var(--dim);line-height:1.1;}
+.ally .cards{display:flex;gap:2px;margin:2px 0 1px;min-height:19px;flex-wrap:wrap;justify-content:center;}
+.mini{
+  min-width:15px;height:20px;padding:0 2px;border-radius:3px;
+  background:linear-gradient(160deg,#f7f3ea,#d9d2c2);color:#2a2438;
+  font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 1px 2px rgba(0,0,0,.5);
+}
+.mini.god{background:linear-gradient(160deg,#ffe9ae,#e8bf62);color:#4a3408;box-shadow:0 0 5px rgba(240,201,106,.6);}
+.ally .sum{font-size:17px;font-weight:900;line-height:1.05;}
+.ally .sum .band{font-size:9px;font-weight:700;display:block;}
+.b-weak{color:#8f88a8;} .b-base{color:#cfc8e6;} .b-strong{color:#7fb4e8;} .b-21{color:var(--divine);text-shadow:0 0 8px rgba(240,201,106,.7);} .b-bust{color:var(--blood);}
+.ally .act{font-size:9.5px;color:var(--dim);text-align:center;line-height:1.2;min-height:11px;}
+.chips{display:flex;gap:2px;flex-wrap:wrap;justify-content:center;min-height:0;margin-top:1px;}
+.chip{font-size:8.5px;padding:0 3px;border-radius:5px;border:1px solid;line-height:1.4;}
+.chip.poison{color:#a5e07a;border-color:#5a7a3a;background:#1c2812;}
+.chip.vuln{color:#ff9d8a;border-color:#7a3a3a;background:#281212;}
+.chip.taunt{color:var(--shield);border-color:#3a5a7a;background:#121c28;}
+.oracle{
+  position:absolute;top:1px;left:2px;right:2px;z-index:6;
+  text-align:center;border-radius:6px;padding:2px 2px 3px;
+  background:rgba(20,16,33,.96);border:1px solid var(--divine);color:var(--divine);
+  box-shadow:0 2px 8px rgba(0,0,0,.6); pointer-events:none;
+  animation:oracleIn .18s ease-out;
+}
+.oracle .oNum{display:block;font-size:13px;font-weight:900;line-height:1.15;}
+.oracle .oAct{display:block;font-size:8.5px;font-weight:700;line-height:1.2;}
+.oracle.o-bust{border-color:var(--blood);color:#ff9d8a;}
+.oracle.o-21{background:rgba(58,44,10,.95);box-shadow:0 0 10px rgba(240,201,106,.5);}
+@keyframes oracleIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+/* ===== ④ 하단 하부: 신의 조작 공간 ===== */
+#godZone{
+  flex:0 0 auto;
+  border-top:1px solid #5a4a20;
+  background:linear-gradient(180deg, rgba(240,201,106,.07), rgba(240,201,106,.02) 40%, transparent);
+  padding:4px 8px calc(6px + env(safe-area-inset-bottom));
+  position:relative;
+}
+#godZone::before{
+  content:"— 신 의 손 패 —";
+  position:absolute;top:-1px;left:50%;transform:translate(-50%,-50%);
+  font-size:8.5px;letter-spacing:3px;color:var(--divine-deep);
+  background:var(--abyss);padding:0 8px;
+}
+#log{ /* 전투 로그 — 전장 좌상단. 세계의 사건은 세계의 무대에 */
+  position:absolute;top:4px;left:7px;right:56%;z-index:6;
+  font-size:10px;line-height:1.5;color:var(--dim);
+  max-height:32px;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  pointer-events:none;
+  text-shadow:0 1px 3px rgba(0,0,0,.95), 0 0 9px rgba(0,0,0,.7);
+}
+#log .l-hit{color:#ff9d8a;} #log .l-heal{color:var(--heal);} #log .l-gold{color:var(--divine);font-weight:700;} #log .l-sys{color:#8a82a8;}
+#handRow{display:flex;align-items:flex-end;gap:7px;margin-bottom:16px;}
+#vaultBox{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:1px;}
+#vaultLabel{font-size:9px;color:var(--divine-deep);letter-spacing:1px;}
+#vaultSlot{
+  width:44px;height:60px;border-radius:8px;
+  border:1.5px dashed var(--divine-deep);
+  display:flex;align-items:center;justify-content:center;
+  font-size:19px;font-weight:900;color:#4a3408;
+  background:rgba(240,201,106,.06);
+  transition:transform .15s, box-shadow .15s;
+  position:relative;
+}
+#vaultSlot.full{
+  border-style:solid;
+  background:linear-gradient(165deg,#fff3d0,#eccb74 60%,#d9ab45);
+  box-shadow:0 3px 10px rgba(0,0,0,.5), 0 0 10px rgba(240,201,106,.35);
+}
+#vaultSlot.full:active{transform:scale(.94);}
+#vaultSlot.empty::after{content:"비어있음";font-size:7.5px;color:#6a5a30;font-weight:400;}
+#vaultSlot.mCandidate{animation:vGlow 1.3s ease-in-out infinite;}
+@keyframes vGlow{0%,100%{box-shadow:0 0 8px rgba(240,201,106,.4)}50%{box-shadow:0 0 18px rgba(255,222,138,.85)}}
+#vaultChip{
+  font-size:8.5px;color:var(--divine);text-align:center;line-height:1.25;min-height:26px;max-width:64px;margin-top:1px;
+}
+#faithBox{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:1px;}
+#faithLabel{font-size:9px;color:var(--divine-deep);letter-spacing:1px;}
+#faithVal{
+  width:40px;height:40px;border-radius:50%;border:1.5px solid var(--divine-deep);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:900;color:var(--divine);
+  background:radial-gradient(circle at 40% 35%, rgba(240,201,106,.15), transparent);
+}
+#faithVal.ready{animation:faithGlow 1.4s ease-in-out infinite;}
+@keyframes faithGlow{0%,100%{box-shadow:0 0 8px rgba(240,201,106,.4)}50%{box-shadow:0 0 16px rgba(240,201,106,.75)}}
+#giveTag{font-size:10px;font-weight:700;color:var(--dim);margin-top:2px;text-align:center;}
+#giveTag b{color:var(--divine);font-size:12.5px;}
+#hand{flex:1;display:flex;justify-content:center;gap:7px;min-height:72px;align-items:flex-end;}
+.gcard{
+  width:52px;height:70px;border-radius:9px;
+  background:linear-gradient(165deg,#fff3d0,#eccb74 60%,#d9ab45);
+  border:1px solid #b8892a;
+  color:#4a3408;font-size:25px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 12px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.6);
+  position:relative;transition:transform .15s, box-shadow .15s, opacity .2s;
+}
+.gcard::after{content:"✦";position:absolute;top:2px;left:4px;font-size:8px;color:#b8892a;}
+.gcard.fromVault::after{content:"📦";font-size:8px;}
+.gcard .vHint{
+  position:absolute;bottom:-17px;left:50%;transform:translateX(-50%);z-index:7;
+  font-size:8.5px;font-weight:800;color:var(--burst);background:#14100a;
+  border:1px solid var(--divine);border-radius:7px;padding:1px 6px;white-space:nowrap;
+  box-shadow:0 2px 7px rgba(0,0,0,.75);
+  animation:menP2 1.4s ease-in-out infinite;
+}
+.gcard.sel .vHint{display:none;} /* 선택 시엔 오라클이 안내하므로 숨김 */
+.gcard.sel{transform:translateY(-10px) scale(1.07);box-shadow:0 10px 22px rgba(240,201,106,.45), 0 0 0 2px var(--divine);}
+.gcard.used{opacity:0;transform:translateY(-30px) scale(.6);pointer-events:none;}
+.gcard.burned{opacity:0;transform:translateY(20px) rotate(12deg) scale(.6);pointer-events:none;}
+.gcard.rerolling{animation:rrFlip .35s ease-out;}
+@keyframes rrFlip{0%{transform:translateY(-10px) scale(1.07) rotateY(0)}50%{transform:translateY(-13px) scale(1.07) rotateY(90deg)}100%{transform:translateY(-10px) scale(1.07) rotateY(0)}}
+#ctrlRow{display:flex;gap:5px;margin-bottom:4px;}
+.btn{
+  flex:1;border:none;border-radius:9px;padding:9px 2px;font-size:11.5px;font-weight:800;
+  font-family:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);
+  transition:transform .08s, opacity .15s; line-height:1.2;
+}
+.btn:active{transform:scale(.96);}
+.btn:disabled{opacity:.32;pointer-events:none;}
+.btn small{display:block;font-size:8.5px;font-weight:600;color:var(--dim);}
+#undoBtn{flex:0 0 40px;font-size:12px;color:var(--dim);}
+#burnBtn{color:#ff9d8a;border-color:#6b3050;background:#241220;}
+#vaultBtn{color:var(--divine);border-color:#5a4a20;background:#221c10;}
+#rerollBtn{color:#bfa8ff;border-color:#4a3a70;background:#191428;}
+#rerollBtn.glow{animation:faithGlow 1.2s ease-in-out infinite;border-color:var(--divine);}
+#confirmBtn{
+  width:100%;border:none;border-radius:10px;padding:12px;font-size:15px;font-weight:800;font-family:inherit;
+  background:linear-gradient(180deg,#f0c96a,#cf9c2f);color:#3a2a05;border:1px solid #8f6a15;
+  box-shadow:0 3px 10px rgba(240,201,106,.3);letter-spacing:1px;
+  transition:transform .08s, opacity .15s;
+}
+#confirmBtn:active{transform:scale(.98);}
+#confirmBtn:disabled{opacity:.35;pointer-events:none;}
+#guide{font-size:9.5px;color:var(--dim);text-align:center;margin-top:3px;min-height:11px;}
+
+/* ===== 온보딩 도움말 — 조작 영역 내 상주 슬롯 (in-flow · 가림 0) ===== */
+#toast{
+  min-height:17px;margin:0 2px 3px;
+  font-size:10.5px;line-height:1.5;text-align:center;color:var(--divine);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+#toast.show{opacity:1;}
+#toast b{color:#ffe9ae;}
+
+/* ===== 전역 연출 ===== */
+#app.shake{animation:shk .3s;}
+@keyframes shk{0%,100%{transform:none}20%{transform:translate(-5px,2px)}40%{transform:translate(4px,-2px)}60%{transform:translate(-3px,1px)}80%{transform:translate(2px,-1px)}}
+#flash{position:absolute;inset:0;pointer-events:none;opacity:0;z-index:40;}
+#flash.gold{background:radial-gradient(circle at 50% 45%, rgba(255,222,138,.5), transparent 70%);animation:fl .5s;}
+#flash.red{background:radial-gradient(circle at 50% 20%, rgba(226,96,79,.4), transparent 70%);animation:fl .35s;}
+@keyframes fl{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
+#vignette{position:absolute;inset:0;pointer-events:none;z-index:39;opacity:0;transition:opacity .5s;
+  box-shadow:inset 0 0 70px 20px rgba(200,50,50,.45);}
+#vignette.on{opacity:1;}
+
+/* ===== 오버레이 ===== */
+.overlay{
+  position:absolute;inset:0;background:rgba(8,7,15,.93);z-index:50;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:22px;text-align:center;
+  animation:ovIn .3s ease-out; overflow-y:auto;
+}
+@keyframes ovIn{from{opacity:0}to{opacity:1}}
+.overlay h2{font-size:23px;letter-spacing:2px;}
+.overlay h2.win{color:var(--divine);text-shadow:0 0 20px rgba(240,201,106,.6);}
+.overlay h2.lose{color:var(--blood);}
+.overlay .sub{font-size:12.5px;color:var(--dim);line-height:1.65;white-space:pre-line;}
+.report{
+  width:100%;max-width:300px;text-align:left;font-size:11px;line-height:1.7;color:var(--dim);
+  background:var(--altar);border:1px solid var(--line);border-radius:11px;padding:11px 14px;
+}
+.report b{color:var(--divine);}
+.report .rline{display:flex;justify-content:space-between;}
+.report .hlt{color:var(--heal);}
+.overlay .obtn{width:230px;border:none;border-radius:11px;padding:12px;font-size:13.5px;font-weight:800;font-family:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);flex:none;}
+.overlay .obtn.gold{background:linear-gradient(180deg,#f0c96a,#cf9c2f);color:#3a2a05;border-color:#8f6a15;}
+.overlay .obtn:active{transform:scale(.97);}
+.rewards{display:flex;flex-direction:column;gap:8px;width:100%;max-width:280px;}
+.rw{
+  background:var(--altar);border:1px solid var(--divine-deep);border-radius:11px;padding:10px 12px;
+  text-align:left;font-family:inherit;color:var(--ink);
+}
+.rw:active{transform:scale(.97);}
+.rw b{color:var(--divine);font-size:13.5px;display:block;margin-bottom:2px;}
+.rw span{font-size:10.5px;color:var(--dim);line-height:1.4;}
+.hidden{display:none !important;}
+/* ===== R&D 검증 시드 (디버그) ===== */
+#dbgWrap{margin-top:2px;display:flex;flex-direction:column;gap:5px;align-items:center;flex:none;}
+#dbgTitle{font-size:9px;color:#5a5478;letter-spacing:1px;}
+#dbgRow{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:340px;}
+.dbg{border:1px solid var(--line);background:var(--panel);color:var(--dim);border-radius:8px;padding:5px 8px;font-size:9px;line-height:1.35;font-family:inherit;}
+.dbg:active{transform:scale(.95);}
+#seedTag{font-size:8.5px;color:#5a5478;}
+#vaultSlot.midCandidate{animation:vGlowMid 1.7s ease-in-out infinite;}
+@keyframes vGlowMid{0%,100%{box-shadow:0 0 5px rgba(240,201,106,.25)}50%{box-shadow:0 0 11px rgba(240,201,106,.5)}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001s !important;transition-duration:.001s !important;}}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- ① 상단: 적 정보 -->
+  <div id="enemyZone">
+    <div id="eTopRow">
+      <span id="turnTag">전투 1/3 · 턴 1</span>
+      <span id="enemyName">검은 늑대</span>
+      <div id="enemyHpWrap"><div id="enemyHpBar"></div><div id="enemyHpText">60/60</div></div>
+    </div>
+    <div id="intentBanner">의도 로딩…</div>
+    <div id="nextIntent">다음 턴 예고…</div>
+  </div>
+
+  <!-- ② 중앙: 전장 스테이지 -->
+  <div id="stage">
+    <div id="log"></div>
+    <svg id="threatSvg" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <line class="tline" id="tl_hero" x1="50" y1="26" x2="14" y2="74"/>
+      <line class="tline" id="tl_war"  x1="50" y1="26" x2="38" y2="74"/>
+      <line class="tline" id="tl_mage" x1="50" y1="26" x2="62" y2="74"/>
+      <line class="tline" id="tl_cleric" x1="50" y1="26" x2="86" y2="74"/>
+    </svg>
+    <div id="sMon">🐺</div>
+    <div class="sfig" id="sf_hero">⚔️</div>
+    <div class="sfig" id="sf_war">🛡️</div>
+    <div class="sfig" id="sf_mage">🔮</div>
+    <div class="sfig" id="sf_cleric">✨</div>
+    <div id="blockBanner">BLOCK</div>
+  </div>
+
+  <!-- ③ 하단 상부: 아군 타깃 패널 -->
+  <div id="allies"></div>
+
+  <!-- ④ 하단 하부: 신의 조작 -->
+  <div id="godZone">
+    <div id="toast"></div>
+    <div id="handRow">
+      <div id="vaultBox">
+        <div id="vaultLabel">성물함</div>
+        <div id="vaultSlot" class="empty"></div>
+        <div id="vaultChip"></div>
+      </div>
+      <div id="hand"></div>
+      <div id="faithBox">
+        <div id="faithLabel">🕯 신앙</div>
+        <div id="faithVal">0/3</div>
+        <div id="giveTag">강림 <b>2</b>/2</div>
+      </div>
+    </div>
+    <div id="ctrlRow">
+      <button class="btn" id="undoBtn">↩</button>
+      <button class="btn" id="vaultBtn">📦 보관<small>다음 턴으로</small></button>
+      <button class="btn" id="burnBtn">🔥 태우기<small>신앙 +1</small></button>
+      <button class="btn" id="rerollBtn">✨ 리롤<small>신앙 3 소모</small></button>
+    </div>
+    <button id="confirmBtn">운명 확정</button>
+    <div id="guide">카드를 고르면, 각 아군의 미래가 보인다</div>
+  </div>
+
+  <div id="flash"></div>
+  <div id="vignette"></div>
+  <div id="startOv" class="overlay">
+    <h2 class="win">용사에게 한 장 더 줘</h2>
+    <div class="sub">그대는 이 세계의 신.
+매 턴 신의 카드 3장 — 그러나
+아군에게 직접 내릴 수 있는 건 <b>2장뿐.</b>
+
+남는 한 장의 운명은 그대의 몫:
+📦 재운다 · 🔥 태운다 · 그냥 흘린다
+
+21 = 기적 · 22+ = 과부하
+적의 다음 수까지 읽고
+세 마리의 마물을 넘어라.</div>
+    <button class="obtn gold" id="startBtn">강림한다</button>
+    <div id="dbgWrap">
+      <div id="dbgTitle">— R&D 검증 시드 (손판정용) —</div>
+      <div id="dbgRow">
+        <button class="dbg" data-s="20260710" data-b="0">기본 운명</button>
+        <button class="dbg" data-s="19" data-b="0">📦 성물함 온보딩<br>늑대 · 턴1 [7] 재우기</button>
+        <button class="dbg" data-s="2" data-b="2">🛡 전사 완벽 방어<br>해골 · 턴1 [K] 재우기</button>
+        <button class="dbg" data-s="5" data-b="1">✨ 성직자 성역<br>마녀 · 턴1 [J] 재우기</button>
+        <button class="dbg" data-s="38" data-b="0">⚔ 결정타 준비<br>늑대 · 턴1 [6] 재우기</button>
+      </div>
+      <div id="seedTag"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ============ 결정론 유틸 (시드 LCG · 난수 API 0건) ============ */
+let SEED = 20260710;
+let rngState = SEED;
+function rng(){ rngState = (rngState * 1103515245 + 12345) & 0x7fffffff; return rngState / 0x7fffffff; }
+function resetRng(){ rngState = SEED; }
+
+/* ============ 카드 ============ */
+const FACES = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+function faceVal(f){ if(f==="A") return [1,11]; if(f==="J"||f==="Q"||f==="K") return [10,10]; const n=+f; return [n,n]; }
+let shoe = [];
+function refillShoe(){
+  const deck = [];
+  for(let d=0; d<2; d++) for(const f of FACES) for(let s=0;s<4;s++) deck.push(f);
+  for(let i=deck.length-1;i>0;i--){ const j = Math.floor(rng()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }
+  shoe = deck;
+}
+function draw(){ if(shoe.length<12) refillShoe(); return shoe.pop(); }
+function bestTotal(faces){
+  let hard=0, aces=0;
+  for(const f of faces){ const [lo]=faceVal(f); hard+=lo; if(f==="A") aces++; }
+  let total = hard;
+  while(aces>0 && total+10<=21){ total+=10; aces--; }
+  return (hard>21)? hard : total;
+}
+function band(t){ if(t>=22) return "bust"; if(t===21) return "21"; if(t>=17) return "strong"; if(t>=11) return "base"; return "weak"; }
+const BAND_LABEL = {weak:"약함", base:"기본", strong:"강함", "21":"기적", bust:"과부하"};
+
+/* ============ 클래스 ============ */
+const CLASSES = {
+  hero:  { emo:"⚔\uFE0F", name:"용사", hp:40,
+    act(t){ if(t>=22) return {k:"bust", txt:"무릎 꿇음"};
+            if(t===21) return {k:"m", txt:"성검 해방", dmg:30};
+            if(t>=17) return {k:"a", txt:"강타", dmg:16};
+            if(t>=11) return {k:"a", txt:"강공격", dmg:10};
+            return {k:"a", txt:"약공격", dmg:5}; } },
+  war:   { emo:"🛡\uFE0F", name:"전사", hp:52,
+    act(t){ if(t>=22) return {k:"bust", txt:"갑옷 균열"};
+            if(t===21) return {k:"m", txt:"완벽 방어"};
+            if(t>=17) return {k:"b", txt:"블록+도발", blk:8, taunt:true};
+            if(t>=11) return {k:"b", txt:"파티 블록", blk:6};
+            return {k:"b", txt:"작은 블록", blk:3}; } },
+  mage:  { emo:"🔮", name:"마법사", hp:30,
+    act(t){ if(t>=22) return {k:"bust", txt:"마력 폭주", dmg:12, self:8};
+            if(t===21) return {k:"m", txt:"아케인 노바", dmg:24};
+            if(t>=17) return {k:"a", txt:"강한 주문", dmg:14};
+            if(t>=11) return {k:"a", txt:"마법탄", dmg:9};
+            return {k:"a", txt:"작은 마법탄", dmg:4}; } },
+  cleric:{ emo:"✨", name:"성직자", hp:34,
+    act(t){ if(t>=22) return {k:"bust", txt:"기도 과부하"};
+            if(t===21) return {k:"m", txt:"성역", heal:12, all:true, cleanse:99};
+            if(t>=17) return {k:"h", txt:"파티 치유", heal:5, all:true, cleanse:1};
+            if(t>=11) return {k:"h", txt:"단일 치유", heal:10};
+            return {k:"h", txt:"작은 치유", heal:4}; } },
+};
+const ORDER = ["war","hero","mage","cleric"];
+const UI_ORDER = ["hero","war","mage","cleric"];
+
+/* ============ 몬스터 (v0B 압박 조정 반영) ============ */
+const MONSTERS = [
+  { id:"wolf", emo:"🐺", name:"검은 늑대", hp:60,
+    intents:[
+      {n:"물어뜯기", txt:"가장 HP 낮은 아군에게 <b>14</b> 피해", hint:"", type:"lowest", dmg:14},
+      {n:"울부짖기", txt:"파티 전체 <b>9</b> 피해", hint:"", type:"aoe", dmg:9},
+      {n:"사냥 본능", txt:"가장 HP 낮은 아군에게 <b>17</b> 피해", hint:"그 전에 처치하면 맞지 않는다", type:"lowest", dmg:17},
+    ]},
+  { id:"witch", emo:"🧙", name:"독 마녀", hp:75,
+    intents:[
+      {n:"맹독 살포", txt:"HP 낮은 2명에게 <b>독</b> (2피해×3턴)", hint:"성직자 17+=독 1 정화 · 21=성역(전체 정화)", type:"poison2"},
+      {n:"저주 폭발", txt:"파티 전체 <b>10</b> 피해", hint:"", type:"aoe", dmg:10},
+    ]},
+  { id:"skel", emo:"💀", name:"해골 기사", hp:90,
+    intents:[
+      {n:"처형 선고", txt:"가장 HP 높은 아군에게 <b>18</b> 피해", hint:"", type:"highest", dmg:18},
+      {n:"파멸의 일격", txt:"파티 전체 <b>14</b> 피해", hint:"전사 21=무효 · 전사 17+=절반 · 16↓=직격", type:"doom", dmg:14},
+    ]},
+];
+
+/* ============ 상태 ============ */
+const S = {
+  battle:0, turn:1, faith:0, vault:null, vaultMeta:null, givesLeft:2,
+  enemy:null, eHp:0, intentIdx:0,
+  allies:{},
+  god:[], sel:-1, assigns:[], vaultGivenTo:[], linkedGive:null,
+  taunt:false, perfectGuard:false, block:0, armorCrack:false, warTotal:0,
+  blessings:{hero21:0, warBlk:0, clericHeal:0},
+  stats:{
+    m21:0, turns:0, saves:0,
+    burns:0, faithGained:0, rerolls:0,
+    vaultStores:0, vaultRetrieves:0, vault21:0, vault17:0,
+    reroll21:0, reroll17:0, vaultLinked:0,
+    vaultGuard:0, vaultHealStrong:0, vaultDecisive:0,
+  },
+  onb:{faith:false, reroll:false, vhint:false},
+  busy:false, over:false,
+};
+
+/* ============ DOM ============ */
+const $ = id => document.getElementById(id);
+const alliesEl = $("allies"), handEl = $("hand"), logEl = $("log");
+
+function initAllies(){
+  for(const id of UI_ORDER){
+    S.allies[id] = { hp:CLASSES[id].hp, max:CLASSES[id].hp, cards:[], godCards:[], poison:0, vuln:false, dead:false };
+  }
+  alliesEl.innerHTML = UI_ORDER.map(id=>{
+    const c = CLASSES[id];
+    return `<div class="ally ${id}" id="al_${id}" data-id="${id}">
+      <div class="mark">▼표적</div>
+      <div class="oracle hidden" id="or_${id}"></div>
+      <div class="nm">${c.emo} ${c.name}</div>
+      <div class="hpW"><div class="hpB" id="hp_${id}"></div></div>
+      <div class="hpT" id="hpt_${id}"></div>
+      <div class="cards" id="cd_${id}"></div>
+      <div class="sum" id="sum_${id}"></div>
+      <div class="act" id="act_${id}"></div>
+      <div class="chips" id="ch_${id}"></div>
+    </div>`;
+  }).join("");
+  for(const id of UI_ORDER){
+    $("al_"+id).addEventListener("click", ()=>onAllyTap(id));
+    $("sf_"+id).addEventListener("click", ()=>onAllyTap(id)); // 스테이지 피규어 = 보조 타깃
+  }
+}
+
+/* ============ 위협 예측 & 위협선 ============ */
+function predictTargets(){
+  const it = S.enemy && S.enemy.intents[S.intentIdx];
+  if(!it) return {};
+  const alive = UI_ORDER.filter(id=>!S.allies[id].dead);
+  const map = {};
+  if(it.type==="aoe" || it.type==="doom"){ for(const id of alive) map[id]="soft"; }
+  else if(it.type==="lowest" || it.type==="highest"){
+    let tgt=null, best = it.type==="lowest"? 1e9 : -1;
+    for(const id of alive){ const hp=S.allies[id].hp; if(it.type==="lowest"? hp<best : hp>best){ best=hp; tgt=id; } }
+    if(S.taunt && !S.allies.war.dead) tgt="war";
+    if(tgt) map[tgt]="hard";
+  }
+  else if(it.type==="poison2"){
+    const sorted = alive.slice().sort((a,b)=>S.allies[a].hp-S.allies[b].hp).slice(0,2);
+    for(const id of sorted) map[id]="hard";
+  }
+  return map;
+}
+function renderMenace(){
+  const map = S.busy ? {} : predictTargets();
+  for(const id of UI_ORDER){
+    const kind = map[id];
+    const panel = $("al_"+id), fig = $("sf_"+id), line = $("tl_"+id);
+    panel.classList.toggle("menaced", !!kind);
+    panel.classList.toggle("soft", kind==="soft");
+    fig.classList.toggle("menacedF", !!kind);
+    fig.classList.toggle("softF", kind==="soft");
+    line.classList.remove("shattering");
+    line.classList.toggle("on", !!kind);
+    line.classList.toggle("soft", kind==="soft");
+  }
+}
+function shatterMenace(){
+  document.querySelectorAll(".tline.on").forEach(l=>{
+    l.classList.add("shattering");
+  });
+  const bb = $("blockBanner");
+  bb.classList.remove("show"); void bb.offsetWidth; bb.classList.add("show");
+  setTimeout(()=>{
+    document.querySelectorAll(".tline").forEach(l=>l.classList.remove("on","shattering"));
+    document.querySelectorAll(".ally").forEach(el=>el.classList.remove("menaced","soft"));
+    document.querySelectorAll(".sfig").forEach(el=>el.classList.remove("menacedF","softF"));
+  }, 560);
+}
+
+/* ============ 렌더 ============ */
+function renderAlly(id){
+  const a = S.allies[id];
+  const el = $("al_"+id);
+  el.classList.toggle("dead", a.dead);
+  $("sf_"+id).classList.toggle("dead", a.dead);
+  const pct = Math.max(0, a.hp/a.max*100);
+  const hb = $("hp_"+id); hb.style.width = pct+"%"; hb.classList.toggle("low", pct<=35);
+  $("hpt_"+id).textContent = a.dead? "쓰러짐" : `${a.hp}/${a.max}`;
+  $("cd_"+id).innerHTML = a.cards.map((f,i)=>`<div class="mini ${a.godCards.includes(i)?'god':''}">${f}</div>`).join("");
+  const t = bestTotal(a.cards);
+  const b = band(t);
+  const sm = $("sum_"+id);
+  if(a.dead || a.cards.length===0){ sm.innerHTML=""; $("act_"+id).textContent = a.dead?"":"—"; }
+  else{
+    sm.innerHTML = `<span class="b-${b}">${t}</span><span class="band b-${b}">${BAND_LABEL[b]}</span>`;
+    $("act_"+id).textContent = "예상: " + CLASSES[id].act(t).txt;
+  }
+  const chips=[];
+  if(a.poison>0) chips.push(`<span class="chip poison">☠${a.poison}</span>`);
+  if(a.vuln) chips.push(`<span class="chip vuln">받피↑</span>`);
+  if(id==="war" && S.taunt && !a.dead) chips.push(`<span class="chip taunt">도발</span>`);
+  $("ch_"+id).innerHTML = chips.join("");
+}
+function renderAll(){ for(const id of UI_ORDER) renderAlly(id); renderEnemy(); renderHand(); renderMenace(); }
+function renderEnemy(){
+  if(!S.enemy) return;
+  $("sMon").textContent = S.enemy.emo;
+  $("enemyName").textContent = S.enemy.name;
+  $("turnTag").textContent = `전투 ${S.battle+1}/3 · 턴 ${S.turn}`;
+  const pct = Math.max(0, S.eHp/S.enemy.hp*100);
+  $("enemyHpBar").style.width = pct+"%";
+  $("enemyHpText").textContent = `${Math.max(0,S.eHp)}/${S.enemy.hp}`;
+  const it = S.enemy.intents[S.intentIdx];
+  $("intentBanner").innerHTML = `<b>${it.n}</b> · ${it.txt}` + (it.hint? `<br><span id="intentHint">💡 ${it.hint}</span>`:"");
+  const ni = S.enemy.intents[(S.intentIdx+1) % S.enemy.intents.length];
+  $("nextIntent").innerHTML = `다음 ▷ <b>${ni.n}</b> · ${ni.txt.replace(/<\/?b>/g,"")}${ni.hint? " · 💡"+ni.hint:""}`;
+}
+function renderFaith(){
+  const fv = $("faithVal");
+  fv.textContent = `${S.faith}/3`;
+  fv.classList.toggle("ready", S.faith>=3);
+  $("giveTag").innerHTML = `강림 <b>${S.givesLeft}</b>/2`;
+}
+/* 성물함 예언: [v]는 합계 (21-v)인 아군을 21로 만든다 */
+function vaultForecast(face){
+  const vals = faceVal(face);
+  const needs = [...new Set(vals.map(v=>21-v))].filter(n=>n>0 && n<21);
+  return needs;
+}
+function renderVault(){
+  const vs = $("vaultSlot"), vc = $("vaultChip");
+  if(!S.vault){ vs.className="empty"; vs.textContent=""; vc.innerHTML=""; return; }
+  vs.className="full"; vs.textContent=S.vault;
+  const mt = S.vaultMeta;
+  const aimedNow  = !!(mt && mt.battle===S.battle && mt.turn===S.turn);            /* 이번 턴에 재움 → 다음 턴 겨냥 */
+  const linkedNow = !!(mt && mt.battle===S.battle && S.turn===mt.turn+1
+    && S.enemy && S.enemy.intents[S.intentIdx].n===mt.previewName);                 /* 예고를 마주한 턴 */
+  let hit21=null, hit17=null, t17=0;
+  for(const id of UI_ORDER){
+    const a = S.allies[id];
+    if(a.dead || !a.cards.length) continue;
+    const t = bestTotal(a.cards.concat([S.vault]));
+    if(t===21 && !hit21) hit21=id;
+    else if(t>=17 && t<=20 && t>t17){ t17=t; hit17=id; }
+  }
+  vs.classList.toggle("mCandidate", !!hit21);
+  vs.classList.toggle("midCandidate", !hit21 && !!hit17);
+  let line;
+  if(hit21)      line = `✨ ${CLASSES[hit21].name} 21 — 탭!`;
+  else if(hit17) line = `▲ ${CLASSES[hit17].name} ${t17} 강행동 후보`;
+  else { const needs = vaultForecast(S.vault); line = `합계 ${needs.join("·")} → 21`; }
+  if(linkedNow)                 line = `🔮 예고 대응<br>` + line;
+  else if(aimedNow && mt.previewName) line += `<br>▷ ${mt.previewName} 대비`;
+  vc.innerHTML = line;
+}
+/* 애매 카드 판정: 이 카드를 누구에게 줘도 17~21이 안 나옴 */
+function isAmbiguous(face){
+  for(const id of UI_ORDER){
+    const a = S.allies[id];
+    if(a.dead || !a.cards.length) continue;
+    const nt = bestTotal(a.cards.concat([face]));
+    if(nt>=17 && nt<=21) return false;
+  }
+  return true;
+}
+function renderHand(){
+  handEl.innerHTML = S.god.map((g,i)=>{
+    if(g.state==="used") return `<div class="gcard used">${g.face}</div>`;
+    if(g.state==="burned") return `<div class="gcard burned">${g.face}</div>`;
+    if(g.state==="vaulted") return "";
+    const hint = (!S.vault && !g.fromVault && S.god.filter(x=>x.state==="hand").length>0 && isAmbiguous(g.face))
+      ? `<span class="vHint">📦 재워둘까?</span>` : "";
+    return `<div class="gcard ${S.sel===i?'sel':''} ${g.fromVault?'fromVault':''}" data-i="${i}" id="gc_${i}">${g.face}${hint}</div>`;
+  }).join("");
+  handEl.querySelectorAll(".gcard[data-i]").forEach(el=>{
+    el.addEventListener("click", ()=>onGodTap(+el.dataset.i));
+  });
+  const selOk = S.sel>=0 && !S.busy;
+  const selCard = selOk ? S.god[S.sel] : null;
+  $("burnBtn").disabled = !selOk;
+  $("vaultBtn").disabled = !selOk || !!S.vault;
+  $("rerollBtn").disabled = !selOk || S.faith<3;
+  $("rerollBtn").classList.toggle("glow", S.faith>=3 && !S.busy);
+  $("undoBtn").disabled = S.assigns.length===0 || S.busy;
+  $("confirmBtn").disabled = S.busy;
+  renderFaith(); renderVault();
+  // 첫 애매 카드 발견 온보딩
+  if(!S.onb.vhint && !S.busy && !S.vault && S.god.some(g=>g.state==="hand" && !g.fromVault && isAmbiguous(g.face))){
+    S.onb.vhint = true;
+    toast(`📦 <b>애매한 카드</b>는 재워서 다음 턴의 패로`);
+  }
+}
+
+/* ============ 로그/토스트/연출 ============ */
+function log(msg, cls){
+  const d = document.createElement("div");
+  if(cls) d.className = cls;
+  d.textContent = msg;
+  logEl.appendChild(d);
+  while(logEl.children.length>2) logEl.removeChild(logEl.firstChild);
+}
+let toastTimer = null;
+function toast(html, ms){
+  const t = $("toast");
+  t.innerHTML = html;
+  t.classList.add("show");
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove("show"), ms||2800);
+}
+function flt(hostId, text, cls){
+  const host = hostId==="enemy" ? $("sMon") : $("sf_"+hostId);
+  const f = document.createElement("div");
+  f.className = "flt "+cls; f.textContent = text;
+  host.appendChild(f);
+  setTimeout(()=>f.remove(), 950);
+}
+function flash(kind){ const f=$("flash"); f.className=""; void f.offsetWidth; f.className=kind; }
+function shake(){ const a=$("app"); a.classList.remove("shake"); void a.offsetWidth; a.classList.add("shake"); }
+function figFx(id, cls, dur){
+  const t = $("sf_"+id); if(!t) return;
+  t.classList.remove(cls); void t.offsetWidth; t.classList.add(cls);
+  setTimeout(()=>t.classList.remove(cls), dur||600);
+}
+function crackFx(id){
+  const el = $("sf_"+id);
+  const c = document.createElement("div");
+  c.className="crack"; c.textContent="⚡";
+  el.appendChild(c);
+  setTimeout(()=>c.remove(), 650);
+}
+function impulseFx(id){
+  const el = $("sf_"+id);
+  const c = document.createElement("div");
+  c.className="impulse";
+  el.appendChild(c);
+  setTimeout(()=>c.remove(), 750);
+}
+function healWave(grand){
+  const w = document.createElement("div");
+  w.className="healWave"+(grand?" grand":"");
+  $("stage").appendChild(w);
+  setTimeout(()=>w.remove(), 950);
+}
+function updateVignette(){
+  const danger = UI_ORDER.some(id=>{ const a=S.allies[id]; return !a.dead && a.hp/a.max<=0.3; });
+  $("vignette").classList.toggle("on", danger);
+}
+
+/* ---- WebAudio 신스 ---- */
+let AC=null;
+function ac(){ if(!AC){ try{ AC = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } return AC; }
+function tone(freq, dur, type, vol, when){
+  const c=ac(); if(!c) return;
+  const t0 = c.currentTime + (when||0);
+  const o=c.createOscillator(), g=c.createGain();
+  o.type=type||"sine"; o.frequency.setValueAtTime(freq,t0);
+  g.gain.setValueAtTime(vol||.12,t0); g.gain.exponentialRampToValueAtTime(.001,t0+dur);
+  o.connect(g); g.connect(c.destination); o.start(t0); o.stop(t0+dur+.02);
+}
+const SFX = {
+  tap(){ tone(660,.06,"square",.05); },
+  give(){ tone(520,.08,"triangle",.08); tone(780,.1,"triangle",.06,.05); },
+  burn(){ tone(200,.18,"sawtooth",.07); tone(420,.1,"sine",.05,.1); },
+  vault(){ tone(440,.09,"triangle",.08); tone(330,.12,"triangle",.06,.07); },
+  reroll(){ tone(700,.07,"square",.06); tone(880,.09,"square",.06,.06); tone(1050,.11,"triangle",.07,.12); },
+  hit(){ tone(140,.15,"square",.1); },
+  bigHit(){ tone(90,.3,"sawtooth",.14); tone(60,.35,"square",.1,.03); },
+  block(){ tone(320,.1,"square",.09); tone(240,.12,"square",.07,.06); },
+  heal(){ tone(620,.12,"sine",.09); tone(830,.16,"sine",.07,.08); },
+  miracle(){ [523,659,784,1047].forEach((f,i)=>tone(f,.22,"triangle",.1,i*.07)); },
+  bust(){ tone(300,.12,"sawtooth",.1); tone(150,.25,"sawtooth",.1,.08); },
+  win(){ [523,659,784,1047,1319].forEach((f,i)=>tone(f,.3,"triangle",.11,i*.09)); },
+  lose(){ [330,262,196,131].forEach((f,i)=>tone(f,.35,"sine",.11,i*.14)); },
+};
+
+/* ============ 오라클 미리보기 ============ */
+function showOracles(){
+  const gi = S.sel;
+  const canGive = gi>=0 && (S.god[gi].fromVault || S.givesLeft>0);
+  for(const id of UI_ORDER){
+    const or = $("or_"+id);
+    const a = S.allies[id];
+    if(gi<0 || a.dead){ or.classList.add("hidden"); continue; }
+    const cur = bestTotal(a.cards);
+    const nt = bestTotal(a.cards.concat([S.god[gi].face]));
+    const act = CLASSES[id].act(nt);
+    const b = band(nt);
+    or.className = "oracle" + (b==="bust"?" o-bust": b==="21"?" o-21":"");
+    or.innerHTML = `<span class="oNum">${cur}→${nt}</span><span class="oAct">${act.txt}</span>`;
+    or.classList.remove("hidden");
+  }
+  document.querySelectorAll(".ally").forEach(el=>{
+    const id = el.dataset.id;
+    el.classList.toggle("targetable", canGive && !S.allies[id].dead);
+  });
+  if(gi<0) $("guide").textContent = "카드를 고르면, 각 아군의 미래가 보인다";
+  else if(canGive) $("guide").textContent = S.god[gi].fromVault ? "성물함 카드 — 강림 제한 없이 줄 수 있다" : "빛나는 아군을 눌러 강림 (남은 강림 "+S.givesLeft+")";
+  else $("guide").textContent = "강림 소진! 이 카드는 📦보관 / 🔥태우기 / 흘리기";
+}
+
+/* ============ 입력 ============ */
+function onGodTap(i){
+  if(S.busy || S.over) return;
+  if(S.god[i].state!=="hand") return;
+  S.sel = (S.sel===i)? -1 : i;
+  SFX.tap();
+  renderHand(); showOracles();
+}
+function onAllyTap(id){
+  if(S.busy || S.over || S.sel<0) return;
+  const a = S.allies[id];
+  if(a.dead) return;
+  const g = S.god[S.sel];
+  if(!g.fromVault && S.givesLeft<=0){ toast("강림은 턴당 <b>2장</b> — 남는 카드는 📦·🔥·흘리기", 2200); return; }
+  g.state="used"; g.to=id;
+  if(!g.fromVault) S.givesLeft--;
+  const asn = {type:"give", gi:S.sel, to:id, fv:!!g.fromVault};
+  S.assigns.push(asn);
+  a.cards.push(g.face);
+  a.godCards.push(a.cards.length-1);
+  const nt = bestTotal(a.cards);
+  // 계측: 출처별 성과
+  if(g.origin==="vault"){
+    if(nt===21) S.stats.vault21++;
+    else if(nt>=17 && nt<=20) S.stats.vault17++;
+    S.vaultGivenTo.push(id);
+    if(S.vaultMetaUsed && S.vaultMetaUsed.linked){
+      S.linkedGive = {id, nt};      /* 연계 "성과"는 운명 확정 시 판정 */
+      S.vaultMetaUsed.linked = false;
+      asn.wasLinkedGive = true;
+    }
+  } else if(g.origin==="reroll"){
+    if(nt===21) S.stats.reroll21++;
+    else if(nt>=17 && nt<=20) S.stats.reroll17++;
+  }
+  SFX.give();
+  figFx(id,"recv",400);
+  if(nt===21){ SFX.miracle(); flash("gold"); flt(id,"21!","f-gold"); }
+  else if(nt>=22){ SFX.bust(); flt(id, nt+"…", "f-dmg"); }
+  S.sel=-1;
+  renderAlly(id); renderHand(); showOracles();
+}
+$("burnBtn").addEventListener("click", ()=>{
+  if(S.sel<0||S.busy) return;
+  const g = S.god[S.sel];
+  g.state="burned";
+  S.faith++; S.stats.burns++; S.stats.faithGained++;
+  S.assigns.push({type:"burn", gi:S.sel});
+  SFX.burn();
+  log(`[${g.face}] 를 태웠다 → 🕯 신앙 +1 (${S.faith})`, "l-sys");
+  if(!S.onb.faith){
+    S.onb.faith = true;
+    toast(`🕯 <b>신앙 +1</b> — <b>3</b>이면 카드 1장 ✨리롤`, 2800);
+  }
+  if(S.faith>=3 && !S.onb.reroll){
+    S.onb.reroll = true;
+    toast(`✨ <b>신앙 3!</b> 카드 선택 후 리롤 버튼`, 2600);
+  }
+  S.sel=-1; renderHand(); showOracles();
+});
+$("vaultBtn").addEventListener("click", ()=>{
+  if(S.sel<0||S.busy||S.vault) return;
+  const g = S.god[S.sel];
+  g.state="vaulted";
+  S.vault = g.face;
+  S.vaultMeta = { turn:S.turn, battle:S.battle, previewName:S.enemy.intents[(S.intentIdx+1)%S.enemy.intents.length].n };
+  S.stats.vaultStores++;
+  S.assigns.push({type:"vault", gi:S.sel});
+  SFX.vault();
+  log(`[${g.face}] 를 성물함에 봉인 — 다음 턴의 패가 된다`, "l-sys");
+  S.sel=-1; renderHand(); showOracles();
+});
+$("vaultSlot").addEventListener("click", ()=>{
+  if(S.busy || S.over || !S.vault) return;
+  const face = S.vault;
+  const meta = S.vaultMeta;
+  // "예고 연계": 보관한 턴의 바로 다음 턴에, 보관 시 예고됐던 의도를 마주한 상태로 꺼냄
+  const linked = !!(meta && meta.battle===S.battle && S.turn===meta.turn+1
+    && S.enemy.intents[S.intentIdx].n===meta.previewName);
+  S.vault = null; S.vaultMeta = null;
+  S.god.push({face, state:"hand", fromVault:true, origin:"vault"});
+  S.vaultMetaUsed = { linked };
+  S.stats.vaultRetrieves++;
+  S.assigns.push({type:"unvault", gi:S.god.length-1, meta, linked});
+  SFX.vault();
+  log(`성물함에서 [${face}] 를 꺼냈다${linked?" (예고 연계!)":""}`, "l-sys");
+  S.sel = S.god.length-1;
+  renderHand(); showOracles();
+});
+$("rerollBtn").addEventListener("click", ()=>{
+  if(S.sel<0||S.busy||S.faith<3) return;
+  const g = S.god[S.sel];
+  const oldFace = g.face, oldOrigin = g.origin;
+  S.faith -= 3;
+  g.face = draw();
+  g.origin = "reroll";
+  S.stats.rerolls++;
+  S.assigns.push({type:"reroll", gi:S.sel, oldFace, oldOrigin, cost:3});
+  SFX.reroll();
+  const el = $("gc_"+S.sel);
+  if(el){ el.classList.add("rerolling"); }
+  log(`✨ 리롤! [${oldFace}] → [${g.face}] (신앙 -3)`, "l-gold");
+  renderHand(); showOracles();
+});
+$("undoBtn").addEventListener("click", ()=>{
+  if(S.busy || S.assigns.length===0) return;
+  const last = S.assigns.pop();
+  if(last.type==="give"){
+    const a = S.allies[last.to];
+    a.cards.pop(); a.godCards.pop();
+    const g = S.god[last.gi];
+    g.state="hand";
+    if(!last.fv) S.givesLeft++;
+    // 계측 롤백
+    if(g.origin==="vault"){
+      const t = bestTotal(a.cards.concat([g.face]));
+      if(t===21) S.stats.vault21=Math.max(0,S.stats.vault21-1);
+      else if(t>=17&&t<=20) S.stats.vault17=Math.max(0,S.stats.vault17-1);
+      const vi = S.vaultGivenTo.lastIndexOf(last.to);
+      if(vi>=0) S.vaultGivenTo.splice(vi,1);
+      if(last.wasLinkedGive){ S.linkedGive=null; S.vaultMetaUsed={linked:true}; }
+      else if(S.vaultMetaUsed===undefined || S.vaultMetaUsed===null) S.vaultMetaUsed={linked:false};
+    } else if(g.origin==="reroll"){
+      const t = bestTotal(a.cards.concat([g.face]));
+      if(t===21) S.stats.reroll21=Math.max(0,S.stats.reroll21-1);
+      else if(t>=17&&t<=20) S.stats.reroll17=Math.max(0,S.stats.reroll17-1);
+    }
+    renderAlly(last.to);
+  } else if(last.type==="burn"){
+    S.god[last.gi].state="hand";
+    S.faith = Math.max(0, S.faith-1);
+    S.stats.burns=Math.max(0,S.stats.burns-1);
+    S.stats.faithGained=Math.max(0,S.stats.faithGained-1);
+  } else if(last.type==="vault"){
+    S.god[last.gi].state="hand";
+    S.vault = null; S.vaultMeta = null;
+    S.stats.vaultStores=Math.max(0,S.stats.vaultStores-1);
+  } else if(last.type==="unvault"){
+    const g = S.god[last.gi];
+    S.vault = g.face;
+    S.vaultMeta = last.meta;
+    S.god.splice(last.gi,1);
+    S.stats.vaultRetrieves=Math.max(0,S.stats.vaultRetrieves-1);
+    S.vaultMetaUsed = null;
+    if(S.sel===last.gi) S.sel=-1;
+  } else if(last.type==="reroll"){
+    shoe.push(S.god[last.gi].face);
+    S.god[last.gi].face = last.oldFace;
+    S.god[last.gi].origin = last.oldOrigin;
+    S.faith += last.cost;
+    S.stats.rerolls=Math.max(0,S.stats.rerolls-1);
+  }
+  SFX.tap();
+  renderHand(); showOracles();
+});
+$("confirmBtn").addEventListener("click", ()=>{ if(!S.busy && !S.over) resolveTurn(); });
+
+/* ============ 턴 시작 ============ */
+function startTurn(){
+  S.turn===1 && log(`${S.enemy.name} 이(가) 나타났다!`, "l-sys");
+  S.taunt=false; S.perfectGuard=false; S.block=0; S.armorCrack=false; S.warTotal=0;
+  S.givesLeft = 2;
+  S.vaultMetaUsed = null;
+  S.vaultGivenTo = []; S.linkedGive = null;
+  for(const id of UI_ORDER){
+    const a = S.allies[id];
+    a.cards=[]; a.godCards=[];
+    if(!a.dead){ a.cards.push(draw(), draw()); }
+  }
+  S.god = [ {face:draw(),state:"hand",origin:"hand"}, {face:draw(),state:"hand",origin:"hand"}, {face:draw(),state:"hand",origin:"hand"} ];
+  S.sel=-1; S.assigns=[];
+  S.intentIdx = (S.turn-1) % S.enemy.intents.length;
+  renderAll(); showOracles(); updateVignette();
+  /* 예고 연계 기회 — 재운 카드가 "그 예고"를 마주한 턴에 21을 만들 수 있으면 알림 */
+  if(S.vault && S.vaultMeta){
+    const mt = S.vaultMeta;
+    if(mt.battle===S.battle && S.turn===mt.turn+1 && S.enemy.intents[S.intentIdx].n===mt.previewName){
+      for(const id of UI_ORDER){
+        const a = S.allies[id];
+        if(!a.dead && a.cards.length && bestTotal(a.cards.concat([S.vault]))===21){
+          toast(`🔮 예고 대응 — 성물함 [${S.vault}] 로 ${CLASSES[id].name} 21 가능!`, 3200);
+          break;
+        }
+      }
+    }
+  }
+}
+
+/* ============ 해결 ============ */
+const wait = ms => new Promise(r=>setTimeout(r,ms));
+function aliveIds(){ return UI_ORDER.filter(id=>!S.allies[id].dead); }
+function dmgEnemy(n){
+  S.eHp -= n;
+  flt("enemy","-"+n,"f-dmg");
+  renderEnemy();
+}
+function dmgAlly(id, n, pierce){
+  const a = S.allies[id];
+  if(a.dead) return 0;
+  let d = n;
+  if(!pierce){
+    d = Math.max(0, d - S.block);
+    if(S.armorCrack) d = Math.round(d*1.3);
+  }
+  if(a.vuln) d = Math.round(d*1.5);
+  a.hp -= d;
+  if(d>0){ flt(id,"-"+d,"f-dmg"); } else { flt(id,"막음","f-block"); SFX.block(); }
+  if(a.hp<=0){ a.hp=0; a.dead=true; log(`${CLASSES[id].name} 이(가) 쓰러졌다…`, "l-hit"); }
+  renderAlly(id); updateVignette();
+  return d;
+}
+function healAlly(id, n, single){
+  const a = S.allies[id];
+  if(a.dead) return;
+  const before = a.hp;
+  a.hp = Math.min(a.max, a.hp+n);
+  const got = a.hp-before;
+  if(got>0){ flt(id,"+"+got,"f-heal"); if(single) impulseFx(id); }
+  renderAlly(id); updateVignette();
+}
+
+async function resolveTurn(){
+  S.busy=true; S.stats.turns++;
+  /* 예고 연계 판정 1: 17+ 도달이면 즉시 인정 (처치 기여는 아래 피해 처리에서) */
+  if(S.linkedGive && S.linkedGive.nt>=17){ S.stats.vaultLinked++; S.linkedGive=null; }
+  renderHand();
+  document.querySelectorAll(".ally").forEach(el=>el.classList.remove("targetable"));
+  document.querySelectorAll(".oracle").forEach(el=>el.classList.add("hidden"));
+  $("guide").textContent = "운명이 실행된다…";
+
+  const acts = {};
+  for(const id of UI_ORDER){
+    const a = S.allies[id];
+    if(a.dead) continue;
+    acts[id] = CLASSES[id].act(bestTotal(a.cards));
+  }
+  S.warTotal = S.allies.war.dead ? 0 : bestTotal(S.allies.war.cards);
+
+  for(const id of ORDER){
+    const a = S.allies[id];
+    if(a.dead || !acts[id]) continue;
+    const act = acts[id];
+    const nm = CLASSES[id].name;
+    await wait(400);
+
+    if(act.k==="bust"){
+      SFX.bust(); figFx(id,"bustFx",600); crackFx(id);
+      if(id==="hero"){ a.vuln=true; log(`${nm}: 무릎 꿇음! 행동 실패, 다음 피해 증가`, "l-hit"); }
+      else if(id==="war"){ S.armorCrack=true; log(`${nm}: 갑옷 균열! 파티 받는 피해 증가`, "l-hit"); }
+      else if(id==="mage"){ dmgEnemy(act.dmg); a.hp=Math.max(1,a.hp-act.self); flt(id,"-"+act.self,"f-dmg"); log(`${nm}: 마력 폭주! 적 ${act.dmg} · 반동 ${act.self}`, "l-hit"); }
+      else { S.faith++; S.stats.faithGained++; log(`${nm}: 기도 과부하… 치유 실패 (🕯 신앙 +1)`, "l-sys"); renderFaith(); }
+      renderAlly(id);
+      continue;
+    }
+
+    if(id==="war"){
+      if(act.txt==="완벽 방어"){
+        S.perfectGuard=true; flash("gold"); SFX.miracle(); S.stats.m21++;
+        figFx(id,"miracle21",950);
+        flt(id,"완벽 방어!","f-gold");
+        log(`${nm}: 완벽 방어! 이번 턴 적의 행동 무효`, "l-gold");
+        shatterMenace();
+      }
+      else{
+        S.block = act.blk + (act.blk>0 && S.warTotal>=17 ? S.blessings.warBlk : 0);
+        if(act.taunt) S.taunt=true;
+        SFX.block(); flt(id,"방어 "+S.block,"f-block");
+        log(`${nm}: ${act.txt} (피해 -${S.block}${act.taunt?" · 도발":""})`);
+        if(act.taunt) renderMenace();
+      }
+      renderAlly(id);
+      continue;
+    }
+
+    if(act.dmg){
+      let d = act.dmg;
+      if(id==="hero" && act.k==="m") d += S.blessings.hero21;
+      if(act.k==="m"){
+        S.stats.m21++; flash("gold"); SFX.miracle(); shake();
+        figFx(id,"miracle21",950);
+        log(`${nm}: ${act.txt}!! ${d} 피해!`, "l-gold");
+        await wait(90); // 히트 스탑
+      }
+      else { SFX.hit(); figFx(id,"recv",350); log(`${nm}: ${act.txt} — ${d} 피해`); }
+      dmgEnemy(d);
+      if(S.vaultGivenTo.includes(id) && (S.eHp<=0 || act.k==="m")) S.stats.vaultDecisive++;
+      if(S.linkedGive && S.linkedGive.id===id && S.eHp<=0){ S.stats.vaultLinked++; S.linkedGive=null; }
+      if(S.eHp<=0) break;
+      continue;
+    }
+
+    if(act.heal!==undefined){
+      let h = act.heal + (bestTotal(a.cards)>=17 ? S.blessings.clericHeal : 0);
+      if(act.k==="m"){
+        S.stats.m21++; flash("gold"); SFX.miracle();
+        figFx(id,"miracle21",950);
+        healWave(true);
+        log(`${nm}: 성역!! 파티 전체 +${h} · 독 정화`, "l-gold");
+      }
+      else if(act.all){ SFX.heal(); healWave(false); log(`${nm}: ${act.txt} +${h}`, "l-heal"); }
+      else { SFX.heal(); log(`${nm}: ${act.txt} +${h}`, "l-heal"); }
+      if(act.all){
+        for(const t of aliveIds()) healAlly(t,h,false);
+      } else {
+        let low=null, lp=2;
+        for(const t of aliveIds()){ const p=S.allies[t].hp/S.allies[t].max; if(p<lp){lp=p; low=t;} }
+        if(low) healAlly(low,h,true);
+      }
+      if(id==="cleric" && S.vaultGivenTo.includes("cleric") && bestTotal(a.cards)>=17) S.stats.vaultHealStrong++;
+      if(act.cleanse){
+        let left = act.cleanse;
+        for(const t of aliveIds()){
+          if(left>0 && S.allies[t].poison>0){ S.allies[t].poison=0; left--; log(`${CLASSES[t].name} 의 독이 정화됐다`, "l-heal"); renderAlly(t); }
+        }
+      }
+    }
+  }
+
+  await wait(480);
+
+  if(S.eHp<=0){ await onVictory(); return; }
+
+  /* ---- 몬스터 행동 ---- */
+  const it = S.enemy.intents[S.intentIdx];
+  if(S.perfectGuard){
+    flash("gold"); SFX.block(); S.stats.saves++;
+    if(S.vaultGivenTo.includes("war")) S.stats.vaultGuard++;
+    log(`완벽 방어! ${S.enemy.name} 의 ${it.n} 이(가) 무효화됐다!`, "l-gold");
+  } else {
+    $("sMon").classList.add("attacking");
+    setTimeout(()=>$("sMon").classList.remove("attacking"), 500);
+    shake(); flash("red");
+    await wait(70); // 히트 스탑
+    if(it.type==="lowest" || it.type==="highest"){
+      let tgt=null, best = it.type==="lowest"? 1e9 : -1;
+      for(const id of aliveIds()){
+        const hp = S.allies[id].hp;
+        if(it.type==="lowest" ? hp<best : hp>best){ best=hp; tgt=id; }
+      }
+      if(S.taunt && !S.allies.war.dead) tgt="war";
+      if(tgt){ SFX.bigHit(); const d=dmgAlly(tgt, it.dmg); log(`${S.enemy.name} 의 ${it.n} → ${CLASSES[tgt].name} ${d} 피해`, "l-hit"); }
+    } else if(it.type==="aoe"){
+      SFX.bigHit();
+      let total=0;
+      for(const id of aliveIds()) total += dmgAlly(id, it.dmg);
+      log(`${S.enemy.name} 의 ${it.n}! (총 ${total} 피해)`, "l-hit");
+    } else if(it.type==="doom"){
+      // 파멸의 일격: 전사 합계 티어로 감쇠 (준비 요구형)
+      SFX.bigHit();
+      let base = it.dmg;
+      let note = "직격!";
+      if(!S.allies.war.dead && S.warTotal>=17 && S.warTotal<=20){ base = Math.ceil(base/2); note = "전사가 절반을 받아냈다!"; }
+      let total=0;
+      for(const id of aliveIds()) total += dmgAlly(id, base);
+      log(`${S.enemy.name} 의 ${it.n}! ${note} (총 ${total})`, "l-hit");
+    } else if(it.type==="poison2"){
+      const sorted = aliveIds().sort((a,b)=>S.allies[a].hp-S.allies[b].hp).slice(0,2);
+      for(const id of sorted){ S.allies[id].poison=3; flt(id,"☠독","f-dmg"); renderAlly(id); }
+      SFX.hit();
+      log(`맹독 살포! ${sorted.map(i=>CLASSES[i].name).join(", ")} 중독`, "l-hit");
+    }
+  }
+
+  /* ---- 독 틱 & 상태 정리 ---- */
+  await wait(400);
+  for(const id of aliveIds()){
+    const a = S.allies[id];
+    if(a.poison>0){ a.poison--; dmgAlly(id, 2, true); }
+  }
+  if(S.allies.hero.vuln){ S.allies.hero.vuln=false; renderAlly("hero"); }
+
+  updateVignette();
+
+  if(aliveIds().length===0){ await onDefeat(); return; }
+
+  S.turn++;
+  await wait(430);
+  S.busy=false;
+  startTurn();
+}
+
+/* ============ 승리/보상/패배 ============ */
+const REWARD_POOL = [
+  {id:"hero21", b:"용사의 축복", s:"성검 해방(용사 21)의 피해 +10", f:()=>S.blessings.hero21+=10},
+  {id:"warBlk", b:"철벽의 축복", s:"전사 17 이상일 때 블록 +4", f:()=>S.blessings.warBlk+=4},
+  {id:"clHeal", b:"자비의 축복", s:"성직자 17 이상일 때 회복 +4", f:()=>S.blessings.clericHeal+=4},
+  {id:"grace",  b:"은총", s:"파티 전원 즉시 12 회복", f:()=>{for(const id of UI_ORDER){const a=S.allies[id]; if(!a.dead){a.hp=Math.min(a.max,a.hp+12);}}}},
+];
+function reportHtml(){
+  const st = S.stats;
+  return `<div class="report">
+    <div class="rline"><span>기적(21)</span><b>${st.m21}회</b></div>
+    <div class="rline"><span>완벽 방어</span><b>${st.saves}회</b></div>
+    <div class="rline"><span>태우기 / 신앙 획득</span><b>${st.burns} / ${st.faithGained}</b></div>
+    <div class="rline"><span>리롤</span><b>${st.rerolls}회</b></div>
+    <div class="rline"><span>리롤 → 21 / 17+</span><b>${st.reroll21} / ${st.reroll17}</b></div>
+    <div class="rline"><span>성물함 보관 / 꺼내기</span><b>${st.vaultStores} / ${st.vaultRetrieves}</b></div>
+    <div class="rline"><span>성물함 → 21 / 17+</span><b>${st.vault21} / ${st.vault17}</b></div>
+    <div class="rline"><span>성물함 → 완벽 방어 / 성역·강회복</span><b>${st.vaultGuard} / ${st.vaultHealStrong}</b></div>
+    <div class="rline"><span>성물함 → 결정타 기여</span><b>${st.vaultDecisive}</b></div>
+    <div class="rline"><span class="hlt">예고 연계 성물함 사용</span><b class="hlt">${st.vaultLinked}회</b></div>
+  </div>`;
+}
+async function onVictory(){
+  SFX.win();
+  S.busy=true;
+  await wait(600);
+  if(S.battle>=2){ showClear(); return; }
+  const ov = document.createElement("div");
+  ov.className="overlay";
+  const opts = [REWARD_POOL[S.battle], REWARD_POOL[(S.battle+1)%4], REWARD_POOL[3]];
+  ov.innerHTML = `<h2 class="win">승리</h2>
+    <div class="sub">${S.enemy.name} 을(를) 물리쳤다.\n신의 축복 하나를 내린다.</div>
+    <div class="rewards">${opts.map((r,i)=>`<button class="rw" data-i="${i}"><b>${r.b}</b><span>${r.s}</span></button>`).join("")}</div>`;
+  $("app").appendChild(ov);
+  ov.querySelectorAll(".rw").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      opts[+btn.dataset.i].f();
+      ov.remove();
+      nextBattle();
+    });
+  });
+}
+function nextBattle(){
+  S.battle++; S.turn=1;
+  S.enemy = MONSTERS[S.battle];
+  S.eHp = S.enemy.hp;
+  log(`— ${S.enemy.name} 출현 —`, "l-sys");
+  S.busy=false;
+  startTurn();
+}
+function survivorNames(){
+  return aliveIds().map(i=>CLASSES[i].name).join(" · ") || "없음";
+}
+function showClear(){
+  const ov = document.createElement("div");
+  ov.className="overlay";
+  ov.innerHTML = `<h2 class="win">세 마물 격파</h2>
+    <div class="sub">총 ${S.stats.turns}턴 · 생존: ${survivorNames()}</div>
+    ${reportHtml()}
+    <div class="sub">신이여, 예고를 읽고 패를 재웠는가?</div>
+    <button class="obtn gold" id="againBtn">같은 운명 다시 (동일 시드)</button>
+    <button class="obtn" id="newBtn">새로운 운명 (시드 변경)</button>`;
+  $("app").appendChild(ov);
+  ov.querySelector("#againBtn").addEventListener("click", ()=>location.reload());
+  ov.querySelector("#newBtn").addEventListener("click", ()=>{ newSeed(); });
+  S.over=true;
+}
+async function onDefeat(){
+  SFX.lose();
+  await wait(500);
+  const ov = document.createElement("div");
+  ov.className="overlay";
+  ov.innerHTML = `<h2 class="lose">파티 전멸</h2>
+    <div class="sub">전투 ${S.battle+1} · ${S.turn}턴째에 무너졌다.</div>
+    ${reportHtml()}
+    <div class="sub">같은 시드 = 같은 카드.\n다른 선택이 다른 운명을 만든다.</div>
+    <button class="obtn gold" id="retryBtn">다시 강림한다 (동일 시드)</button>
+    <button class="obtn" id="newBtn2">새로운 운명 (시드 변경)</button>`;
+  $("app").appendChild(ov);
+  ov.querySelector("#retryBtn").addEventListener("click", ()=>location.reload());
+  ov.querySelector("#newBtn2").addEventListener("click", ()=>{ newSeed(); });
+  S.over=true;
+}
+function newSeed(){
+  const ns = (SEED + 1 + Math.floor(performance.now())) % 99999989;
+  location.hash = "s" + ns;
+  location.reload();
+}
+
+/* ============ 부팅 ============ */
+(function boot(){
+  const m = location.hash.match(/^#s(\d+)(?:b(\d))?$/);
+  if(m){ SEED = +m[1]; if(m[2]!==undefined) S.battle = Math.min(2, +m[2]); }
+  resetRng();
+  refillShoe();
+  initAllies();
+  S.enemy = MONSTERS[S.battle]; S.eHp = S.enemy.hp;
+  renderAll(); renderFaith(); renderVault();
+  $("seedTag").textContent = `현재 시드 ${SEED} · 전투 ${S.battle+1}부터 시작`;
+  document.querySelectorAll(".dbg").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      location.hash = "s"+btn.dataset.s+(btn.dataset.b!=="0" ? "b"+btn.dataset.b : "");
+      location.reload();
+    });
+  });
+  $("startBtn").addEventListener("click", ()=>{
+    ac() && ac().resume && ac().resume();
+    $("startOv").remove();
+    startTurn();
+  });
+})();
+</script>
+</body>
+</html>
