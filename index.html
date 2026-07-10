@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>용사에게 한 장 더 줘 v1C1 — HP Threshold Probe (실험판)</title>
+<title>용사에게 한 장 더 줘 v1D — Battle Action Feedback (실험판)</title>
 <style>
 :root{
   --abyss:#131120; --altar:#1e1a30; --panel:#262040; --line:#3a3260;
@@ -131,6 +131,82 @@ body{
 .shockRing.big{border-width:5px;animation:ringOutBig .75s ease-out forwards;box-shadow:0 0 30px rgba(255,222,138,.9);}
 @keyframes ringOut{from{opacity:.95;width:24px;height:24px}to{opacity:0;width:420px;height:420px}}
 @keyframes ringOutBig{from{opacity:1;width:24px;height:24px}to{opacity:0;width:760px;height:760px}}
+/* ═══ ✦ v1D 전장 액션 FX (표현 계층 — 수치·판정·리듬 무변경) ═══ */
+/* 준비(윈드업) — 기존 wait(400) 창 재활용 */
+.sfig.wind{animation:sWind .34s ease-out;}
+@keyframes sWind{0%,100%{transform:translateX(-50%)}45%{transform:translateX(calc(-50% + var(--lx,0px)*.3)) translateY(2px) scale(.96)}}
+.sfig.windGlow{box-shadow:0 0 0 1px var(--divine),0 0 10px rgba(240,201,106,.45);}
+.sfig.windArc{box-shadow:0 0 0 1px var(--arcane),0 0 12px rgba(157,130,242,.55);}
+.sfig.windHoly{box-shadow:0 0 0 1px var(--heal),0 0 12px rgba(111,211,160,.5);}
+.sfig.windGuard{animation:sGuardUp .34s ease-out;box-shadow:0 0 0 2px var(--shield),0 0 10px rgba(127,180,232,.5);}
+@keyframes sGuardUp{0%,100%{transform:translateX(-50%)}50%{transform:translateX(-50%) translateY(-4px) scale(1.08)}}
+/* 돌진 */
+.sfig.lunge{animation:sLunge .3s cubic-bezier(.3,1.3,.5,1);z-index:3;}
+@keyframes sLunge{0%{transform:translateX(-50%)}45%{transform:translateX(calc(-50% + var(--lx,16px))) translateY(-10px) scale(1.08)}100%{transform:translateX(-50%)}}
+/* 용사 — 베기선 */
+.fxSlash{position:absolute;width:44px;height:3px;border-radius:2px;pointer-events:none;z-index:6;
+  background:linear-gradient(90deg,transparent,#fff 30%,var(--burst) 60%,transparent);
+  transform:translate(-50%,-50%) rotate(var(--ang,-30deg)) scaleX(.2);opacity:0;
+  animation:slashIn .2s ease-out forwards;box-shadow:0 0 8px rgba(255,222,138,.7);}
+.fxSlash.big{width:96px;height:5px;animation:slashInBig .3s ease-out forwards;box-shadow:0 0 16px rgba(255,232,160,.95);}
+@keyframes slashIn{0%{opacity:0;transform:translate(-50%,-50%) rotate(var(--ang)) scaleX(.2)}30%{opacity:1;transform:translate(-50%,-50%) rotate(var(--ang)) scaleX(1.15)}100%{opacity:0;transform:translate(-50%,-50%) rotate(var(--ang)) scaleX(1)}}
+@keyframes slashInBig{0%{opacity:0;transform:translate(-50%,-50%) rotate(var(--ang)) scaleX(.1)}22%{opacity:1;transform:translate(-50%,-50%) rotate(var(--ang)) scaleX(1.25)}60%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) rotate(var(--ang)) scaleX(1.05)}}
+/* 용사 2장 블랙잭 — 슝~(모으기) */
+.sfig.bjCharge{animation:sBjCharge .38s ease-in;z-index:3;}
+@keyframes sBjCharge{0%{transform:translateX(-50%)}70%{transform:translateX(-50%) translateY(3px) scale(.9);filter:brightness(1.5)}100%{transform:translateX(-50%) scale(1)}}
+.fxGather{position:absolute;width:54px;height:54px;border-radius:50%;border:2px solid var(--burst);pointer-events:none;z-index:5;
+  transform:translate(-50%,-50%);animation:gatherIn .36s ease-in forwards;box-shadow:0 0 14px rgba(255,222,138,.6);}
+@keyframes gatherIn{from{opacity:.2;width:64px;height:64px}to{opacity:.95;width:10px;height:10px}}
+/* 마법사 — 투사체/메테오 */
+.fxProj{position:absolute;width:9px;height:9px;border-radius:50%;pointer-events:none;z-index:6;
+  background:radial-gradient(circle at 35% 30%,#fff,var(--arcane));box-shadow:0 0 10px var(--arcane),0 0 20px rgba(157,130,242,.5);
+  left:var(--x0);top:var(--y0);animation:projFly var(--fd,.26s) ease-in forwards;}
+.fxProj.holy{background:radial-gradient(circle at 35% 30%,#fff,var(--heal));box-shadow:0 0 10px var(--heal),0 0 18px rgba(111,211,160,.5);}
+@keyframes projFly{from{left:var(--x0);top:var(--y0);opacity:1}to{left:var(--x1);top:var(--y1);opacity:1}}
+.fxMeteor{position:absolute;width:11px;height:11px;border-radius:50%;pointer-events:none;z-index:6;
+  background:radial-gradient(circle at 40% 30%,#fff,var(--arcane));
+  box-shadow:0 0 12px var(--arcane),0 -14px 10px -4px rgba(157,130,242,.5),0 -26px 14px -6px rgba(157,130,242,.3);
+  left:var(--x0);top:-6%;animation:meteorDrop var(--fd,.3s) cubic-bezier(.5,0,.9,.4) forwards;}
+@keyframes meteorDrop{from{top:-6%;opacity:1}to{top:var(--y1);opacity:1}}
+.fxPop{position:absolute;width:16px;height:16px;border-radius:50%;pointer-events:none;z-index:6;
+  border:2px solid var(--arcane);transform:translate(-50%,-50%);animation:popOut .28s ease-out forwards;box-shadow:0 0 12px rgba(157,130,242,.7);}
+.fxPop.gold{border-color:var(--burst);box-shadow:0 0 14px rgba(255,222,138,.8);}
+.fxPop.big{border-width:3px;animation:popOutBig .4s ease-out forwards;}
+@keyframes popOut{from{opacity:1;width:8px;height:8px}to{opacity:0;width:44px;height:44px}}
+@keyframes popOutBig{from{opacity:1;width:12px;height:12px}to{opacity:0;width:92px;height:92px}}
+/* 히트 스파크 (몬스터 측) */
+.fxSpark{position:absolute;pointer-events:none;z-index:7;font-size:13px;color:var(--burst);
+  transform:translate(-50%,-50%);animation:sparkFx .3s ease-out forwards;text-shadow:0 0 8px rgba(255,222,138,.9);}
+.fxSpark.big{font-size:20px;}
+@keyframes sparkFx{0%{opacity:1;transform:translate(-50%,-50%) scale(.5) rotate(0)}60%{opacity:1;transform:translate(-50%,-50%) scale(1.25) rotate(18deg)}100%{opacity:0;transform:translate(-50%,-50%) scale(1) rotate(24deg)}}
+/* 몬스터 피격 반동 — 눌림/경직 (모든 피해 공통, dmgEnemy 보장) */
+#sMon.hitRe{animation:eHitRe .22s ease-out;}
+@keyframes eHitRe{0%{transform:translateX(-50%)}35%{transform:translateX(-50%) translateY(4px) scale(1.05,.9)}100%{transform:translateX(-50%)}}
+#sMon.stagger{animation:eStagger .4s ease-out;}
+@keyframes eStagger{0%{transform:translateX(-50%)}30%{transform:translateX(calc(-50% + 5px)) translateY(-3px) rotate(3deg)}65%{transform:translateX(calc(-50% - 2px))}100%{transform:translateX(-50%)}}
+/* 전사 — 방패벽/발구름 */
+.fxGuardWall{position:absolute;left:50%;top:56%;width:150px;height:40px;pointer-events:none;z-index:6;
+  border-top:4px solid var(--shield);border-radius:50% 50% 0 0/100% 100% 0 0;transform:translate(-50%,-50%);
+  box-shadow:0 -4px 18px rgba(127,180,232,.65);opacity:0;animation:wallFlash .5s ease-out forwards;}
+@keyframes wallFlash{0%{opacity:0;transform:translate(-50%,-50%) scaleX(.5)}25%{opacity:1;transform:translate(-50%,-50%) scaleX(1.06)}70%{opacity:.9}100%{opacity:0;transform:translate(-50%,-50%) scaleX(1)}}
+.fxStomp{position:absolute;width:14px;height:8px;border-radius:50%;border:2px solid var(--shield);pointer-events:none;z-index:5;
+  transform:translate(-50%,-50%);animation:stompOut .34s ease-out forwards;}
+@keyframes stompOut{from{opacity:.9;width:10px;height:6px}to{opacity:0;width:52px;height:16px}}
+.fxDeflect{position:absolute;width:26px;height:2px;background:linear-gradient(90deg,#fff,transparent);pointer-events:none;z-index:7;
+  transform:translate(-50%,-50%) rotate(var(--ang));animation:deflectFly .3s ease-out forwards;box-shadow:0 0 6px rgba(200,230,255,.8);}
+@keyframes deflectFly{from{opacity:1}to{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) rotate(var(--ang))}}
+/* 성직자 — 문양/기둥/정화 */
+.fxGlyph{position:absolute;width:26px;height:26px;border-radius:50%;border:1px dashed var(--heal);pointer-events:none;z-index:5;
+  transform:translate(-50%,-50%) scale(.6);animation:glyphSpin .7s ease-out forwards;
+  display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--heal);text-shadow:0 0 6px rgba(111,211,160,.8);}
+@keyframes glyphSpin{0%{opacity:0;transform:translate(-50%,-50%) scale(.5) rotate(0)}30%{opacity:1;transform:translate(-50%,-50%) scale(1.05) rotate(80deg)}100%{opacity:0;transform:translate(-50%,-50%) scale(1) rotate(160deg)}}
+.fxPillar{position:absolute;left:50%;top:30%;width:190px;height:120px;pointer-events:none;z-index:4;transform:translate(-50%,0);
+  background:linear-gradient(180deg,transparent,rgba(255,236,180,.14) 30%,rgba(255,236,180,.28) 70%,rgba(255,236,180,.05));
+  border-radius:14px;opacity:0;animation:pillarUp .85s ease-out forwards;}
+@keyframes pillarUp{0%{opacity:0;transform:translate(-50%,14px)}30%{opacity:1;transform:translate(-50%,0)}75%{opacity:.85}100%{opacity:0}}
+.fxRise{position:absolute;width:5px;height:5px;border-radius:50%;background:#4a3f6b;pointer-events:none;z-index:6;
+  transform:translate(-50%,-50%);animation:riseUp .55s ease-out forwards;box-shadow:0 0 5px rgba(20,10,40,.8);}
+@keyframes riseUp{from{opacity:.95;transform:translate(-50%,-50%)}to{opacity:0;transform:translate(-50%,-26px) scale(.5)}}
 @keyframes s21{
   0%{transform:translateX(-50%);box-shadow:none}
   25%{transform:translateX(-50%) translateY(-10px) scale(1.35);box-shadow:0 0 0 3px var(--divine), 0 0 26px 8px rgba(240,201,106,.85)}
@@ -424,11 +500,8 @@ body{
 .hidden{display:none !important;}
 /* ===== R&D 검증 시드 (디버그) ===== */
 #dbgWrap{margin-top:2px;display:flex;flex-direction:column;gap:5px;align-items:center;flex:none;}
-#dbgTitle,#dbgTitle2,#dbgTitle3,#dbgTitle4{font-size:9px;color:#5a5478;letter-spacing:1px;}
-#dbgRow,#dbgRow2,#dbgRow3,#dbgRow4{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:340px;}
-.dbgc{border:1px solid var(--line);background:var(--panel);color:var(--dim);border-radius:8px;padding:5px 8px;font-size:9px;line-height:1.35;font-family:inherit;}
-.dbgc:active{transform:scale(.95);}
-.dbgc.on{border-color:var(--divine);color:var(--divine);}
+#dbgTitle,#dbgTitle2,#dbgTitle3{font-size:9px;color:#5a5478;letter-spacing:1px;}
+#dbgRow,#dbgRow2,#dbgRow3{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:340px;}
 .dbg{border:1px solid var(--line);background:var(--panel);color:var(--dim);border-radius:8px;padding:5px 8px;font-size:9px;line-height:1.35;font-family:inherit;}
 .dbg:active{transform:scale(.95);}
 #seedTag{font-size:8.5px;color:#5a5478;}
@@ -555,14 +628,6 @@ body{
         <button class="dbg" data-s="6" data-b="0">✦✦ 3블랙잭<br>[4]→전사 · [J]→용사</button>
         <button class="dbg" data-s="91" data-b="0">✦✦✦✦ 4블랙잭<br>[3]→용사 · [4]→전사</button>
       </div>
-      <div id="dbgTitle4">— v1C1 HP 커브 프로브 (실험판 전용) —</div>
-      <div id="dbgRow4">
-        <button class="dbgc" data-c="base">Base<br>60·120·300·900</button>
-        <button class="dbgc" data-c="sweet450">Sweet450<br>80·180·450·900</button>
-        <button class="dbgc" data-c="wall800">Wall800<br>100·300·800·900</button>
-        <button class="dbgc" data-c="stretch1200">Stretch1200<br>100·300·800·1200</button>
-        <button class="dbgc" data-c="danger2500">⚠Danger2500<br>관측용 · 재미 추천 아님</button>
-      </div>
       <div id="seedTag"></div>
     </div>
   </div>
@@ -652,16 +717,6 @@ const MONSTERS = [
       {n:"종말의 일격", txt:"파티 전체 <b>24</b> 피해", hint:"전사 21=무효 · 전사 17+=절반 · 16↓=직격", type:"doom", dmg:24},
     ]},
 ];
-
-/* ✦ v1C1: HP Threshold Probe — 커브 선택 장치 (룰·연출 무변경, HP 수치만 교체) */
-let CURVE = "base";
-const HP_CURVES = {
-  base:        { label:"Base (기준판)",        hp:[60,120,300,900]  },
-  sweet450:    { label:"Sweet450",             hp:[80,180,450,900]  },
-  wall800:     { label:"Wall800",              hp:[100,300,800,900] },
-  stretch1200: { label:"Stretch1200",          hp:[100,300,800,1200]},
-  danger2500:  { label:"Danger2500 ⚠관측용",   hp:[100,300,800,2500]},
-};
 
 /* ============ 상태 ============ */
 const S = {
@@ -916,6 +971,102 @@ function shockRing(big){
   w.className = "shockRing"+(big?" big":"");
   $("stage").appendChild(w);
   setTimeout(()=>w.remove(), big?800:600);
+}
+
+/* ═══ ✦ v1D 전장 액션 FX 라이브러리 (표현 계층 — 수치·판정·PB 리듬 무변경) ═══ */
+const FIG_X  = {hero:14, war:38, mage:62, cleric:86};   /* 스테이지 % 좌표 */
+const FIG_Y  = 72, MON_X = 50, MON_Y = 24;
+const FX_DX  = {hero:22, war:12, mage:-12, cleric:-22}; /* 중앙(몬스터)을 향한 돌진 방향 */
+function fxEl(cls, x, y, vars, ttl, text){
+  const e = document.createElement("div");
+  e.className = cls;
+  e.style.left = x+"%"; e.style.top = y+"%";
+  if(vars) for(const k in vars) e.style.setProperty(k, vars[k]);
+  if(text!==undefined) e.textContent = text;
+  $("stage").appendChild(e);
+  setTimeout(()=>e.remove(), ttl||700);
+  return e;
+}
+/* 준비 동작 — 기존 wait(400) 창을 윈드업으로 재활용 (추가 시간 0) */
+function prepFx(id, act){
+  const t = $("sf_"+id); if(!t) return;
+  if(id==="war"){ figFx(id, act.txt==="완벽 방어" ? "windGuard" : "wind", 360); if(act.txt!=="완벽 방어") t.style.setProperty("--lx", FX_DX.war+"px"); return; }
+  t.style.setProperty("--lx", FX_DX[id]+"px");
+  figFx(id, "wind", 360);
+  const glow = id==="hero" ? "windGlow" : id==="mage" ? "windArc" : "windHoly";
+  t.classList.add(glow); setTimeout(()=>t.classList.remove(glow), 360);
+}
+/* 용사 — 베기 (인덱스 기반 결정론 각도/오프셋, 난수 0) */
+const SLASH_PAT = [{a:-32,dx:-7,dy:-5},{a:24,dx:7,dy:3},{a:-14,dx:-3,dy:7},{a:40,dx:5,dy:-7}];
+function slashFx(i, big){
+  const p = SLASH_PAT[i % SLASH_PAT.length];
+  fxEl("fxSlash"+(big?" big":""), MON_X+p.dx*0.8, MON_Y+p.dy*0.6, {"--ang":p.a+"deg"}, big?340:240);
+  fxEl("fxSpark"+(big?" big":""), MON_X+p.dx*0.5, MON_Y+p.dy*0.4, null, 320, "✦");
+}
+function lungeFx(id){ const t=$("sf_"+id); if(t) t.style.setProperty("--lx", FX_DX[id]+"px"); figFx(id,"lunge",320); }
+async function heroCombo(n, big){
+  lungeFx("hero");
+  await wait(120);
+  for(let i=0;i<n;i++){ slashFx(i, big && i===n-1); enemyRecoilFx(false); SFX.tap(); await wait(i===n-1?60:78); }
+}
+async function heroBjFinisher(){
+  /* 슝~(모으기) … 솨삭!!(대각 일섬) — 2장 블랙잭 전용 */
+  figFx("hero","bjCharge",400);
+  fxEl("fxGather", FIG_X.hero, FIG_Y, null, 380);
+  await wait(340);
+  lungeFx("hero");
+  await wait(110);
+  fxEl("fxSlash big", MON_X, MON_Y, {"--ang":"-38deg"}, 360);
+  fxEl("fxSpark big", MON_X, MON_Y-3, null, 340, "✦");
+  fxEl("fxPop gold big", MON_X, MON_Y, null, 420);
+  await wait(70);   /* 일섬 히트스탑 */
+}
+/* 마법사 — 투사체/메테오 */
+async function mageBolt(n){
+  for(let i=0;i<n;i++){
+    fxEl("fxProj", 0, 0, {"--x0":FIG_X.mage+"%","--y0":FIG_Y+"%","--x1":(MON_X+(i-1)*4)+"%","--y1":MON_Y+"%","--fd":".24s"}, 300);
+    setTimeout(()=>{ fxEl("fxPop", MON_X+(i-1)*4, MON_Y, null, 300); }, 240);
+    SFX.tap();
+    await wait(n>1?110:240);
+  }
+  if(n>1) await wait(150);
+}
+async function mageMeteor(){
+  /* 메테오 — 팡, 팡, 마지막 큰 폭발 */
+  const off = [-6, 6, 0];
+  for(let i=0;i<3;i++){
+    const last = i===2;
+    fxEl("fxMeteor", 0, 0, {"--x0":(MON_X+off[i])+"%","--y1":(MON_Y-2)+"%","--fd":last?".3s":".26s"}, 340);
+    setTimeout(()=>{
+      fxEl("fxPop"+(last?" big":""), MON_X+off[i], MON_Y-1, null, last?440:300);
+      if(!last) enemyRecoilFx(false);
+    }, last?290:250);
+    SFX.pb(i);
+    await wait(last?300:120);
+  }
+  await wait(120);
+}
+/* 전사 — 발구름/방패벽 */
+function stompFx(){ fxEl("fxStomp", FIG_X.war, FIG_Y+9, null, 380); }
+function guardWallFx(){
+  fxEl("fxGuardWall", 0, 0, null, 540);
+  for(const [a,dx,dy] of [[-40,-24,-14],[30,26,-12],[-10,-30,4]])
+    fxEl("fxDeflect", MON_X, 46, {"--ang":a+"deg","--dx":dx+"px","--dy":dy+"px"}, 320);
+  fxEl("fxSpark big", MON_X, 44, null, 340, "⚡");
+}
+/* 성직자 — 문양/기둥/정화 */
+function glyphFx(id){ fxEl("fxGlyph", FIG_X[id], FIG_Y+7, null, 740, "✚"); }
+function healOrbFx(toId){
+  fxEl("fxProj holy", 0, 0, {"--x0":FIG_X.cleric+"%","--y0":FIG_Y+"%","--x1":FIG_X[toId]+"%","--y1":(FIG_Y-4)+"%","--fd":".3s"}, 340);
+  setTimeout(()=>glyphFx(toId), 290);
+}
+function cleanseFx(id){ for(const d of [-4,0,4]) fxEl("fxRise", FIG_X[id]+d, FIG_Y-2, null, 580); }
+/* 몬스터 피격 반동 — 모든 피해의 공통 보장 */
+function enemyRecoilFx(big){
+  const m = $("sMon");
+  m.classList.remove("hitRe","stagger"); void m.offsetWidth;
+  m.classList.add(big?"stagger":"hitRe");
+  setTimeout(()=>m.classList.remove(big?"stagger":"hitRe"), big?420:240);
 }
 /* ✦ v1B2: 21 완성 펀치 — 카드 꽂힘 → 패널·카드·피규어 덜썩 → 짧은 화면 펀치 */
 function punch21(id){
@@ -1228,9 +1379,10 @@ function dmgEnemy(n){
       S.stats.ovkTotal += ovk;
       if(S._turnOvk > S.stats.ovkMax) S.stats.ovkMax = S._turnOvk;
     }
-    if(before<=0){ flt("enemy","OVERKILL +"+n,"f-ovk"); renderEnemy(); return; }
+    if(before<=0){ enemyRecoilFx(n>=24); flt("enemy","OVERKILL +"+n,"f-ovk"); renderEnemy(); return; }
     if(S.eHp<=0) $("sMon").classList.add("doomed");   /* 죽음 확정 — 그러나 연쇄는 멈추지 않는다 */
   }
+  enemyRecoilFx(n>=24);   /* ✦ v1D: 모든 피해 공통 피격 반동 (큰 피해=경직 반동) */
   flt("enemy","-"+n,"f-dmg");
   renderEnemy();
 }
@@ -1365,6 +1517,7 @@ async function resolveTurn(){
       S._chainAfterDeath = true;
     }
     const nm = CLASSES[id].name;
+    prepFx(id, act);   /* ✦ v1D: 준비 동작 — 기존 대기 창을 윈드업으로 */
     await wait(400);
 
     if(act.k==="bust"){
@@ -1376,6 +1529,7 @@ async function resolveTurn(){
         if(has("m2") && tot<=24){          /* 불안정한 별: 22~24 = 과충전 공격 */
           let od = tot + S.chainMagic;
           const self = Math.ceil(act.self/2);
+          await mageBolt(2);   /* ✦ v1D: 폭주 이중 볼트 */
           if(S.chainMagic>0) procB("m3","d",S.chainMagic,null,id);
           procB("m2","d",od-act.dmg,"과충전 "+od+"!",id);
           a.hp = Math.max(1, a.hp-self); flt(id,"-"+self,"f-dmg");
@@ -1406,6 +1560,7 @@ async function resolveTurn(){
         S.block = act.blk;
         if(act.blk>0 && S.warTotal>=17 && has("w1")){ S.block += 4; procB("w1","s",4,"철벽 +4",id); }
         if(act.taunt) S.taunt=true;
+        lungeFx("war"); stompFx();   /* ✦ v1D: 묵직한 전진 + 발구름 충격파 */
         SFX.block(); flt(id,"방어 "+S.block,"f-block");
         log(`${nm}: ${act.txt} (피해 -${S.block}${act.taunt?" · 도발":""})`);
         if(act.taunt) renderMenace();
@@ -1416,6 +1571,15 @@ async function resolveTurn(){
 
     if(act.dmg){
       let d = act.dmg;
+      /* ✦ v1D: 직업 액션 문법 — 카드 수 = 연격 수, 2장 21 = 슝~솨삭 (수치 무변경) */
+      if(id==="hero"){
+        const n = Math.min(4, Math.max(1, a.cards.length));
+        if(act.k==="m" && a.cards.length===2) await heroBjFinisher();
+        else await heroCombo(n, act.k==="m");
+      } else if(id==="mage"){
+        if(act.k==="m") await mageMeteor();
+        else await mageBolt(act.dmg>=14 ? 3 : 1);
+      }
       /* ── 🌟 축복 피해 파이프라인: 가산 → 맹세 ×2 → 배율 ×2 ── */
       if(id==="mage" && S.chainMagic>0){ d += S.chainMagic; procB("m3","d",S.chainMagic,"연쇄 +"+S.chainMagic,id); }
       if(id==="hero" && act.k==="m"){
@@ -1452,10 +1616,12 @@ async function resolveTurn(){
       if(act.k==="m"){
         S.stats.m21++; flash("gold"); SFX.miracle();
         figFx(id,"miracle21",950);
+        fxEl("fxPillar", 0, 0, null, 900);   /* ✦ v1D: 성역 빛기둥 */
         healWave(true);
+        (async()=>{ for(const t of aliveIds()){ glyphFx(t); await wait(70); } })();   /* ✦ v1D: 순차 성역 문양 */
         log(`${nm}: 성역!! 파티 전체 +${h} · 독 정화`, "l-gold");
       }
-      else if(act.all){ SFX.heal(); healWave(false); log(`${nm}: ${act.txt} +${h}`, "l-heal"); }
+      else if(act.all){ SFX.heal(); healWave(false); for(const t of aliveIds()) glyphFx(t); log(`${nm}: ${act.txt} +${h}`, "l-heal"); }
       else { SFX.heal(); log(`${nm}: ${act.txt} +${h}`, "l-heal"); }
       let ovSum=0, shSum=0;
       const applyHeal = (t)=>{
@@ -1467,7 +1633,7 @@ async function resolveTurn(){
       else {
         let low=null, lp=2;
         for(const t of aliveIds()){ const p=S.allies[t].hp/S.allies[t].max; if(p<lp){lp=p; low=t;} }
-        if(low) applyHeal(low);
+        if(low){ healOrbFx(low); applyHeal(low); }   /* ✦ v1D: 성직자→대상 빛구슬 */
       }
       if(ovSum>0 && has("c1") && shSum>0){ S.stats.overhealConv += shSum; procB("c1","s",shSum,"🛡 +"+shSum,id); }
       if(ovSum>0 && has("c2")){
@@ -1481,7 +1647,7 @@ async function resolveTurn(){
       if(act.cleanse){
         let left = act.cleanse;
         for(const t of aliveIds()){
-          if(left>0 && S.allies[t].poison>0){ S.allies[t].poison=0; left--; log(`${CLASSES[t].name} 의 독이 정화됐다`, "l-heal"); renderAlly(t); }
+          if(left>0 && S.allies[t].poison>0){ S.allies[t].poison=0; left--; cleanseFx(t); log(`${CLASSES[t].name} 의 독이 정화됐다`, "l-heal"); renderAlly(t); }
         }
       }
     }
@@ -1497,7 +1663,16 @@ async function resolveTurn(){
   /* ---- 몬스터 행동 ---- */
   const it = S.enemy.intents[S.intentIdx];
   if(S.perfectGuard){
-    flash("gold"); SFX.block(); S.stats.saves++;
+    /* ✦ v1D: 완벽 방어 순간극 — 적 돌진 → 방패벽 쾅 → 튕김 → 경직 */
+    figFx("war","windGuard",420);
+    $("sMon").classList.add("attacking");
+    setTimeout(()=>$("sMon").classList.remove("attacking"), 500);
+    await wait(240);
+    guardWallFx();
+    flash("gold"); SFX.block(); shake("sm");
+    enemyRecoilFx(true);   /* 튕겨나가 짧게 경직 */
+    await wait(220);
+    S.stats.saves++;
     if(S.vaultGivenTo.includes("war")) S.stats.vaultGuard++;
     log(`완벽 방어! ${S.enemy.name} 의 ${it.n} 이(가) 무효화됐다!`, "l-gold");
     const negated = (it.dmg||0) * ((it.type==="aoe"||it.type==="doom") ? aliveIds().length : 1);
@@ -1687,7 +1862,7 @@ function showClear(finalBoss){
   ov.innerHTML = `<h2 class="win">${finalBoss? "마왕의 그림자 소멸":"세 마물 격파"}</h2>
     <div class="sub">총 ${S.stats.turns}턴 · 생존: ${survivorNames()}</div>
     ${reportHtml()}
-    ${bossOffer? `<button class="obtn boss" id="bossBtn">👑 보너스 보스 도전 — 마왕의 그림자 (HP ${MONSTERS[3].hp})<br><small>축복을 하나 더 받고 시작한다</small></button>` : ""}
+    ${bossOffer? `<button class="obtn boss" id="bossBtn">👑 보너스 보스 도전 — 마왕의 그림자 (HP 900)<br><small>축복을 하나 더 받고 시작한다</small></button>` : ""}
     <div class="sub">${finalBoss? "신이여, 숫자는 터졌는가?":"신이여, 예고를 읽고 패를 재웠는가?"}</div>
     <button class="obtn gold" id="againBtn">같은 운명 다시 (동일 시드)</button>
     <button class="obtn" id="newBtn">새로운 운명 (시드 변경)</button>`;
@@ -1724,41 +1899,24 @@ function newSeed(){
 
 /* ============ 부팅 ============ */
 (function boot(){
-  /* ✦ v1C1: 해시에서 curve 토큰을 먼저 분리 — 기존 시드 해시(#s91b0)와 공존 */
-  let hashStr = location.hash;
-  const cm = hashStr.match(/curve([A-Za-z]+[0-9]*)/i);
-  if(cm){ const k = cm[1].toLowerCase(); if(HP_CURVES[k]) CURVE = k; hashStr = hashStr.replace(cm[0],""); }
-  if(hashStr==="#") hashStr = "";
-  const m = hashStr.match(/^#s(\d+)(?:b(\d))?(?:g(\w\d))?$/);
+  const m = location.hash.match(/^#s(\d+)(?:b(\d))?(?:g(\w\d))?$/);
   if(m){
     SEED = +m[1];
     if(m[2]!==undefined) S.battle = Math.min(3, +m[2]);
     if(m[3] && BLESS.some(b=>b.id===m[3])) S.bless = [m[3]];
   }
-  /* ✦ v1C1: 선택된 커브의 HP를 몬스터 테이블에 주입 (HP 수치 외 무변경) */
-  HP_CURVES[CURVE].hp.forEach((v,i)=>{ MONSTERS[i].hp = v; });
   resetRng();
   refillShoe();
   initAllies();
   S.enemy = MONSTERS[S.battle]; S.eHp = S.enemy.hp;
   renderAll(); renderFaith(); renderVault();
   const bl0 = S.bless[0] ? BLESS.find(b=>b.id===S.bless[0]) : null;
-  $("seedTag").textContent = `현재 시드 ${SEED} · 전투 ${S.battle+1}부터` + (bl0? ` · 🌟 ${bl0.n} 보유` : "") + ` · 🧪 HP Probe: ${HP_CURVES[CURVE].label}`;
+  $("seedTag").textContent = `현재 시드 ${SEED} · 전투 ${S.battle+1}부터` + (bl0? ` · 🌟 ${bl0.n} 보유` : "");
   renderBlessChip();
   $("blessChip").addEventListener("click", showBlessList);
-  const curveToken = ()=> CURVE!=="base" ? "curve"+CURVE : "";
   document.querySelectorAll(".dbg").forEach(btn=>{
     btn.addEventListener("click", ()=>{
-      /* ✦ v1C1: 시드 검증 버튼은 현재 커브를 유지한 채 이동 (커브 간 4BJ 비교용) */
-      location.hash = "s"+btn.dataset.s+(btn.dataset.b!=="0" ? "b"+btn.dataset.b : "")+(btn.dataset.g? "g"+btn.dataset.g : "")+curveToken();
-      location.reload();
-    });
-  });
-  document.querySelectorAll(".dbgc").forEach(btn=>{
-    if(btn.dataset.c===CURVE) btn.classList.add("on");
-    btn.addEventListener("click", ()=>{
-      /* ✦ v1C1: 커브 전환은 현재 시드·전투를 유지 — 같은 카드 스트림으로 HP만 비교 */
-      location.hash = "s"+SEED+(S.battle>0 ? "b"+S.battle : "")+(btn.dataset.c!=="base" ? "curve"+btn.dataset.c : "");
+      location.hash = "s"+btn.dataset.s+(btn.dataset.b!=="0" ? "b"+btn.dataset.b : "")+(btn.dataset.g? "g"+btn.dataset.g : "");
       location.reload();
     });
   });
