@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>용사에게 한 장 더 줘 v1B1 — Miracle Chain Full Resolve</title>
+<title>용사에게 한 장 더 줘 v1C1 — HP Threshold Probe (실험판)</title>
 <style>
 :root{
   --abyss:#131120; --altar:#1e1a30; --panel:#262040; --line:#3a3260;
@@ -42,6 +42,8 @@ body{
 #enemyHpWrap{flex:1;height:13px;background:#160e18;border:1px solid #532a3c;border-radius:6px;overflow:hidden;position:relative;}
 #enemyHpBar{height:100%;width:100%;background:linear-gradient(90deg,#c74b4b,#e2604f);transition:width .35s;}
 #enemyHpText{position:absolute;inset:0;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;color:#ffd9d2;text-shadow:0 1px 2px #000;}
+/* ✦ v1B2: HP바 오버킬 카운터 — 죽음 너머로 쌓이는 숫자 */
+#enemyHpText.ovk{color:#ff9d5c;font-weight:900;font-size:11px;letter-spacing:.5px;text-shadow:0 0 8px rgba(255,140,70,.8),0 1px 2px #000;}
 #intentBanner{
   margin-top:3px;
   background:linear-gradient(180deg,#3a1c2a,#2a1420);
@@ -112,6 +114,23 @@ body{
 .sfig.recv{animation:sRecv .35s ease-out;}
 @keyframes sRecv{0%{transform:translateX(-50%)}40%{transform:translateX(-50%) translateY(-6px) scale(1.15)}100%{transform:translateX(-50%)}}
 .sfig.miracle21{animation:s21 .95s ease-out;z-index:3;}
+/* ✦ v1B2: 파티 블랙잭 단계별 펀치 — 뒤로 갈수록 무겁게 */
+.sfig.pbP1{animation:pbJ1 .45s ease-out;z-index:3;}
+.sfig.pbP2{animation:pbJ2 .5s ease-out;z-index:3;}
+.sfig.pbP3{animation:pbJ3 .6s ease-out;z-index:3;}
+.sfig.pbP4{animation:pbJ4 .9s cubic-bezier(.2,1.5,.4,1);z-index:4;}
+@keyframes pbJ1{0%,100%{transform:translateX(-50%)}35%{transform:translateX(-50%) translateY(-6px) scale(1.14);box-shadow:0 0 0 2px var(--divine),0 0 12px rgba(240,201,106,.55)}}
+@keyframes pbJ2{0%,100%{transform:translateX(-50%)}35%{transform:translateX(-50%) translateY(-8px) scale(1.2);box-shadow:0 0 0 2px var(--divine),0 0 16px rgba(240,201,106,.65)}}
+@keyframes pbJ3{0%,100%{transform:translateX(-50%)}35%{transform:translateX(-50%) translateY(-11px) scale(1.28);box-shadow:0 0 0 3px var(--divine),0 0 22px 4px rgba(240,201,106,.75)}}
+@keyframes pbJ4{0%{transform:translateX(-50%)}30%{transform:translateX(-50%) translateY(-16px) scale(1.5);box-shadow:0 0 0 4px var(--divine),0 0 34px 12px rgba(255,222,138,.95);filter:brightness(1.45)}62%{transform:translateX(-50%) translateY(-6px) scale(1.2);box-shadow:0 0 0 2px var(--divine),0 0 18px 5px rgba(255,222,138,.6)}100%{transform:translateX(-50%);filter:none}}
+/* ✦ v1B2: 21 완성 — 카드가 정확히 꽂힌 순간의 피규어 팝 */
+.sfig.pop21{animation:sPop .5s cubic-bezier(.2,1.5,.4,1);z-index:3;}
+@keyframes sPop{0%,100%{transform:translateX(-50%)}40%{transform:translateX(-50%) translateY(-9px) scale(1.25);box-shadow:0 0 0 2px var(--divine),0 0 18px rgba(240,201,106,.7)}}
+/* ✦ v1B2: 충격파 링 — 3인은 금색 링, 4인·피날레는 대형 */
+.shockRing{position:absolute;left:50%;top:36%;width:24px;height:24px;border-radius:50%;border:3px solid var(--burst);transform:translate(-50%,-50%);pointer-events:none;z-index:5;animation:ringOut .55s ease-out forwards;box-shadow:0 0 18px rgba(255,222,138,.7);}
+.shockRing.big{border-width:5px;animation:ringOutBig .75s ease-out forwards;box-shadow:0 0 30px rgba(255,222,138,.9);}
+@keyframes ringOut{from{opacity:.95;width:24px;height:24px}to{opacity:0;width:420px;height:420px}}
+@keyframes ringOutBig{from{opacity:1;width:24px;height:24px}to{opacity:0;width:760px;height:760px}}
 @keyframes s21{
   0%{transform:translateX(-50%);box-shadow:none}
   25%{transform:translateX(-50%) translateY(-10px) scale(1.35);box-shadow:0 0 0 3px var(--divine), 0 0 26px 8px rgba(240,201,106,.85)}
@@ -146,8 +165,9 @@ body{
 }
 #pbBanner.show{animation:pbIn .55s cubic-bezier(.2,1.6,.4,1) forwards;}
 #pbBanner.pb2{font-size:17px;}
-#pbBanner.pb3{font-size:22px;}
-#pbBanner.pb4{font-size:26px;color:#ffe9ae;animation:pbIn .55s cubic-bezier(.2,1.6,.4,1) forwards, pbHue .9s linear infinite;}
+#pbBanner.pb3{font-size:23px;text-shadow:0 0 22px rgba(240,201,106,.95), 0 2px 4px rgba(0,0,0,.8);}   /* ✦ v1B2: 한 단계 강화 */
+#pbBanner.pb4{font-size:26px;color:#ffe9ae;animation:pbIn4 .6s cubic-bezier(.2,1.7,.35,1) forwards, pbHue .9s linear infinite;}   /* ✦ v1B2: 전용 등장 */
+@keyframes pbIn4{0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(-2deg)}35%{opacity:1;transform:translate(-50%,-50%) scale(1.3) rotate(1deg)}65%{transform:translate(-50%,-50%) scale(.96)}100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 @keyframes pbIn{from{opacity:0;transform:translate(-50%,-50%) scale(.4)}30%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 @keyframes pbHue{0%,100%{text-shadow:0 0 18px rgba(240,201,106,.9),0 2px 4px rgba(0,0,0,.8)}50%{text-shadow:0 0 30px rgba(255,130,130,.95),0 2px 4px rgba(0,0,0,.8)}}
 @keyframes blockIn{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}70%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
@@ -159,16 +179,24 @@ body{
 }
 .healWave.grand{border-color:var(--burst);border-width:4px;box-shadow:0 0 26px rgba(255,222,138,.75);}
 @keyframes waveOut{from{opacity:.95;width:20px;height:20px}to{opacity:0;width:560px;height:560px}}
-.flt{position:absolute;left:50%;top:-4px;transform:translateX(-50%);font-size:15px;font-weight:900;pointer-events:none;z-index:6;animation:fltUp .9s ease-out forwards;text-shadow:0 1px 3px #000;white-space:nowrap;}
+.flt{position:absolute;left:50%;top:-26px;transform:translateX(-50%);font-size:15px;font-weight:900;pointer-events:none;z-index:6;animation:fltUp .9s ease-out forwards;text-shadow:0 1px 3px #000;white-space:nowrap;}
+/* ✦ v1B2a: 기적·오버킬 숫자 — 글자 아랫단까지 심볼 머리 위에서 시작 (겹침·잘림 0) */
+.flt.f-gold,.flt.f-ovk{top:-34px;animation:fltPop .95s cubic-bezier(.2,1.4,.4,1) forwards;}
+@keyframes fltPop{0%{opacity:0;transform:translate(-50%,2px) scale(.4)}20%{opacity:1;transform:translate(-50%,-3px) scale(1.25)}36%{transform:translate(-50%,-5px) scale(1)}100%{opacity:0;transform:translate(-50%,-32px) scale(1)}}
+.flt.f-ovkBig{font-size:21px;letter-spacing:1px;top:-40px;}
+/* ✦ v1B2a: 몬스터 위 플로트 — 스테이지 밖으로 나가지 않는 안전 앵커 */
+.flt.onE{top:-6px;}
+.flt.onE.f-gold,.flt.onE.f-ovk{top:-10px;}
+.flt.onE.f-ovkBig{top:2px;}
 @keyframes fltUp{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-24px)}}
 .f-dmg{color:#ff8d7a;} .f-heal{color:var(--heal);} .f-block{color:var(--shield);} .f-gold{color:var(--burst);font-size:18px;}
 .f-bless{color:#ffd98a;font-size:12px;text-shadow:0 0 8px rgba(255,217,138,.6);}
 .f-pb{color:#8fe3ff;font-size:13px;font-weight:900;text-shadow:0 0 8px rgba(143,227,255,.7);}
 /* ✦ v1B1: 오버킬 플로트 — 죽은 적 위에 얹는 초과 피해 */
 .f-ovk{color:#ff9d5c;font-size:17px;font-weight:900;letter-spacing:.5px;text-shadow:0 0 12px rgba(255,140,70,.85), 0 1px 3px #000;}
-/* ✦ v1B1: 사망 확정(연쇄 완주 중) 몬스터 — 회색빛으로 떨며 기적을 견딘다 */
-#sMon.doomed{filter:grayscale(.55) brightness(.82);animation:doomQuake .16s linear infinite;}
-@keyframes doomQuake{0%,100%{transform:translateX(-50%)}25%{transform:translateX(calc(-50% - 2px)) rotate(-1.2deg)}75%{transform:translateX(calc(-50% + 2px)) rotate(1.2deg)}}
+/* ✦ v1B1→v1B2: 사망 확정 몬스터 — 회색빛 유지, 떨림은 절반으로 (정보는 남기고 노이즈는 뺀다) */
+#sMon.doomed{filter:grayscale(.55) brightness(.82);animation:doomQuake .34s linear infinite;}
+@keyframes doomQuake{0%,100%{transform:translateX(-50%)}25%{transform:translateX(calc(-50% - 1px))}75%{transform:translateX(calc(-50% + 1px))}}
 
 /* ===== ③ 하단 상부: 아군 타깃 패널 ===== */
 #allies{
@@ -185,6 +213,12 @@ body{
 .ally.targetable{border-color:var(--divine);box-shadow:0 0 0 1px var(--divine), 0 0 12px rgba(240,201,106,.25);cursor:pointer;}
 .ally.targetable:active{transform:scale(.97);}
 .ally.dead{opacity:.38;filter:grayscale(1);}
+/* ✦ v1B2: 21 완성 — 하단 패널·카드가 함께 덜썩 (카드→전장 연결감) */
+.ally.hit21{animation:allyThud .5s cubic-bezier(.2,1.4,.4,1);border-color:var(--divine);}
+@keyframes allyThud{0%{transform:none}25%{transform:translateY(-5px) scale(1.04);box-shadow:0 0 0 2px var(--divine),0 0 16px rgba(240,201,106,.55)}55%{transform:translateY(1px)}100%{transform:none}}
+.cards.glow21{animation:cardThud .5s cubic-bezier(.2,1.4,.4,1);}
+.cards.glow21 .mini{box-shadow:0 0 8px 2px rgba(255,222,138,.85);}
+@keyframes cardThud{0%{transform:none}30%{transform:translateY(-3px)}55%{transform:translateY(1px)}100%{transform:none}}
 .ally.menaced{border-top:2px solid var(--menace);}
 .ally.menaced.soft{border-top:2px solid rgba(255,90,74,.45);}
 .ally .mark{position:absolute;top:0;right:3px;font-size:8px;color:var(--menace);display:none;font-weight:900;}
@@ -345,6 +379,10 @@ body{
 
 /* ===== 전역 연출 ===== */
 #app.shake{animation:shk .3s;}
+#app.shakeSm{animation:shkSm .2s;}   /* ✦ v1B2: 21 완성 펀치 — 짧고 선명하게 */
+#app.shakeXL{animation:shkXL .55s;}  /* ✦ v1B2: 대사건 전용 — 무겁게 */
+@keyframes shkSm{0%,100%{transform:none}30%{transform:translate(-2px,1px)}70%{transform:translate(2px,-1px)}}
+@keyframes shkXL{0%,100%{transform:none}12%{transform:translate(-8px,4px)}28%{transform:translate(7px,-4px)}44%{transform:translate(-6px,3px)}60%{transform:translate(5px,-2px)}76%{transform:translate(-3px,1px)}90%{transform:translate(2px,-1px)}}
 @keyframes shk{0%,100%{transform:none}20%{transform:translate(-5px,2px)}40%{transform:translate(4px,-2px)}60%{transform:translate(-3px,1px)}80%{transform:translate(2px,-1px)}}
 #flash{position:absolute;inset:0;pointer-events:none;opacity:0;z-index:40;}
 #flash.gold{background:radial-gradient(circle at 50% 45%, rgba(255,222,138,.5), transparent 70%);animation:fl .5s;}
@@ -386,8 +424,11 @@ body{
 .hidden{display:none !important;}
 /* ===== R&D 검증 시드 (디버그) ===== */
 #dbgWrap{margin-top:2px;display:flex;flex-direction:column;gap:5px;align-items:center;flex:none;}
-#dbgTitle,#dbgTitle2,#dbgTitle3{font-size:9px;color:#5a5478;letter-spacing:1px;}
-#dbgRow,#dbgRow2,#dbgRow3{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:340px;}
+#dbgTitle,#dbgTitle2,#dbgTitle3,#dbgTitle4{font-size:9px;color:#5a5478;letter-spacing:1px;}
+#dbgRow,#dbgRow2,#dbgRow3,#dbgRow4{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:340px;}
+.dbgc{border:1px solid var(--line);background:var(--panel);color:var(--dim);border-radius:8px;padding:5px 8px;font-size:9px;line-height:1.35;font-family:inherit;}
+.dbgc:active{transform:scale(.95);}
+.dbgc.on{border-color:var(--divine);color:var(--divine);}
 .dbg{border:1px solid var(--line);background:var(--panel);color:var(--dim);border-radius:8px;padding:5px 8px;font-size:9px;line-height:1.35;font-family:inherit;}
 .dbg:active{transform:scale(.95);}
 #seedTag{font-size:8.5px;color:#5a5478;}
@@ -508,11 +549,19 @@ body{
         <button class="dbg" data-s="8" data-b="0" data-g="m2">🔮 과충전<br>[8]→마법사 23 폭주</button>
         <button class="dbg" data-s="24" data-b="0" data-g="c2">✨ 징벌 신성<br>성직자 21 → 신성 24</button>
       </div>
-      <div id="dbgTitle3">— v1B1 파티 블랙잭 · 연쇄 완주 검증 —</div>
+      <div id="dbgTitle3">— v1B2 파티 블랙잭 · 연쇄 완주 검증 —</div>
       <div id="dbgRow3">
         <button class="dbg" data-s="12" data-b="0">✦ 2블랙잭<br>[7]→전사</button>
         <button class="dbg" data-s="6" data-b="0">✦✦ 3블랙잭<br>[4]→전사 · [J]→용사</button>
         <button class="dbg" data-s="91" data-b="0">✦✦✦✦ 4블랙잭<br>[3]→용사 · [4]→전사</button>
+      </div>
+      <div id="dbgTitle4">— v1C1 HP 커브 프로브 (실험판 전용) —</div>
+      <div id="dbgRow4">
+        <button class="dbgc" data-c="base">Base<br>60·120·300·900</button>
+        <button class="dbgc" data-c="sweet450">Sweet450<br>80·180·450·900</button>
+        <button class="dbgc" data-c="wall800">Wall800<br>100·300·800·900</button>
+        <button class="dbgc" data-c="stretch1200">Stretch1200<br>100·300·800·1200</button>
+        <button class="dbgc" data-c="danger2500">⚠Danger2500<br>관측용 · 재미 추천 아님</button>
       </div>
       <div id="seedTag"></div>
     </div>
@@ -603,6 +652,16 @@ const MONSTERS = [
       {n:"종말의 일격", txt:"파티 전체 <b>24</b> 피해", hint:"전사 21=무효 · 전사 17+=절반 · 16↓=직격", type:"doom", dmg:24},
     ]},
 ];
+
+/* ✦ v1C1: HP Threshold Probe — 커브 선택 장치 (룰·연출 무변경, HP 수치만 교체) */
+let CURVE = "base";
+const HP_CURVES = {
+  base:        { label:"Base (기준판)",        hp:[60,120,300,900]  },
+  sweet450:    { label:"Sweet450",             hp:[80,180,450,900]  },
+  wall800:     { label:"Wall800",              hp:[100,300,800,900] },
+  stretch1200: { label:"Stretch1200",          hp:[100,300,800,1200]},
+  danger2500:  { label:"Danger2500 ⚠관측용",   hp:[100,300,800,2500]},
+};
 
 /* ============ 상태 ============ */
 const S = {
@@ -736,7 +795,10 @@ function renderEnemy(){
   $("turnTag").textContent = `전투 ${S.battle+1}/3 · 턴 ${S.turn}`;
   const pct = Math.max(0, S.eHp/S.enemy.hp*100);
   $("enemyHpBar").style.width = pct+"%";
-  $("enemyHpText").textContent = `${Math.max(0,S.eHp)}/${S.enemy.hp}`;
+  /* ✦ v1B2: 연쇄 중 사망 확정이면 HP바가 오버킬 카운터가 된다 */
+  const ht = $("enemyHpText");
+  if(S.chainLock && S.eHp<=0 && S._turnOvk>0){ ht.textContent = `OVERKILL +${S._turnOvk}`; ht.classList.add("ovk"); }
+  else { ht.textContent = `${Math.max(0,S.eHp)}/${S.enemy.hp}`; ht.classList.remove("ovk"); }
   const it = S.enemy.intents[S.intentIdx];
   $("intentBanner").innerHTML = `<b>${it.n}</b> · ${it.txt}` + (it.hint? `<br><span id="intentHint">💡 ${it.hint}</span>`:"");
   const ni = S.enemy.intents[(S.intentIdx+1) % S.enemy.intents.length];
@@ -837,12 +899,35 @@ function toast(html, ms){
 function flt(hostId, text, cls){
   const host = hostId==="enemy" ? $("sMon") : $("sf_"+hostId);
   const f = document.createElement("div");
-  f.className = "flt "+cls; f.textContent = text;
+  /* ✦ v1B2a: 몬스터 위 플로트는 스테이지 상단 잘림 방지용 별도 앵커(onE) */
+  f.className = "flt "+cls+(hostId==="enemy"?" onE":""); f.textContent = text;
   host.appendChild(f);
   setTimeout(()=>f.remove(), 950);
 }
 function flash(kind){ const f=$("flash"); f.className=""; void f.offsetWidth; f.className=kind; }
-function shake(){ const a=$("app"); a.classList.remove("shake"); void a.offsetWidth; a.classList.add("shake"); }
+function shake(kind){   /* ✦ v1B2: "sm"=펀치 / 기본 / "xl"=대사건 */
+  const a=$("app");
+  a.classList.remove("shake","shakeSm","shakeXL"); void a.offsetWidth;
+  a.classList.add(kind==="sm"?"shakeSm": kind==="xl"?"shakeXL":"shake");
+}
+/* ✦ v1B2: 충격파 링 — big=4인·피날레 전용 */
+function shockRing(big){
+  const w = document.createElement("div");
+  w.className = "shockRing"+(big?" big":"");
+  $("stage").appendChild(w);
+  setTimeout(()=>w.remove(), big?800:600);
+}
+/* ✦ v1B2: 21 완성 펀치 — 카드 꽂힘 → 패널·카드·피규어 덜썩 → 짧은 화면 펀치 */
+function punch21(id){
+  const p = $("al_"+id);
+  p.classList.remove("hit21"); void p.offsetWidth; p.classList.add("hit21");
+  setTimeout(()=>p.classList.remove("hit21"), 540);
+  const cd = $("cd_"+id);
+  cd.classList.remove("glow21"); void cd.offsetWidth; cd.classList.add("glow21");
+  setTimeout(()=>cd.classList.remove("glow21"), 540);
+  figFx(id,"pop21",520);
+  shake("sm");
+}
 function figFx(id, cls, dur){
   const t = $("sf_"+id); if(!t) return;
   t.classList.remove(cls); void t.offsetWidth; t.classList.add(cls);
@@ -975,7 +1060,7 @@ function onAllyTap(id){
   }
   SFX.give();
   figFx(id,"recv",400);
-  if(nt===21){ SFX.miracle(); flash("gold"); flt(id,"21!","f-gold"); }
+  if(nt===21){ SFX.miracle(); flash("gold"); flt(id,"21!","f-gold"); punch21(id); }   /* ✦ v1B2: 덜썩! */
   else if(nt>=22){ SFX.bust(); flt(id, nt+"…", "f-dmg"); }
   S.sel=-1;
   renderAlly(id); renderHand(); showOracles();
@@ -1185,42 +1270,57 @@ function pbTag(){ return S.pbCount>=4? "×4" : S.pbCount===3? "×2" : "×1.25"; 
 async function pbAnnounce(n){
   const b = $("pbBanner");
   if(n>=4){
-    /* 팡! 쾅! 콰앙! 촤아악! — 순차 폭발 후 대형 배너 */
-    let k=0;
-    for(const id of UI_ORDER){
-      const a = S.allies[id];
-      if(!a.dead && a.cards.length && bestTotal(a.cards)===21){
-        figFx(id,"miracle21",800); flt(id,"21!","f-gold"); SFX.pb(k++);
-        await wait(220);
+    /* ✦ v1B2: 팜…팜…팜……팜!!!! — 뒤로 갈수록 무거워지는 리듬 */
+    const members = UI_ORDER.filter(id=>{ const a=S.allies[id]; return !a.dead && a.cards.length && bestTotal(a.cards)===21; });
+    const gaps = [170, 240, 380];                     /* 타격 간격 — 점점 벌어진다 */
+    for(let k=0; k<members.length; k++){
+      const id = members[k];
+      const last = (k===members.length-1);
+      if(last) await wait(150);                       /* 숨 고르기 — 마지막 한 방 직전의 정적 */
+      figFx(id, "pbP"+Math.min(4, last?4:k+1), last?900:700);
+      flt(id,"21!","f-gold");
+      SFX.pb(k);
+      if(k===2) shake("sm");                          /* 3타부터 화면이 반응하기 시작 */
+      if(last){
+        await wait(90);                               /* 히트스탑 */
+        flash("gold"); shake("xl"); shockRing(true);
+        b.textContent = "✦ 전원 블랙잭! ×4 ✦";
+        b.className = "show pb4";
+        SFX.win();
+        await wait(880);
+      } else {
+        await wait(gaps[k]);
       }
     }
-    flash("gold"); shake();
-    b.textContent = "✦ 전원 블랙잭! ×4 ✦";
-    b.className = "show pb4";
-    SFX.win();
-    await wait(850);
-  } else {
-    b.textContent = `✦ 파티 블랙잭 ${n} ${n===3? "×2":"×1.25"} ✦`;
-    b.className = "show pb"+n;
-    if(n===3) shake();
+  } else if(n===3){
+    /* ✦ v1B2: 3인 = "오 크게 터졌다" — 플래시 + 쉐이크 + 금색 링 */
+    flash("gold"); shake(); shockRing(false);
+    b.textContent = "✦ 파티 블랙잭 3 ×2 ✦";
+    b.className = "show pb3";
     SFX.miracle();
-    await wait(n===3? 650 : 500);
+    await wait(700);
+  } else {
+    /* 2인 = 짧고 산뜻하게 (v1B 유지) */
+    b.textContent = "✦ 파티 블랙잭 2 ×1.25 ✦";
+    b.className = "show pb2";
+    SFX.miracle();
+    await wait(500);
   }
   b.className = "";
 }
 
-/* ✦ v1B1: 기적 연쇄 완주 피날레 — 죽음은 연쇄가 끝난 뒤에 온다 */
+/* ✦ v1B1→v1B2: 기적 연쇄 완주 피날레 — 죽음은 연쇄가 끝난 뒤에, 더 무겁게 온다 */
 async function chainFinale(){
   S.stats.chainFull++;
   if(S.pbCount>=4) S.stats.pb4Full++;
   if(!S._chainAfterDeath) return;                 /* 마지막 타자가 처치 → 끊긴 연출 없음, 배너 생략 */
   S.stats.chainDelay++;
   const b = $("pbBanner");
-  flash("gold"); shake(); SFX.miracle();
+  flash("gold"); shake(S.pbCount>=4?"xl":""); SFX.miracle(); shockRing(S.pbCount>=4);
   b.textContent = "✦ 기적 연쇄 완주! ✦";
   b.className = "show " + (S.pbCount>=4 ? "pb4" : "pb3");
-  if(S._turnOvk>0) flt("enemy","초과 피해 "+S._turnOvk,"f-ovk");
-  log(`기적 연쇄 완주! 초과 피해 ${S._turnOvk}`, "l-gold");
+  if(S._turnOvk>0){ flt("enemy","초과 피해 "+S._turnOvk,"f-ovk f-ovkBig"); log(`기적 연쇄 완주! 초과 피해 ${S._turnOvk}`, "l-gold"); }
+  else log(`기적 연쇄 완주!`, "l-gold");
   await wait(820);
   b.className = "";
 }
@@ -1587,7 +1687,7 @@ function showClear(finalBoss){
   ov.innerHTML = `<h2 class="win">${finalBoss? "마왕의 그림자 소멸":"세 마물 격파"}</h2>
     <div class="sub">총 ${S.stats.turns}턴 · 생존: ${survivorNames()}</div>
     ${reportHtml()}
-    ${bossOffer? `<button class="obtn boss" id="bossBtn">👑 보너스 보스 도전 — 마왕의 그림자 (HP 900)<br><small>축복을 하나 더 받고 시작한다</small></button>` : ""}
+    ${bossOffer? `<button class="obtn boss" id="bossBtn">👑 보너스 보스 도전 — 마왕의 그림자 (HP ${MONSTERS[3].hp})<br><small>축복을 하나 더 받고 시작한다</small></button>` : ""}
     <div class="sub">${finalBoss? "신이여, 숫자는 터졌는가?":"신이여, 예고를 읽고 패를 재웠는가?"}</div>
     <button class="obtn gold" id="againBtn">같은 운명 다시 (동일 시드)</button>
     <button class="obtn" id="newBtn">새로운 운명 (시드 변경)</button>`;
@@ -1624,24 +1724,41 @@ function newSeed(){
 
 /* ============ 부팅 ============ */
 (function boot(){
-  const m = location.hash.match(/^#s(\d+)(?:b(\d))?(?:g(\w\d))?$/);
+  /* ✦ v1C1: 해시에서 curve 토큰을 먼저 분리 — 기존 시드 해시(#s91b0)와 공존 */
+  let hashStr = location.hash;
+  const cm = hashStr.match(/curve([A-Za-z]+[0-9]*)/i);
+  if(cm){ const k = cm[1].toLowerCase(); if(HP_CURVES[k]) CURVE = k; hashStr = hashStr.replace(cm[0],""); }
+  if(hashStr==="#") hashStr = "";
+  const m = hashStr.match(/^#s(\d+)(?:b(\d))?(?:g(\w\d))?$/);
   if(m){
     SEED = +m[1];
     if(m[2]!==undefined) S.battle = Math.min(3, +m[2]);
     if(m[3] && BLESS.some(b=>b.id===m[3])) S.bless = [m[3]];
   }
+  /* ✦ v1C1: 선택된 커브의 HP를 몬스터 테이블에 주입 (HP 수치 외 무변경) */
+  HP_CURVES[CURVE].hp.forEach((v,i)=>{ MONSTERS[i].hp = v; });
   resetRng();
   refillShoe();
   initAllies();
   S.enemy = MONSTERS[S.battle]; S.eHp = S.enemy.hp;
   renderAll(); renderFaith(); renderVault();
   const bl0 = S.bless[0] ? BLESS.find(b=>b.id===S.bless[0]) : null;
-  $("seedTag").textContent = `현재 시드 ${SEED} · 전투 ${S.battle+1}부터` + (bl0? ` · 🌟 ${bl0.n} 보유` : "");
+  $("seedTag").textContent = `현재 시드 ${SEED} · 전투 ${S.battle+1}부터` + (bl0? ` · 🌟 ${bl0.n} 보유` : "") + ` · 🧪 HP Probe: ${HP_CURVES[CURVE].label}`;
   renderBlessChip();
   $("blessChip").addEventListener("click", showBlessList);
+  const curveToken = ()=> CURVE!=="base" ? "curve"+CURVE : "";
   document.querySelectorAll(".dbg").forEach(btn=>{
     btn.addEventListener("click", ()=>{
-      location.hash = "s"+btn.dataset.s+(btn.dataset.b!=="0" ? "b"+btn.dataset.b : "")+(btn.dataset.g? "g"+btn.dataset.g : "");
+      /* ✦ v1C1: 시드 검증 버튼은 현재 커브를 유지한 채 이동 (커브 간 4BJ 비교용) */
+      location.hash = "s"+btn.dataset.s+(btn.dataset.b!=="0" ? "b"+btn.dataset.b : "")+(btn.dataset.g? "g"+btn.dataset.g : "")+curveToken();
+      location.reload();
+    });
+  });
+  document.querySelectorAll(".dbgc").forEach(btn=>{
+    if(btn.dataset.c===CURVE) btn.classList.add("on");
+    btn.addEventListener("click", ()=>{
+      /* ✦ v1C1: 커브 전환은 현재 시드·전투를 유지 — 같은 카드 스트림으로 HP만 비교 */
+      location.hash = "s"+SEED+(S.battle>0 ? "b"+S.battle : "")+(btn.dataset.c!=="base" ? "curve"+btn.dataset.c : "");
       location.reload();
     });
   });
