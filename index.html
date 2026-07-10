@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>용사에게 한 장 더 줘 v0D</title>
+<title>용사에게 한 장 더 줘 v1 — Blessing Spike</title>
 <style>
 :root{
   --abyss:#131120; --altar:#1e1a30; --panel:#262040; --line:#3a3260;
@@ -149,6 +149,7 @@ body{
 .flt{position:absolute;left:50%;top:-4px;transform:translateX(-50%);font-size:15px;font-weight:900;pointer-events:none;z-index:6;animation:fltUp .9s ease-out forwards;text-shadow:0 1px 3px #000;white-space:nowrap;}
 @keyframes fltUp{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-24px)}}
 .f-dmg{color:#ff8d7a;} .f-heal{color:var(--heal);} .f-block{color:var(--shield);} .f-gold{color:var(--burst);font-size:18px;}
+.f-bless{color:#ffd98a;font-size:12px;text-shadow:0 0 8px rgba(255,217,138,.6);}
 
 /* ===== ③ 하단 상부: 아군 타깃 패널 ===== */
 #allies{
@@ -366,13 +367,33 @@ body{
 .hidden{display:none !important;}
 /* ===== R&D 검증 시드 (디버그) ===== */
 #dbgWrap{margin-top:2px;display:flex;flex-direction:column;gap:5px;align-items:center;flex:none;}
-#dbgTitle{font-size:9px;color:#5a5478;letter-spacing:1px;}
-#dbgRow{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:340px;}
+#dbgTitle,#dbgTitle2{font-size:9px;color:#5a5478;letter-spacing:1px;}
+#dbgRow,#dbgRow2{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:340px;}
 .dbg{border:1px solid var(--line);background:var(--panel);color:var(--dim);border-radius:8px;padding:5px 8px;font-size:9px;line-height:1.35;font-family:inherit;}
 .dbg:active{transform:scale(.95);}
 #seedTag{font-size:8.5px;color:#5a5478;}
 #vaultSlot.midCandidate{animation:vGlowMid 1.7s ease-in-out infinite;}
 @keyframes vGlowMid{0%,100%{box-shadow:0 0 5px rgba(240,201,106,.25)}50%{box-shadow:0 0 11px rgba(240,201,106,.5)}}
+/* ===== 🌟 축복 UI (v1) ===== */
+#blessChip{
+  position:absolute;top:-9px;right:8px;z-index:12;
+  font-size:9px;font-weight:700;font-family:inherit;
+  padding:1px 8px;border-radius:8px;
+  background:var(--panel);border:1px solid var(--divine-deep);color:var(--divine);
+}
+#blessChip:active{transform:scale(.94);}
+.blWrap{display:flex;flex-direction:column;gap:6px;width:88%;max-width:300px;}
+.blItem{background:var(--altar);border:1px solid var(--divine-deep);border-radius:9px;padding:7px 10px;text-align:left;}
+.blItem b{color:var(--divine);display:block;font-size:12px;margin-bottom:1px;}
+.blItem span{color:var(--dim);font-size:10px;line-height:1.4;}
+.rw em{display:block;font-size:8.5px;color:#8f88a8;font-style:normal;letter-spacing:.5px;margin-top:3px;}
+.rsep{margin:6px 0 2px;font-size:9px;color:#5a5478;text-align:center;letter-spacing:1px;}
+.rbless{font-size:9.5px;color:var(--divine);text-align:center;line-height:1.5;margin-bottom:2px;}
+.overlay .obtn.boss{
+  width:250px;background:linear-gradient(180deg,#3a1c3f,#241026);
+  border:1px solid #a0508a;color:#f0b8e0;line-height:1.4;
+}
+.overlay .obtn.boss small{display:block;font-size:9.5px;color:#c088b0;font-weight:400;}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.001s !important;transition-duration:.001s !important;}}
 </style>
 </head>
@@ -411,6 +432,7 @@ body{
 
   <!-- ④ 하단 하부: 신의 조작 -->
   <div id="godZone">
+    <button id="blessChip">🌟 0</button>
     <div id="toast"></div>
     <div id="handRow">
       <div id="vaultBox">
@@ -458,6 +480,13 @@ body{
         <button class="dbg" data-s="2" data-b="2">🛡 전사 완벽 방어<br>해골 · 턴1 [K] 재우기</button>
         <button class="dbg" data-s="5" data-b="1">✨ 성직자 성역<br>마녀 · 턴1 [J] 재우기</button>
         <button class="dbg" data-s="38" data-b="0">⚔ 결정타 준비<br>늑대 · 턴1 [6] 재우기</button>
+      </div>
+      <div id="dbgTitle2">— v1 축복 검증 —</div>
+      <div id="dbgRow2">
+        <button class="dbg" data-s="38" data-b="0" data-g="h2">⚔ 용맹 ×2<br>턴1 용사 21 = 60</button>
+        <button class="dbg" data-s="19" data-b="0" data-g="w2">🛡 반격의 성좌<br>[5]→전사 21, 반사 7</button>
+        <button class="dbg" data-s="8" data-b="0" data-g="m2">🔮 과충전<br>[8]→마법사 23 폭주</button>
+        <button class="dbg" data-s="24" data-b="0" data-g="c2">✨ 징벌 신성<br>성직자 21 → 신성 24</button>
       </div>
       <div id="seedTag"></div>
     </div>
@@ -531,15 +560,21 @@ const MONSTERS = [
       {n:"울부짖기", txt:"파티 전체 <b>9</b> 피해", hint:"", type:"aoe", dmg:9},
       {n:"사냥 본능", txt:"가장 HP 낮은 아군에게 <b>17</b> 피해", hint:"그 전에 처치하면 맞지 않는다", type:"lowest", dmg:17},
     ]},
-  { id:"witch", emo:"🧙", name:"독 마녀", hp:75,
+  { id:"witch", emo:"🧙", name:"독 마녀", hp:120,
     intents:[
       {n:"맹독 살포", txt:"HP 낮은 2명에게 <b>독</b> (2피해×3턴)", hint:"성직자 17+=독 1 정화 · 21=성역(전체 정화)", type:"poison2"},
       {n:"저주 폭발", txt:"파티 전체 <b>10</b> 피해", hint:"", type:"aoe", dmg:10},
     ]},
-  { id:"skel", emo:"💀", name:"해골 기사", hp:90,
+  { id:"skel", emo:"💀", name:"해골 기사", hp:300,
     intents:[
       {n:"처형 선고", txt:"가장 HP 높은 아군에게 <b>18</b> 피해", hint:"", type:"highest", dmg:18},
       {n:"파멸의 일격", txt:"파티 전체 <b>14</b> 피해", hint:"전사 21=무효 · 전사 17+=절반 · 16↓=직격", type:"doom", dmg:14},
+    ]},
+  { id:"boss", emo:"😈", name:"마왕의 그림자", hp:900,
+    intents:[
+      {n:"암흑 파동", txt:"파티 전체 <b>12</b> 피해", hint:"", type:"aoe", dmg:12},
+      {n:"침식 선고", txt:"HP 가장 높은 아군에게 <b>22</b> 피해", hint:"블록·보호막으로 버텨라", type:"highest", dmg:22},
+      {n:"종말의 일격", txt:"파티 전체 <b>24</b> 피해", hint:"전사 21=무효 · 전사 17+=절반 · 16↓=직격", type:"doom", dmg:24},
     ]},
 ];
 
@@ -550,13 +585,16 @@ const S = {
   allies:{},
   god:[], sel:-1, assigns:[], vaultGivenTo:[], linkedGive:null,
   taunt:false, perfectGuard:false, block:0, armorCrack:false, warTotal:0,
-  blessings:{hero21:0, warBlk:0, clericHeal:0},
+  bless:[], chainMagic:0, oathCharge:false,
   stats:{
     m21:0, turns:0, saves:0,
     burns:0, faithGained:0, rerolls:0,
     vaultStores:0, vaultRetrieves:0, vault21:0, vault17:0,
     reroll21:0, reroll17:0, vaultLinked:0,
     vaultGuard:0, vaultHealStrong:0, vaultDecisive:0,
+    blessProcs:0, blessDmg:0, blessSup:0, blessVal:{},
+    maxHit:0, maxTurnDmg:0, hero21Max:0, mage21Max:0,
+    reflectTotal:0, overhealConv:0,
   },
   onb:{faith:false, reroll:false, vhint:false},
   busy:false, over:false,
@@ -568,7 +606,7 @@ const alliesEl = $("allies"), handEl = $("hand"), logEl = $("log");
 
 function initAllies(){
   for(const id of UI_ORDER){
-    S.allies[id] = { hp:CLASSES[id].hp, max:CLASSES[id].hp, cards:[], godCards:[], poison:0, vuln:false, dead:false };
+    S.allies[id] = { hp:CLASSES[id].hp, max:CLASSES[id].hp, cards:[], godCards:[], poison:0, vuln:false, dead:false, shield:0 };
   }
   alliesEl.innerHTML = UI_ORDER.map(id=>{
     const c = CLASSES[id];
@@ -644,7 +682,7 @@ function renderAlly(id){
   $("sf_"+id).classList.toggle("dead", a.dead);
   const pct = Math.max(0, a.hp/a.max*100);
   const hb = $("hp_"+id); hb.style.width = pct+"%"; hb.classList.toggle("low", pct<=35);
-  $("hpt_"+id).textContent = a.dead? "쓰러짐" : `${a.hp}/${a.max}`;
+  $("hpt_"+id).textContent = a.dead? "쓰러짐" : `${a.hp}/${a.max}${a.shield>0? " 🛡"+a.shield : ""}`;
   $("cd_"+id).innerHTML = a.cards.map((f,i)=>`<div class="mini ${a.godCards.includes(i)?'god':''}">${f}</div>`).join("");
   const t = bestTotal(a.cards);
   const b = band(t);
@@ -1050,6 +1088,9 @@ const wait = ms => new Promise(r=>setTimeout(r,ms));
 function aliveIds(){ return UI_ORDER.filter(id=>!S.allies[id].dead); }
 function dmgEnemy(n){
   S.eHp -= n;
+  S._turnDmg = (S._turnDmg||0) + n;
+  if(n > S.stats.maxHit) S.stats.maxHit = n;
+  if(S._turnDmg > S.stats.maxTurnDmg) S.stats.maxTurnDmg = S._turnDmg;
   flt("enemy","-"+n,"f-dmg");
   renderEnemy();
 }
@@ -1062,6 +1103,11 @@ function dmgAlly(id, n, pierce){
     if(S.armorCrack) d = Math.round(d*1.3);
   }
   if(a.vuln) d = Math.round(d*1.5);
+  if(a.shield>0 && d>0){            /* 🛡 보호막 (자비의 축복) — 독도 막는다 */
+    const ab = Math.min(a.shield, d);
+    a.shield -= ab; d -= ab;
+    flt(id,"🛡"+ab,"f-block");
+  }
   a.hp -= d;
   if(d>0){ flt(id,"-"+d,"f-dmg"); } else { flt(id,"막음","f-block"); SFX.block(); }
   if(a.hp<=0){ a.hp=0; a.dead=true; log(`${CLASSES[id].name} 이(가) 쓰러졌다…`, "l-hit"); }
@@ -1070,16 +1116,17 @@ function dmgAlly(id, n, pierce){
 }
 function healAlly(id, n, single){
   const a = S.allies[id];
-  if(a.dead) return;
+  if(a.dead) return 0;
   const before = a.hp;
   a.hp = Math.min(a.max, a.hp+n);
   const got = a.hp-before;
   if(got>0){ flt(id,"+"+got,"f-heal"); if(single) impulseFx(id); }
   renderAlly(id); updateVignette();
+  return n - got;                    /* 초과 회복량 반환 */
 }
 
 async function resolveTurn(){
-  S.busy=true; S.stats.turns++;
+  S.busy=true; S.stats.turns++; S._turnDmg=0;
   /* 예고 연계 판정 1: 17+ 도달이면 즉시 인정 (처치 기여는 아래 피해 처리에서) */
   if(S.linkedGive && S.linkedGive.nt>=17){ S.stats.vaultLinked++; S.linkedGive=null; }
   renderHand();
@@ -1106,7 +1153,23 @@ async function resolveTurn(){
       SFX.bust(); figFx(id,"bustFx",600); crackFx(id);
       if(id==="hero"){ a.vuln=true; log(`${nm}: 무릎 꿇음! 행동 실패, 다음 피해 증가`, "l-hit"); }
       else if(id==="war"){ S.armorCrack=true; log(`${nm}: 갑옷 균열! 파티 받는 피해 증가`, "l-hit"); }
-      else if(id==="mage"){ dmgEnemy(act.dmg); a.hp=Math.max(1,a.hp-act.self); flt(id,"-"+act.self,"f-dmg"); log(`${nm}: 마력 폭주! 적 ${act.dmg} · 반동 ${act.self}`, "l-hit"); }
+      else if(id==="mage"){
+        const tot = bestTotal(a.cards);
+        if(has("m2") && tot<=24){          /* 불안정한 별: 22~24 = 과충전 공격 */
+          let od = tot + S.chainMagic;
+          const self = Math.ceil(act.self/2);
+          if(S.chainMagic>0) procB("m3","d",S.chainMagic,null,id);
+          procB("m2","d",od-act.dmg,"과충전 "+od+"!",id);
+          a.hp = Math.max(1, a.hp-self); flt(id,"-"+self,"f-dmg");
+          SFX.miracle(); shake();
+          dmgEnemy(od);
+          log(`${nm}: 과충전 폭주!! 적 ${od} · 반동 ${self}`, "l-gold");
+          if(S.eHp<=0){ renderAlly(id); break; }
+        } else {
+          dmgEnemy(act.dmg); a.hp=Math.max(1,a.hp-act.self); flt(id,"-"+act.self,"f-dmg");
+          log(`${nm}: 마력 폭주! 적 ${act.dmg} · 반동 ${act.self}`, "l-hit");
+        }
+      }
       else { S.faith++; S.stats.faithGained++; log(`${nm}: 기도 과부하… 치유 실패 (🕯 신앙 +1)`, "l-sys"); renderFaith(); }
       renderAlly(id);
       continue;
@@ -1119,9 +1182,11 @@ async function resolveTurn(){
         flt(id,"완벽 방어!","f-gold");
         log(`${nm}: 완벽 방어! 이번 턴 적의 행동 무효`, "l-gold");
         shatterMenace();
+        if(has("w3") && !S.oathCharge){ S.oathCharge=true; flt(id,"맹세!","f-bless"); }
       }
       else{
-        S.block = act.blk + (act.blk>0 && S.warTotal>=17 ? S.blessings.warBlk : 0);
+        S.block = act.blk;
+        if(act.blk>0 && S.warTotal>=17 && has("w1")){ S.block += 4; procB("w1","s",4,"철벽 +4",id); }
         if(act.taunt) S.taunt=true;
         SFX.block(); flt(id,"방어 "+S.block,"f-block");
         log(`${nm}: ${act.txt} (피해 -${S.block}${act.taunt?" · 도발":""})`);
@@ -1133,7 +1198,18 @@ async function resolveTurn(){
 
     if(act.dmg){
       let d = act.dmg;
-      if(id==="hero" && act.k==="m") d += S.blessings.hero21;
+      /* ── 🌟 축복 피해 파이프라인: 가산 → 맹세 ×2 → 배율 ×2 ── */
+      if(id==="mage" && S.chainMagic>0){ d += S.chainMagic; procB("m3","d",S.chainMagic,"연쇄 +"+S.chainMagic,id); }
+      if(id==="hero" && act.k==="m"){
+        if(has("h1")){ d += 20; procB("h1","d",20,"성검 +20",id); }
+        if(S.oathCharge){ const inc=d; d*=2; S.oathCharge=false; procB("w3","d",inc,"맹세 ×2",id); }
+        if(has("h2")){ const inc=d; d*=2; procB("h2","d",inc,"용맹 ×2",id); }
+        if(d > S.stats.hero21Max) S.stats.hero21Max = d;
+      }
+      if(id==="mage" && act.k==="m"){
+        if(has("m1")){ const inc=d; d*=2; procB("m1","d",inc,"비전 ×2",id); }
+        if(d > S.stats.mage21Max) S.stats.mage21Max = d;
+      }
       if(act.k==="m"){
         S.stats.m21++; flash("gold"); SFX.miracle(); shake();
         figFx(id,"miracle21",950);
@@ -1142,6 +1218,8 @@ async function resolveTurn(){
       }
       else { SFX.hit(); figFx(id,"recv",350); log(`${nm}: ${act.txt} — ${d} 피해`); }
       dmgEnemy(d);
+      if(id==="mage" && act.k==="m" && has("m3")){ S.chainMagic += 10; flt(id,"연쇄 마력 +10","f-bless"); }
+      if(id==="hero" && act.k==="m" && S.eHp<=0 && has("h3")){ S.faith+=2; S.stats.faithGained+=2; procB("h3","s",2,"🕯 신탁 +2",id); renderFaith(); }
       if(S.vaultGivenTo.includes(id) && (S.eHp<=0 || act.k==="m")) S.stats.vaultDecisive++;
       if(S.linkedGive && S.linkedGive.id===id && S.eHp<=0){ S.stats.vaultLinked++; S.linkedGive=null; }
       if(S.eHp<=0) break;
@@ -1149,7 +1227,7 @@ async function resolveTurn(){
     }
 
     if(act.heal!==undefined){
-      let h = act.heal + (bestTotal(a.cards)>=17 ? S.blessings.clericHeal : 0);
+      let h = act.heal;
       if(act.k==="m"){
         S.stats.m21++; flash("gold"); SFX.miracle();
         figFx(id,"miracle21",950);
@@ -1158,13 +1236,26 @@ async function resolveTurn(){
       }
       else if(act.all){ SFX.heal(); healWave(false); log(`${nm}: ${act.txt} +${h}`, "l-heal"); }
       else { SFX.heal(); log(`${nm}: ${act.txt} +${h}`, "l-heal"); }
-      if(act.all){
-        for(const t of aliveIds()) healAlly(t,h,false);
-      } else {
+      let ovSum=0, shSum=0;
+      const applyHeal = (t)=>{
+        const o = healAlly(t, h, !act.all);
+        if(o>0 && has("c1")){ const sh=Math.ceil(o/2); S.allies[t].shield += sh; shSum += sh; renderAlly(t); }
+        ovSum += o;
+      };
+      if(act.all){ for(const t of aliveIds()) applyHeal(t); }
+      else {
         let low=null, lp=2;
         for(const t of aliveIds()){ const p=S.allies[t].hp/S.allies[t].max; if(p<lp){lp=p; low=t;} }
-        if(low) healAlly(low,h,true);
+        if(low) applyHeal(low);
       }
+      if(ovSum>0 && has("c1") && shSum>0){ S.stats.overhealConv += shSum; procB("c1","s",shSum,"🛡 +"+shSum,id); }
+      if(ovSum>0 && has("c2")){
+        const hd = Math.ceil(ovSum/2);
+        S.stats.overhealConv += hd;
+        procB("c2","d",hd,"신성 "+hd,id);
+        if(S.eHp>0){ SFX.hit(); dmgEnemy(hd); }
+      }
+      if(act.k==="m" && has("c3")){ S.faith+=2; S.stats.faithGained+=2; procB("c3","s",2,"🕯 메아리 +2",id); renderFaith(); }
       if(id==="cleric" && S.vaultGivenTo.includes("cleric") && bestTotal(a.cards)>=17) S.stats.vaultHealStrong++;
       if(act.cleanse){
         let left = act.cleanse;
@@ -1185,6 +1276,15 @@ async function resolveTurn(){
     flash("gold"); SFX.block(); S.stats.saves++;
     if(S.vaultGivenTo.includes("war")) S.stats.vaultGuard++;
     log(`완벽 방어! ${S.enemy.name} 의 ${it.n} 이(가) 무효화됐다!`, "l-gold");
+    const negated = (it.dmg||0) * ((it.type==="aoe"||it.type==="doom") ? aliveIds().length : 1);
+    if(has("w2") && negated>0){        /* 반격의 성좌: 막은 총 피해의 50% 반사 */
+      const refl = Math.ceil(negated/2);
+      S.stats.reflectTotal += refl;
+      procB("w2","d",refl,"반격 "+refl+"!","war");
+      await wait(260); SFX.hit();
+      dmgEnemy(refl);
+      log(`반격의 성좌! ${refl} 피해 반사`, "l-gold");
+    }
   } else {
     $("sMon").classList.add("attacking");
     setTimeout(()=>$("sMon").classList.remove("attacking"), 500);
@@ -1220,6 +1320,8 @@ async function resolveTurn(){
     }
   }
 
+  if(S.eHp<=0){ await wait(400); await onVictory(); return; }   /* 반격 처치 */
+
   /* ---- 독 틱 & 상태 정리 ---- */
   await wait(400);
   for(const id of aliveIds()){
@@ -1238,15 +1340,71 @@ async function resolveTurn(){
   startTurn();
 }
 
-/* ============ 승리/보상/패배 ============ */
-const REWARD_POOL = [
-  {id:"hero21", b:"용사의 축복", s:"성검 해방(용사 21)의 피해 +10", f:()=>S.blessings.hero21+=10},
-  {id:"warBlk", b:"철벽의 축복", s:"전사 17 이상일 때 블록 +4", f:()=>S.blessings.warBlk+=4},
-  {id:"clHeal", b:"자비의 축복", s:"성직자 17 이상일 때 회복 +4", f:()=>S.blessings.clericHeal+=4},
-  {id:"grace",  b:"은총", s:"파티 전원 즉시 12 회복", f:()=>{for(const id of UI_ORDER){const a=S.allies[id]; if(!a.dead){a.hp=Math.min(a.max,a.hp+12);}}}},
+/* ============ 🌟 축복 12종 (Blessing Spike 01) ============ */
+const BLESS = [
+  {id:"h1", cls:"hero",   n:"성검의 축복",   d:"용사 21 → 피해 +20",                    tag:"21 · 가산"},
+  {id:"h2", cls:"hero",   n:"용맹의 성좌",   d:"용사 21 → 최종 피해 ×2",                tag:"21 · 배율 · 결정타"},
+  {id:"h3", cls:"hero",   n:"마무리의 신탁", d:"용사 21로 처치 → 신앙 +2",              tag:"처치 · 신앙"},
+  {id:"w1", cls:"war",    n:"철벽의 축복",   d:"전사 17+ → 블록 +4",                    tag:"방어 · 가산"},
+  {id:"w2", cls:"war",    n:"반격의 성좌",   d:"완벽 방어 → 막은 피해 50% 반사",        tag:"방어 · 반사"},
+  {id:"w3", cls:"war",    n:"수호자의 맹세", d:"전사 21 → 다음 용사 피해 ×2 (1회)",     tag:"연계 · 배율"},
+  {id:"m1", cls:"mage",   n:"비전 증폭",     d:"마법사 21 → 피해 ×2",                   tag:"21 · 배율"},
+  {id:"m2", cls:"mage",   n:"불안정한 별",   d:"마법사 22~24 → 과충전 공격 (반동 절반)", tag:"폭주 · 변환"},
+  {id:"m3", cls:"mage",   n:"연쇄 마력",     d:"마법사 21마다 이번 전투 마법 피해 +10",  tag:"중첩 · 전투한정"},
+  {id:"c1", cls:"cleric", n:"자비의 축복",   d:"초과 회복 50% → 보호막",                tag:"회복 · 전환"},
+  {id:"c2", cls:"cleric", n:"징벌의 성좌",   d:"초과 회복 50% → 신성 피해",             tag:"회복 · 신성"},
+  {id:"c3", cls:"cleric", n:"성역의 메아리", d:"성직자 21 → 신앙 +2",                   tag:"21 · 신앙"},
 ];
+function has(id){ return S.bless.includes(id); }
+function procB(bid, kind, val, txt, hostId){
+  S.stats.blessProcs++;
+  const v = Math.max(0, Math.round(val||0));
+  if(kind==="d") S.stats.blessDmg += v; else S.stats.blessSup += v;
+  S.stats.blessVal[bid] = (S.stats.blessVal[bid]||0) + v;
+  if(txt) flt(hostId||"enemy", txt, "f-bless");
+}
+function blessOffers(){
+  const pool = BLESS.filter(b=>!S.bless.includes(b.id));
+  const out = [];
+  while(out.length<3 && pool.length){ out.push(pool.splice(Math.floor(rng()*pool.length),1)[0]); }
+  return out;
+}
+function renderBlessChip(){ $("blessChip").textContent = `🌟 ${S.bless.length}`; }
+function showBlessList(){
+  const ov = document.createElement("div"); ov.className="overlay";
+  const items = S.bless.length
+    ? S.bless.map(id=>{ const b=BLESS.find(x=>x.id===id); return `<div class="blItem">${CLASSES[b.cls].emo} <b>${b.n}</b><span>${b.d}</span></div>`; }).join("")
+    : `<div class="blItem"><span>아직 받은 축복이 없다 — 승리 후 성좌가 열린다</span></div>`;
+  ov.innerHTML = `<h2 class="win">🌟 나의 축복</h2><div class="blWrap">${items}</div>
+    <button class="obtn" id="blClose">닫기</button>`;
+  $("app").appendChild(ov);
+  ov.querySelector("#blClose").addEventListener("click", ()=>ov.remove());
+}
+function showReward(then){
+  const ov = document.createElement("div"); ov.className="overlay";
+  const opts = blessOffers();
+  ov.innerHTML = `<h2 class="win">승리</h2>
+    <div class="sub">${S.enemy.name} 을(를) 물리쳤다.\n성좌가 열린다 — 축복 하나를 고른다.</div>
+    <div class="rewards">${opts.map((b,i)=>`<button class="rw" data-i="${i}"><b>${CLASSES[b.cls].emo} ${b.n}</b><span>${b.d}</span><em>${b.tag}</em></button>`).join("")}</div>`;
+  $("app").appendChild(ov);
+  ov.querySelectorAll(".rw").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      S.bless.push(opts[+btn.dataset.i].id);
+      renderBlessChip();
+      ov.remove();
+      then();
+    });
+  });
+}
 function reportHtml(){
   const st = S.stats;
+  let mvp = "—", mv = 0;
+  for(const k in st.blessVal){
+    if(st.blessVal[k] > mv){ mv = st.blessVal[k]; const b = BLESS.find(x=>x.id===k); if(b) mvp = `${b.n} (${mv})`; }
+  }
+  const blist = S.bless.length
+    ? S.bless.map(id=>{ const b=BLESS.find(x=>x.id===id); return CLASSES[b.cls].emo+" "+b.n; }).join(" · ")
+    : "없음";
   return `<div class="report">
     <div class="rline"><span>기적(21)</span><b>${st.m21}회</b></div>
     <div class="rline"><span>완벽 방어</span><b>${st.saves}회</b></div>
@@ -1258,30 +1416,28 @@ function reportHtml(){
     <div class="rline"><span>성물함 → 완벽 방어 / 성역·강회복</span><b>${st.vaultGuard} / ${st.vaultHealStrong}</b></div>
     <div class="rline"><span>성물함 → 결정타 기여</span><b>${st.vaultDecisive}</b></div>
     <div class="rline"><span class="hlt">예고 연계 성물함 사용</span><b class="hlt">${st.vaultLinked}회</b></div>
+    <div class="rsep">— 🌟 축복 · 도파민 —</div>
+    <div class="rbless">${blist}</div>
+    <div class="rline"><span>축복 발동 / 추가 피해 / 지원 전환</span><b>${st.blessProcs} / ${st.blessDmg} / ${st.blessSup}</b></div>
+    <div class="rline"><span class="hlt">최대 단일 피해 / 최대 턴 피해</span><b class="hlt">${st.maxHit} / ${st.maxTurnDmg}</b></div>
+    <div class="rline"><span>용사 21 최대 / 마법사 21 최대</span><b>${st.hero21Max||"—"} / ${st.mage21Max||"—"}</b></div>
+    <div class="rline"><span>전사 반격 총합 / 초과회복 전환</span><b>${st.reflectTotal} / ${st.overhealConv}</b></div>
+    <div class="rline"><span>MVP 축복</span><b>${mvp}</b></div>
   </div>`;
 }
 async function onVictory(){
   SFX.win();
   S.busy=true;
   await wait(600);
-  if(S.battle>=2){ showClear(); return; }
-  const ov = document.createElement("div");
-  ov.className="overlay";
-  const opts = [REWARD_POOL[S.battle], REWARD_POOL[(S.battle+1)%4], REWARD_POOL[3]];
-  ov.innerHTML = `<h2 class="win">승리</h2>
-    <div class="sub">${S.enemy.name} 을(를) 물리쳤다.\n신의 축복 하나를 내린다.</div>
-    <div class="rewards">${opts.map((r,i)=>`<button class="rw" data-i="${i}"><b>${r.b}</b><span>${r.s}</span></button>`).join("")}</div>`;
-  $("app").appendChild(ov);
-  ov.querySelectorAll(".rw").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      opts[+btn.dataset.i].f();
-      ov.remove();
-      nextBattle();
-    });
-  });
+  if(S.battle>=3){ showClear(true); return; }     /* 보스 격파 */
+  if(S.battle===2){ showClear(false); return; }   /* 3마물 격파 → 보스 선택지 */
+  showReward(()=>nextBattle());
 }
 function nextBattle(){
   S.battle++; S.turn=1;
+  S.chainMagic = 0; S.oathCharge = false;   /* 전투 한정 축복 초기화 */
+  for(const id of aliveIds()){ const a=S.allies[id]; a.hp=Math.min(a.max, a.hp+8); }
+  log(`— 승리의 은총 · 전원 +8 —`, "l-heal");
   S.enemy = MONSTERS[S.battle];
   S.eHp = S.enemy.hp;
   log(`— ${S.enemy.name} 출현 —`, "l-sys");
@@ -1291,16 +1447,22 @@ function nextBattle(){
 function survivorNames(){
   return aliveIds().map(i=>CLASSES[i].name).join(" · ") || "없음";
 }
-function showClear(){
+function showClear(finalBoss){
   const ov = document.createElement("div");
   ov.className="overlay";
-  ov.innerHTML = `<h2 class="win">세 마물 격파</h2>
+  const bossOffer = !finalBoss && S.battle===2;
+  ov.innerHTML = `<h2 class="win">${finalBoss? "마왕의 그림자 소멸":"세 마물 격파"}</h2>
     <div class="sub">총 ${S.stats.turns}턴 · 생존: ${survivorNames()}</div>
     ${reportHtml()}
-    <div class="sub">신이여, 예고를 읽고 패를 재웠는가?</div>
+    ${bossOffer? `<button class="obtn boss" id="bossBtn">👑 보너스 보스 도전 — 마왕의 그림자 (HP 900)<br><small>축복을 하나 더 받고 시작한다</small></button>` : ""}
+    <div class="sub">${finalBoss? "신이여, 숫자는 터졌는가?":"신이여, 예고를 읽고 패를 재웠는가?"}</div>
     <button class="obtn gold" id="againBtn">같은 운명 다시 (동일 시드)</button>
     <button class="obtn" id="newBtn">새로운 운명 (시드 변경)</button>`;
   $("app").appendChild(ov);
+  if(bossOffer) ov.querySelector("#bossBtn").addEventListener("click", ()=>{
+    ov.remove(); S.over=false;
+    showReward(()=>nextBattle());
+  });
   ov.querySelector("#againBtn").addEventListener("click", ()=>location.reload());
   ov.querySelector("#newBtn").addEventListener("click", ()=>{ newSeed(); });
   S.over=true;
@@ -1329,17 +1491,24 @@ function newSeed(){
 
 /* ============ 부팅 ============ */
 (function boot(){
-  const m = location.hash.match(/^#s(\d+)(?:b(\d))?$/);
-  if(m){ SEED = +m[1]; if(m[2]!==undefined) S.battle = Math.min(2, +m[2]); }
+  const m = location.hash.match(/^#s(\d+)(?:b(\d))?(?:g(\w\d))?$/);
+  if(m){
+    SEED = +m[1];
+    if(m[2]!==undefined) S.battle = Math.min(3, +m[2]);
+    if(m[3] && BLESS.some(b=>b.id===m[3])) S.bless = [m[3]];
+  }
   resetRng();
   refillShoe();
   initAllies();
   S.enemy = MONSTERS[S.battle]; S.eHp = S.enemy.hp;
   renderAll(); renderFaith(); renderVault();
-  $("seedTag").textContent = `현재 시드 ${SEED} · 전투 ${S.battle+1}부터 시작`;
+  const bl0 = S.bless[0] ? BLESS.find(b=>b.id===S.bless[0]) : null;
+  $("seedTag").textContent = `현재 시드 ${SEED} · 전투 ${S.battle+1}부터` + (bl0? ` · 🌟 ${bl0.n} 보유` : "");
+  renderBlessChip();
+  $("blessChip").addEventListener("click", showBlessList);
   document.querySelectorAll(".dbg").forEach(btn=>{
     btn.addEventListener("click", ()=>{
-      location.hash = "s"+btn.dataset.s+(btn.dataset.b!=="0" ? "b"+btn.dataset.b : "");
+      location.hash = "s"+btn.dataset.s+(btn.dataset.b!=="0" ? "b"+btn.dataset.b : "")+(btn.dataset.g? "g"+btn.dataset.g : "");
       location.reload();
     });
   });
