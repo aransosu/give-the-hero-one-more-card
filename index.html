@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>용사에게 한 장 더 줘 v1D1 — Action Grammar Polish (실험판)</title>
+<title>용사에게 한 장 더 줘 v1D2 — Hero Slash Max / FX Anchor Bugfix (실험판)</title>
 <style>
 :root{
   --abyss:#131120; --altar:#1e1a30; --panel:#262040; --line:#3a3260;
@@ -143,16 +143,26 @@ body{
 /* 돌진 */
 .sfig.lunge{animation:sLunge .3s cubic-bezier(.3,1.3,.5,1);z-index:3;}
 @keyframes sLunge{0%{transform:translateX(-50%)}45%{transform:translateX(calc(-50% + var(--lx,16px))) translateY(-10px) scale(1.08)}100%{transform:translateX(-50%)}}
-/* 용사 — 베기선 (✦ v1D1: 궤적 선명화 — 하얀 심 + 금빛 광, 잔상 고스트) */
-.fxSlash{position:absolute;width:52px;height:3px;border-radius:2px;pointer-events:none;z-index:6;
-  background:linear-gradient(90deg,transparent,#fff 32%,#fff 48%,var(--burst) 66%,transparent);
-  transform:translate(-50%,-50%) rotate(var(--ang,-30deg)) scaleX(.2);opacity:0;
+/* 용사 — 베기선 (✦ v1D1: 궤적 선명화 → ✦ v1D2: 길이 가변(--slen) + 칼날 스윕(--swp) + MAX 계층) */
+/* 날의 인상: 뒤쪽은 금빛 여운, 앞쪽(진행 방향)에 하얀 심과 날끝 — "칼날이 서서 지나간다" */
+.fxSlash{position:absolute;width:var(--slen,56px);height:3px;border-radius:3px 1px 1px 3px;pointer-events:none;z-index:6;
+  background:linear-gradient(90deg,transparent,rgba(255,222,138,.5) 16%,rgba(255,232,170,.85) 38%,#fff 58%,#fff 78%,rgba(255,255,255,.95) 90%,transparent);
+  transform:translate(-50%,-50%) rotate(var(--ang,-30deg)) translateX(calc(var(--swp,6px)*-1)) scaleX(.2);opacity:0;
   animation:slashIn .2s ease-out forwards;box-shadow:0 0 6px #fff,0 0 14px rgba(255,222,138,.85);}
-.fxSlash.gh{width:44px;height:2px;opacity:0;animation:slashIn .26s ease-out .05s forwards;box-shadow:0 0 8px rgba(255,222,138,.5);}
-.fxSlash.mid{width:70px;height:4px;box-shadow:0 0 8px #fff,0 0 18px rgba(255,232,160,.9);}
-.fxSlash.big{width:106px;height:5px;animation:slashInBig .3s ease-out forwards;box-shadow:0 0 10px #fff,0 0 22px rgba(255,232,160,1);}
-@keyframes slashIn{0%{opacity:0;transform:translate(-50%,-50%) rotate(var(--ang)) scaleX(.2)}30%{opacity:1;transform:translate(-50%,-50%) rotate(var(--ang)) scaleX(1.15)}100%{opacity:0;transform:translate(-50%,-50%) rotate(var(--ang)) scaleX(1)}}
-@keyframes slashInBig{0%{opacity:0;transform:translate(-50%,-50%) rotate(var(--ang)) scaleX(.1)}22%{opacity:1;transform:translate(-50%,-50%) rotate(var(--ang)) scaleX(1.25)}60%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) rotate(var(--ang)) scaleX(1.05)}}
+.fxSlash.gh{width:calc(var(--slen,56px)*.85);height:2px;opacity:0;animation:slashIn .26s ease-out .05s forwards;box-shadow:0 0 8px rgba(255,222,138,.5);}
+.fxSlash.mid{height:4px;box-shadow:0 0 8px #fff,0 0 18px rgba(255,232,160,.9);}
+.fxSlash.big{height:5px;animation:slashInBig .3s ease-out forwards;box-shadow:0 0 10px #fff,0 0 22px rgba(255,232,160,1);}
+@keyframes slashIn{0%{opacity:0;transform:translate(-50%,-50%) rotate(var(--ang)) translateX(calc(var(--swp,6px)*-1)) scaleX(.2)}30%{opacity:1;transform:translate(-50%,-50%) rotate(var(--ang)) translateX(0px) scaleX(1.15)}100%{opacity:0;transform:translate(-50%,-50%) rotate(var(--ang)) translateX(var(--swp,6px)) scaleX(1)}}
+@keyframes slashInBig{0%{opacity:0;transform:translate(-50%,-50%) rotate(var(--ang)) translateX(calc(var(--swp,16px)*-1)) scaleX(.1)}22%{opacity:1;transform:translate(-50%,-50%) rotate(var(--ang)) translateX(calc(var(--swp,16px)*-.2)) scaleX(1.25)}60%{opacity:1;transform:translate(-50%,-50%) rotate(var(--ang)) translateX(calc(var(--swp,16px)*.4)) scaleX(1.1)}100%{opacity:0;transform:translate(-50%,-50%) rotate(var(--ang)) translateX(var(--swp,16px)) scaleX(1.05)}}
+/* ✦ v1D2 MAX — 용사 21 피니시 / 2장 BJ 일섬. 화면 횡 ~70%를 수우왁! (길이는 JS가 스테이지 실측으로 주입) */
+.fxSlash.max{height:6px;border-radius:4px 1px 1px 4px;
+  background:linear-gradient(90deg,transparent,rgba(255,222,138,.4) 10%,rgba(255,232,170,.9) 30%,#fff 52%,#fff 82%,#fff 94%,transparent);
+  animation:slashMax .34s cubic-bezier(.2,.9,.3,1) forwards;
+  box-shadow:0 0 8px #fff,0 0 22px rgba(255,232,160,1),0 0 44px rgba(255,222,138,.6);}
+.fxSlash.max::after{content:"";position:absolute;left:12%;right:3%;top:-2px;height:1px;border-radius:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.95) 75%,transparent);opacity:.9;}
+.fxSlash.max.x2{animation-delay:.07s;height:5px;filter:brightness(.92);}
+@keyframes slashMax{0%{opacity:0;transform:translate(-50%,-50%) rotate(var(--ang)) translateX(calc(var(--swp,34px)*-1)) scaleX(.06)}18%{opacity:1;transform:translate(-50%,-50%) rotate(var(--ang)) translateX(calc(var(--swp,34px)*-.3)) scaleX(1.16)}58%{opacity:1;transform:translate(-50%,-50%) rotate(var(--ang)) translateX(calc(var(--swp,34px)*.35)) scaleX(1.04)}100%{opacity:0;transform:translate(-50%,-50%) rotate(var(--ang)) translateX(var(--swp,34px)) scaleX(1)}}
 /* ✦ v1D1: 돌진 잔광 트레일 — 용사의 이동이 궤적으로 남는다 */
 .fxTrail{position:absolute;height:3px;border-radius:2px;pointer-events:none;z-index:5;
   background:linear-gradient(90deg,transparent,rgba(255,232,170,.85),transparent);
@@ -999,7 +1009,11 @@ const FX_DX  = {hero:22, war:12, mage:-12, cleric:-22}; /* 중앙(몬스터)을 
 function fxEl(cls, x, y, vars, ttl, text){
   const e = document.createElement("div");
   e.className = cls;
-  e.style.left = x+"%"; e.style.top = y+"%";
+  /* ✦ v1D2 버그픽스: x/y가 null이면 인라인 좌표를 박지 않는다.
+     인라인 left/top은 스타일시트의 left:var(--x0)·left:50% 등을 "이겨버려서",
+     CSS가 좌표 주인인 FX(메테오·빛기둥·방패벽·투사체)가 좌상단 (0,0)으로 새는 원인이었다. */
+  if(x!==null && x!==undefined) e.style.left = x+"%";
+  if(y!==null && y!==undefined) e.style.top  = y+"%";
   if(vars) for(const k in vars) e.style.setProperty(k, vars[k]);
   if(text!==undefined) e.textContent = text;
   $("stage").appendChild(e);
@@ -1026,41 +1040,61 @@ function monAnchor(){
   }catch(e){}
   return { x:MON_X, y:MON_Y };
 }
-function slashFx(i, big){
+function slashFx(i, big, strong){
   const p = SLASH_PAT[i % SLASH_PAT.length], A = monAnchor();
   /* ✦ v1D1: 궤적 이중화 — 하얀 심 + 반 박자 늦은 금빛 고스트 */
-  fxEl("fxSlash"+(big?" big":""), A.x+p.dx*0.8, A.y+p.dy*0.6, {"--ang":p.a+"deg"}, big?340:240);
-  fxEl("fxSlash gh", A.x+p.dx*0.8+1, A.y+p.dy*0.6+1, {"--ang":(p.a+6)+"deg"}, 330);
+  /* ✦ v1D2: 계층형 길이 — 낮음(짧고 분명) < 강타(길고 깊게) < 피니시(MAX 일섬) */
+  const tier = big ? "max" : strong ? "mid" : "";
+  const L = slashLen(big ? "max" : strong ? "mid" : "low");
+  const sw = big ? Math.round(L*0.13) : strong ? 12 : 6;
+  const v = {"--ang":p.a+"deg","--slen":L+"px","--swp":sw+"px"};
+  fxEl("fxSlash"+(tier?" "+tier:""), A.x+p.dx*0.8, A.y+p.dy*0.6, v, big?430:240);
+  fxEl("fxSlash gh", A.x+p.dx*0.8+1, A.y+p.dy*0.6+1, {"--ang":(p.a+6)+"deg","--slen":L+"px","--swp":sw+"px"}, big?460:330);
   fxEl("fxSpark"+(big?" big":""), A.x+p.dx*0.5, A.y+p.dy*0.4, null, 320, "✦");
+}
+/* ✦ v1D2: 베기 길이는 스테이지 실측 기반 — MAX = 횡폭 ~70% ("2/3~3/4까지 수우왁") */
+function stageW(){ try{ const r=$("stage").getBoundingClientRect(); if(r.width>0) return r.width; }catch(e){} return 360; }
+function slashLen(t){
+  const w = stageW();
+  return t==="max" ? Math.min(Math.round(w*0.70), 320)
+       : t==="big" ? Math.round(w*0.42)
+       : t==="mid" ? Math.round(w*0.28)
+       : Math.round(w*0.16);
 }
 function lungeFx(id){ const t=$("sf_"+id); if(t) t.style.setProperty("--lx", FX_DX[id]+"px"); figFx(id,"lunge",320); }
 function trailFx(id){
   /* ✦ v1D1: 돌진 잔광 — 피규어 → 적 방향 궤적 */
   fxEl("fxTrail", FIG_X[id]+(FX_DX[id]>0?4:-4), FIG_Y-6, {"--ang":(FX_DX[id]>0?-28:28)+"deg","--len":"56px"}, 320);
 }
-async function heroCombo(n, big){
+async function heroCombo(n, big, strong){
   lungeFx("hero"); trailFx("hero");
   await wait(120);
   for(let i=0;i<n;i++){
     const last = i===n-1;
-    slashFx(i, big && last);
-    if(!big && last && n>=4){ fxEl("fxSlash mid", monAnchor().x, monAnchor().y, {"--ang":"-24deg"}, 300); await wait(45); }  /* ✦ v1D1: 난무 마무리 미세 히트스탑 */
-    enemyRecoilFx(false); SFX.tap();
+    /* ✦ v1D2: 기적 난무의 개별 타격은 강타급, 마지막 한 방만 MAX — "쌓아 올려 터뜨린다" */
+    slashFx(i, big && last, strong || big);
+    if(!big && last && n>=4){ fxEl("fxSlash mid", monAnchor().x, monAnchor().y, {"--ang":"-24deg","--slen":slashLen("mid")+"px","--swp":"12px"}, 300); await wait(45); }  /* ✦ v1D1: 난무 마무리 미세 히트스탑 */
+    enemyRecoilFx(big && last);   /* ✦ v1D2: MAX 피니시는 적이 크게 휘청인다(stagger) */
+    SFX.tap();
+    if(big && last){ shake("sm"); await wait(70); }   /* ✦ v1D2: MAX 일섬 히트스탑 70ms (턴 전체 +70ms 한정) */
     await wait(last?60:78);
   }
 }
 async function heroBjFinisher(){
-  /* 슝~(모으기) … 솨악!!(대각 일섬) — 2장 블랙잭 = 완벽한 한 수 (✦ v1D1: X자 잔상 + 히트스탑 90ms) */
+  /* 슝~(모으기) … 솨악!!(대각 일섬) — 2장 블랙잭 = 완벽한 한 수
+     ✦ v1D2: X자 두 획 모두 MAX 길이(횡 ~70%) — 응축 후 가장 시원한 일섬. 타이밍 340+110+90 무변경 */
   figFx("hero","bjCharge",400);
   fxEl("fxGather", FIG_X.hero, FIG_Y, null, 380);
   await wait(340);
   lungeFx("hero"); trailFx("hero");
   await wait(110);
-  const A = monAnchor();
-  fxEl("fxSlash big", A.x, A.y, {"--ang":"-38deg"}, 360);
-  fxEl("fxSlash gh", A.x, A.y, {"--ang":"38deg"}, 380);      /* 역대각 잔상 — X자 일섬 */
+  const A = monAnchor(), L = slashLen("max"), sw = Math.round(L*0.15);
+  fxEl("fxSlash max", A.x, A.y, {"--ang":"-38deg","--slen":L+"px","--swp":sw+"px"}, 460);
+  fxEl("fxSlash max x2", A.x, A.y, {"--ang":"38deg","--slen":L+"px","--swp":sw+"px"}, 500);   /* 역대각 — X자 일섬 (노이즈 없이 두 획) */
+  fxEl("fxTrail", A.x, A.y+1, {"--ang":"-38deg","--len":Math.round(L*0.9)+"px"}, 430);         /* ✦ v1D2: 잔광 여운 */
   fxEl("fxSpark big", A.x, A.y-3, null, 340, "✦");
   fxEl("fxPop gold big", A.x, A.y, null, 420);
+  enemyRecoilFx(true);   /* ✦ v1D2: 일섬엔 적이 크게 휘청인다 */
   shake("sm");
   await wait(90);   /* 일섬 히트스탑 */
 }
@@ -1071,7 +1105,7 @@ async function mageBolt(n){
   for(let i=0;i<n;i++){
     const p = BOLT_PAT[i % BOLT_PAT.length];
     const tx = A.x+p.x, ty = A.y+p.y;
-    fxEl("fxProj", 0, 0, {"--x0":FIG_X.mage+"%","--y0":FIG_Y+"%","--x1":tx+"%","--y1":ty+"%","--fd":".24s"}, 300);
+    fxEl("fxProj", null, null, {"--x0":FIG_X.mage+"%","--y0":FIG_Y+"%","--x1":tx+"%","--y1":ty+"%","--fd":".24s"}, 300);   /* ✦ v1D2: 좌표는 CSS var 주인 — 인라인 (0,0) 금지 */
     setTimeout(()=>{ fxEl("fxPop", tx, ty, null, 300); }, 240);
     SFX.tap();
     await wait(n>1?110:240);
@@ -1088,7 +1122,7 @@ async function mageMeteor(twoCardBJ){
     fxEl("fxCircle", A.x, A.y, null, 400);
     SFX.vault();
     await wait(320);
-    fxEl("fxMeteor big", 0, 0, {"--x0":A.x+"%","--y1":(A.y-1)+"%","--fd":".3s"}, 340);
+    fxEl("fxMeteor big", A.x, null, {"--x0":A.x+"%","--y1":(A.y-1)+"%","--fd":".3s"}, 340);   /* ✦ v1D2 버그픽스: left 인라인 0%가 적 앞쁳서 좌측 낙하 — 적 x로 고정 */
     setTimeout(()=>{ fxEl("fxPop gold big", A.x, A.y, null, 460); enemyRecoilFx(true); }, 290);
     SFX.pb(3);
     await wait(380);
@@ -1098,7 +1132,7 @@ async function mageMeteor(twoCardBJ){
     for(let i=0;i<pts.length;i++){
       const last = i===pts.length-1;
       const tx = A.x+pts[i].x, ty = A.y+pts[i].y;
-      fxEl("fxMeteor"+(last?" big":""), 0, 0, {"--x0":tx+"%","--y1":(ty-1)+"%","--fd":last?".3s":".24s"}, 340);
+      fxEl("fxMeteor"+(last?" big":""), tx, null, {"--x0":tx+"%","--y1":(ty-1)+"%","--fd":last?".3s":".24s"}, 340);   /* ✦ v1D2 버그픽스: 산개 낙하점 x = 적 앵커 기준 */
       setTimeout(()=>{
         fxEl("fxPop"+(last?" big gold":""), tx, ty, null, last?440:300);
         if(!last) enemyRecoilFx(false);
@@ -1112,7 +1146,7 @@ async function mageMeteor(twoCardBJ){
 /* 전사 — 발구름/방패벽 */
 function stompFx(){ fxEl("fxStomp", FIG_X.war, FIG_Y+9, null, 380); }
 function guardWallFx(){
-  fxEl("fxGuardWall", 0, 0, null, 540);
+  fxEl("fxGuardWall", null, null, null, 540);   /* ✦ v1D2 버그픽스: 인라인 (0,0)이 CSS 정위치(50%,56%)를 덮어 좌상단 유출 */
   for(const [a,dx,dy] of [[-40,-24,-14],[30,26,-12],[-10,-30,4]])
     fxEl("fxDeflect", MON_X, 46, {"--ang":a+"deg","--dx":dx+"px","--dy":dy+"px"}, 320);
   fxEl("fxSpark big", MON_X, 44, null, 340, "⚡");
@@ -1120,7 +1154,7 @@ function guardWallFx(){
 /* 성직자 — 문양/기둥/정화 */
 function glyphFx(id){ fxEl("fxGlyph", FIG_X[id], FIG_Y+7, null, 740, "✚"); }
 function healOrbFx(toId){
-  fxEl("fxProj holy", 0, 0, {"--x0":FIG_X.cleric+"%","--y0":FIG_Y+"%","--x1":FIG_X[toId]+"%","--y1":(FIG_Y-4)+"%","--fd":".3s"}, 340);
+  fxEl("fxProj holy", null, null, {"--x0":FIG_X.cleric+"%","--y0":FIG_Y+"%","--x1":FIG_X[toId]+"%","--y1":(FIG_Y-4)+"%","--fd":".3s"}, 340);   /* ✦ v1D2: 좌표는 CSS var 주인 */
   setTimeout(()=>glyphFx(toId), 290);
 }
 function cleanseFx(id){ for(const d of [-4,0,4]) fxEl("fxRise", FIG_X[id]+d, FIG_Y-2, null, 580); }
@@ -1639,7 +1673,7 @@ async function resolveTurn(){
       if(id==="hero"){
         const n = Math.min(4, Math.max(1, a.cards.length));
         if(act.k==="m" && a.cards.length===2) await heroBjFinisher();
-        else await heroCombo(n, act.k==="m");
+        else await heroCombo(n, act.k==="m", act.dmg>=16);   /* ✦ v1D2: 17~20 강타 = 더 길고 깊은 베기 */
       } else if(id==="mage"){
         if(act.k==="m") await mageMeteor(a.cards.length===2);   /* ✦ v1D1: 2장 BJ = 마법진 응축 중앙 직격 */
         else await mageBolt(act.dmg>=14 ? 3 : 1);
@@ -1681,7 +1715,7 @@ async function resolveTurn(){
         if(a.cards.length===2){ fxEl("fxGather holy", FIG_X.cleric, FIG_Y, null, 320); await wait(260); }   /* ✦ v1D1: 2장 BJ = 빛 응축… 개화 */
         S.stats.m21++; flash("gold"); SFX.miracle();
         figFx(id,"miracle21",950);
-        fxEl("fxPillar", 0, 0, null, 900);   /* ✦ v1D: 성역 빛기둥 */
+        fxEl("fxPillar", null, null, null, 900);   /* ✦ v1D 성역 빛기둥 · ✦ v1D2 버그픽스: 인라인 (0,0)이 좌상단 "노란 네모"의 정체였다 */
         healWave(true);
         (async()=>{ for(const t of aliveIds()){ glyphFx(t); await wait(70); } })();   /* ✦ v1D: 순차 성역 문양 */
         log(`${nm}: 성역!! 파티 전체 +${h} · 독 정화`, "l-gold");
