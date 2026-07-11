@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>용사에게 한 장 더 줘 v1G — Player Shell + Hand UX (실험판)</title>
+<title>용사에게 한 장 더 줘 v1G1 — Minimal UI Polish (실험판)</title>
 <style>
 :root{
   --abyss:#131120; --altar:#1e1a30; --panel:#262040; --line:#3a3260;
@@ -553,6 +553,24 @@ body{
 #vaultSlot.recvGlow{animation:vGlow 1.1s ease-in-out infinite;transform:scale(1.06);border-color:var(--divine);}
 #vaultSlot.dimTarget{opacity:.38;}
 #guide{margin:2px 0 3px;}
+/* ✦ v1G1 미니멀 폴리시 */
+#gameTitle{display:flex;flex-direction:column;align-items:center;gap:2px;margin:0 0 14px;line-height:1.15;}
+#gameTitle .t1{font-size:17px;font-weight:700;color:var(--dim);letter-spacing:6px;}
+#gameTitle .t2{font-size:34px;font-weight:900;color:var(--divine);letter-spacing:2px;text-shadow:0 0 14px rgba(240,200,90,.35);}
+#titleSub{margin-bottom:22px;}
+#ctrlRow{align-items:stretch;}
+#ctrlRow .btn, #ctrlRow #confirmBtn{
+  height:38px;padding:0 6px;border-radius:9px;font-size:12px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;white-space:nowrap;overflow:hidden;margin:0;}
+#undoBtn{flex:1 1 0;min-width:88px;}
+#rerollBtn{flex:1 1 0;min-width:88px;}
+#ctrlRow #confirmBtn{flex:1.3 1 0;font-size:13px;flex-direction:row;gap:0;}
+#ctrlRow #confirmBtn #burnPrev{font-size:10.5px;font-weight:700;opacity:.9;margin-left:2px;}
+#rerollBtn .cost{font-size:10.5px;font-weight:700;margin-left:3px;color:inherit;}
+#rerollBtn.lack{opacity:.42;}
+#faithVal{letter-spacing:0;}
+#vaultSlot.recvGlow{animation:vGlow 1.4s ease-in-out infinite;transform:scale(1.08);border-color:var(--divine);box-shadow:0 0 10px rgba(240,200,90,.55),0 0 20px rgba(240,200,90,.25);}
+#vaultSlot.dimTarget{opacity:.3;filter:saturate(.4);}
 #ciA.on,#ciB.on,#ciOff.on,#dlA.on,#dlB.on,#dlAB.on,#dlABC.on,#dlOff.on{border-color:var(--divine);color:var(--divine);}
 .dbg{border:1px solid var(--line);background:var(--panel);color:var(--dim);border-radius:8px;padding:5px 8px;font-size:9px;line-height:1.35;font-family:inherit;}
 .dbg:active{transform:scale(.95);}
@@ -630,15 +648,15 @@ body{
       </div>
       <div id="hand"></div>
       <div id="faithBox">
-        <div id="faithLabel">🕯 신앙</div>
-        <div id="faithVal">0/3</div>
+        <div id="faithLabel">신앙</div>
+        <div id="faithVal">🕯 0</div>
         <div id="giveTag">강림 <b>2</b>/2</div>
       </div>
     </div>
     <div id="ctrlRow">
-      <button class="btn" id="undoBtn">↩ 되돌림<small>배치 취소</small></button>
-      <button id="confirmBtn">운명 확정<small id="burnPrev"></small></button>
-      <button class="btn" id="rerollBtn">✨ 리롤<small>신앙 3 소모</small></button>
+      <button class="btn" id="undoBtn">↩ 되돌림</button>
+      <button id="confirmBtn">운명 확정<span id="burnPrev"></span></button>
+      <button class="btn" id="rerollBtn">↻ 리롤 <b class="cost">🕯3</b></button>
       <button class="btn hiddenOv" id="vaultBtn">📦</button>
       <button class="btn hiddenOv" id="burnBtn">🔥</button>
     </div>
@@ -656,8 +674,8 @@ body{
   <div id="flash"></div>
   <div id="vignette"></div>
   <div id="titleOv" class="overlay">
-    <h2 class="win">용사에게 한 장 더 줘</h2>
-    <div class="sub">신의 손으로 네 용사의 운명을 조율하라.</div>
+    <h1 id="gameTitle"><span class="t1">용사에게</span><span class="t2">한 장 더 줘</span></h1>
+    <div class="sub" id="titleSub">신의 손으로 네 용사의 운명을 조율하라.</div>
     <button class="obtn gold" id="journeyBtn">새로운 여정</button>
     <button id="labLink">DEV LAB</button>
   </div>
@@ -927,7 +945,7 @@ function initAllies(){
   alliesEl.innerHTML = UI_ORDER.map(id=>{
     const c = CLASSES[id];
     return `<div class="ally ${id}" id="al_${id}" data-id="${id}">
-      <div class="mark">▼표적</div>
+      <div class="mark">▼</div>
       <div class="oracle hidden" id="or_${id}"></div>
       <div class="nm">${c.emo} ${c.name}</div>
       <div class="hpW"><div class="hpB" id="hp_${id}"></div></div>
@@ -1005,7 +1023,7 @@ function renderAlly(id){
   const sm = $("sum_"+id);
   if(a.dead || a.cards.length===0){ sm.innerHTML=""; $("act_"+id).textContent = a.dead?"":"—"; }
   else{
-    sm.innerHTML = `<span class="b-${b}">${t}</span><span class="band b-${b}">${BAND_LABEL[b]}</span>`;
+    sm.innerHTML = `<span class="b-${b}">${t}</span>`;   /* ✦ v1G1: "강함/기본" 라벨 제거 — 숫자 색상만으로 말한다 */
     $("act_"+id).textContent = "예상: " + CLASSES[id].act(t).txt;
   }
   const chips=[];
@@ -1033,9 +1051,10 @@ function renderEnemy(){
 }
 function renderFaith(){
   const fv = $("faithVal");
-  fv.textContent = `${S.faith}/3`;
+  fv.textContent = `🕯 ${S.faith}`;   /* ✦ v1G1: 자원 영역 = "지금 몇 개" (분수형 제거 — 비용은 리롤 버튼이 말한다) */
   fv.classList.toggle("ready", S.faith>=3);
-  $("giveTag").innerHTML = `강림 <b>${S.givesLeft}</b>/2`;
+  const gmax = 2;   /* 기본 강림 2회 — 향후 신의 법칙 "강림 +1"이 3으로 늘릴 수 있음 (인장이 자연 확장) */
+  $("giveTag").innerHTML = `강림 ` + Array.from({length:gmax},(_,i)=> i<S.givesLeft? "●":"○").join(" ");
 }
 /* 성물함 예언: [v]는 합계 (21-v)인 아군을 21로 만든다 */
 function vaultForecast(face){
@@ -1096,7 +1115,8 @@ function renderHand(){
   const selCard = selOk ? S.god[S.sel] : null;
   $("burnBtn").disabled = !selOk;
   $("vaultBtn").disabled = !selOk || !!S.vault;
-  $("rerollBtn").disabled = !selOk || S.faith<3;
+  $("rerollBtn").disabled = !selOk;
+  $("rerollBtn").classList.toggle("lack", selOk && S.faith<3);   /* ✦ v1G1: 부족 시 흐림 + 탭하면 안내 */
   $("rerollBtn").classList.toggle("glow", S.faith>=3 && !S.busy);
   $("undoBtn").disabled = S.assigns.length===0 || S.busy;
   $("confirmBtn").disabled = S.busy;
@@ -1104,7 +1124,7 @@ function renderHand(){
   $("vaultSlot").classList.toggle("recvGlow", selOk && !!selCard && selCard.state==="hand" && !S.vault);
   $("vaultSlot").classList.toggle("dimTarget", selOk && !!selCard && selCard.state==="hand" && !!S.vault);
   const burnN = S.god.filter(g=>g.state==="hand").length;
-  $("burnPrev").textContent = burnN>0 ? `남은 ${burnN}장 → 🕯+${burnN}` : "모든 운명 배치됨";
+  $("burnPrev").textContent = burnN>0 ? ` · 🕯+${burnN}` : "";
   renderFaith(); renderVault();
   // 첫 애매 카드 발견 온보딩
   if(!S.onb.vhint && !S.busy && !S.vault && S.god.some(g=>g.state==="hand" && !g.fromVault && isAmbiguous(g.face))){
@@ -1535,7 +1555,8 @@ $("vaultSlot").addEventListener("click", ()=>{
   renderHand(); showOracles();
 });
 $("rerollBtn").addEventListener("click", ()=>{
-  if(S.sel<0||S.busy||S.faith<3) return;
+  if(S.sel<0||S.busy) return;
+  if(S.faith<3){ $("guide").textContent = "신앙이 부족합니다 — 남는 카드가 🕯 이 된다"; return; }
   const g = S.god[S.sel];
   const oldFace = g.face, oldOrigin = g.origin;
   S.faith -= 3;
