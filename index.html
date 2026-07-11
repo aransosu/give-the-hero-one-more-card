@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>용사에게 한 장 더 줘 v1D2 — Hero Slash Max / FX Anchor Bugfix (실험판)</title>
+<title>용사에게 한 장 더 줘 v1E — Card Identity Spike (실험판 · 기본 Off=v1D2 동일)</title>
 <style>
 :root{
   --abyss:#131120; --altar:#1e1a30; --panel:#262040; --line:#3a3260;
@@ -530,7 +530,10 @@ body{
 /* ===== R&D 검증 시드 (디버그) ===== */
 #dbgWrap{margin-top:2px;display:flex;flex-direction:column;gap:5px;align-items:center;flex:none;}
 #dbgTitle,#dbgTitle2,#dbgTitle3{font-size:9px;color:#5a5478;letter-spacing:1px;}
-#dbgRow,#dbgRow2,#dbgRow3{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:340px;}
+#dbgRow,#dbgRow2,#dbgRow3,#dbgRow4,#dbgRow4b{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:340px;}
+#dbgTitle4{font-size:9px;color:#6d5a3a;letter-spacing:1px;}
+#ciStats{font-size:9px;color:#8a82a8;max-width:340px;text-align:center;line-height:1.5;}
+#ciA.on,#ciB.on,#ciOff.on{border-color:var(--divine);color:var(--divine);}
 .dbg{border:1px solid var(--line);background:var(--panel);color:var(--dim);border-radius:8px;padding:5px 8px;font-size:9px;line-height:1.35;font-family:inherit;}
 .dbg:active{transform:scale(.95);}
 #seedTag{font-size:8.5px;color:#5a5478;}
@@ -644,6 +647,19 @@ body{
         <button class="dbg" data-s="5" data-b="1">✨ 성직자 성역<br>마녀 · 턴1 [J] 재우기</button>
         <button class="dbg" data-s="38" data-b="0">⚔ 결정타 준비<br>늑대 · 턴1 [6] 재우기</button>
       </div>
+      <div id="dbgTitle4">— v1E 카드 개성 실험 (기본 off = v1D2 동일) —</div>
+      <div id="dbgRow4">
+        <button class="dbg" id="ciOff">끔<br>기준 동작</button>
+        <button class="dbg" id="ciA">A 행운의 7<br>첫 7 강림 ×1.5 (성물함 ×2)</button>
+        <button class="dbg" id="ciB">B 기적의 재료<br>7 포함 21 = +7 · 777 = +21</button>
+      </div>
+      <div id="dbgRow4b">
+        <button class="dbg" data-s="54" data-b="0" data-ci="B">🎰 트리플 세븐<br>용사 [7,7] + 신의 7 = 777</button>
+        <button class="dbg" data-s="54" data-b="0" data-ci="A">🍀 A 비교<br>같은 시드 54, ×1.5 판</button>
+        <button class="dbg" data-s="11" data-b="0" data-ci="B">🍀 7이 완성하는 21<br>[7]→용사 = 행운의 기적</button>
+        <button class="dbg" data-s="12" data-b="0" data-ci="B">🛡 7의 완벽 방어<br>기존 회귀시드12 · 신앙+1</button>
+      </div>
+      <div id="ciStats">카드 개성: off (v1D2 기준 동작)</div>
       <div id="dbgTitle2">— v1 축복 검증 —</div>
       <div id="dbgRow2">
         <button class="dbg" data-s="38" data-b="0" data-g="h2">⚔ 용맹 ×2<br>턴1 용사 21 = 60</button>
@@ -666,6 +682,7 @@ body{
 "use strict";
 /* ============ 결정론 유틸 (시드 LCG · 난수 API 0건) ============ */
 let SEED = 20260710;
+let CI_MODE = "off";   /* ✦ v1E 카드 개성 실험: off=v1D2 완전 동일 · A=행운의 7 · B=기적의 재료 (해시 c 파라미터) */
 let rngState = SEED;
 function rng(){ rngState = (rngState * 1103515245 + 12345) & 0x7fffffff; return rngState / 0x7fffffff; }
 function resetRng(){ rngState = SEED; }
@@ -689,6 +706,20 @@ function bestTotal(faces){
   return (hard>21)? hard : total;
 }
 function band(t){ if(t>=22) return "bust"; if(t===21) return "21"; if(t>=17) return "strong"; if(t>=11) return "base"; return "weak"; }
+/* ═══ ✦ v1E 카드 개성 헬퍼 — 전부 CI_MODE 게이트, off면 어디서도 호출 결과가 상태를 바꾸지 않음 ═══ */
+function ciHas7(cards){ return cards.includes("7"); }
+function ci777(cards){ return cards.length===3 && cards.every(c=>c==="7"); }
+function ciLuckyMult(id, hasNum){ /* A안: 이번 턴 신의 7을 받은 영웅의 '수치 있는 행동'에 전투당 1회 ×1.5 (성물함 경유 ×2) */
+  if(CI_MODE!=="A" || !hasNum || !S.ciLuckyLeft) return 0;
+  const s7 = S.ciSeven[id]; if(!s7) return 0;
+  S.ciLuckyLeft = false; S.stats.ciA++; if(s7.vault) S.stats.ciAx2++;
+  return s7.vault ? 2 : 1.5;
+}
+function updateCiStats(){
+  const el = document.getElementById("ciStats"); if(!el) return;
+  el.textContent = CI_MODE==="off" ? "카드 개성: off (v1D2 기준 동작)"
+    : `CI ${CI_MODE} · 7강림 ${S.stats.ci7}(성물함 ${S.stats.ci7v}) · A발동 ${S.stats.ciA}(×2 ${S.stats.ciAx2}) · 7포함21 ${S.stats.ciB7} · 777 ${S.stats.ciB777} · 전사신앙 ${S.stats.ciFaith} · 리롤 ${S.stats.rerolls} · 최대턴딜 ${S.stats.maxTurnDmg}`;
+}
 const BAND_LABEL = {weak:"약함", base:"기본", strong:"강함", "21":"기적", bust:"과부하"};
 
 /* ============ 클래스 ============ */
@@ -768,8 +799,10 @@ const S = {
     reflectTotal:0, overhealConv:0,
     pbTimes:0, pbMax:0, pb2:0, pb3:0, pb4:0, pbDmg:0, pbSup:0,
     ovkTotal:0, ovkMax:0, chainFull:0, chainDelay:0, pb4Full:0,   /* ✦ v1B1 */
+    ci7:0, ci7v:0, ciA:0, ciAx2:0, ciB7:0, ciB777:0, ciFaith:0,   /* ✦ v1E 카드 개성 관측 (off일 땐 전부 0 유지) */
   },
   onb:{faith:false, reroll:false, vhint:false},
+  ciSeven:{}, ciLuckyLeft:true,   /* ✦ v1E: 이번 턴 신의 7 수령자 / A안 전투당 1회 행운 */
   busy:false, over:false,
 };
 
@@ -1306,6 +1339,12 @@ function onAllyTap(id){
     if(nt===21) S.stats.reroll21++;
     else if(nt>=17 && nt<=20) S.stats.reroll17++;
   }
+  if(CI_MODE!=="off" && g.face==="7"){   /* ✦ v1E: 신의 7 수령 기록 (베이스 7은 B의 21 판정에서만 취급) */
+    if(!S.ciSeven[id]) S.ciSeven[id] = {vault:!!g.fromVault};
+    else if(g.fromVault) S.ciSeven[id].vault = true;
+    S.stats.ci7++; if(g.fromVault) S.stats.ci7v++;
+    flt(id, "🍀", "f-bless"); updateCiStats();
+  }
   SFX.give();
   figFx(id,"recv",400);
   if(nt===21){ SFX.miracle(); flash("gold"); flt(id,"21!","f-gold"); punch21(id); }   /* ✦ v1B2: 덜썩! */
@@ -1435,6 +1474,7 @@ function startTurn(){
   S.givesLeft = 2;
   S.vaultMetaUsed = null;
   S.vaultGivenTo = []; S.linkedGive = null;
+  if(CI_MODE!=="off"){ S.ciSeven = {}; if(S.turn===1) S.ciLuckyLeft = true; updateCiStats(); }   /* ✦ v1E */
   for(const id of UI_ORDER){
     const a = S.allies[id];
     a.cards=[]; a.godCards=[];
@@ -1653,11 +1693,20 @@ async function resolveTurn(){
         log(`${nm}: 완벽 방어! 이번 턴 적의 행동 무효`, "l-gold");
         shatterMenace();
         if(has("w3") && !S.oathCharge){ S.oathCharge=true; flt(id,"맹세!","f-bless"); }
+        if(CI_MODE==="B" && ciHas7(a.cards)){   /* ✦ v1E-B: 7로 세운 완벽 방어 — 행운이 신앙으로 */
+          S.faith++; S.stats.faithGained++; S.stats.ciFaith++;
+          flt(id, "🍀 행운이 신앙으로 +🕯", "f-bless"); renderFaith(); updateCiStats();
+        }
       }
       else{
         S.block = act.blk;
         if(act.blk>0 && S.warTotal>=17 && has("w1")){ S.block += 4; procB("w1","s",4,"철벽 +4",id); }
         if(act.taunt) S.taunt=true;
+        if(CI_MODE==="A" && S.block>0){   /* ✦ v1E-A: 전사의 행운 — 방어 수치 증폭 */
+          const mlt = ciLuckyMult("war", true);
+          if(mlt){ const inc = Math.round(S.block*mlt)-S.block; S.block += inc;
+                   flt(id, (mlt===2?"🍀✨ 재워둔 7 ×2":"🍀 행운의 7 ×1.5")+" 방어 +"+inc, "f-bless"); updateCiStats(); }
+        }
         lungeFx("war"); stompFx();   /* ✦ v1D: 묵직한 전진 + 발구름 충격파 */
         SFX.block(); flt(id,"방어 "+S.block,"f-block");
         log(`${nm}: ${act.txt} (피해 -${S.block}${act.taunt?" · 도발":""})`);
@@ -1681,6 +1730,11 @@ async function resolveTurn(){
       /* ── 🌟 축복 피해 파이프라인: 가산 → 맹세 ×2 → 배율 ×2 ── */
       if(id==="mage" && S.chainMagic>0){ d += S.chainMagic; procB("m3","d",S.chainMagic,"연쇄 +"+S.chainMagic,id); }
       if(id==="hero" && act.k==="m"){
+        if(CI_MODE==="B"){   /* ✦ v1E-B: 기적의 재료 — 7 포함 21 가산 (PB·맹세·용맹 배율에 실린다) */
+          const j = ci777(a.cards), inc = j?21:(ciHas7(a.cards)?7:0);
+          if(inc){ d += inc; S.stats[j?"ciB777":"ciB7"]++; flt(id, j?"🎰 트리플 세븐 +21":"🍀 행운의 기적 +7", "f-bless");
+                   if(j){ flash("gold"); log("트리플 세븐!! 세 장의 7이 하나의 기적이 된다", "l-gold"); } updateCiStats(); }
+        }
         if(has("h1")){ d += 20; procB("h1","d",20,"성검 +20",id); }
         if(S.pbMult>1){ const nd=Math.round(d*S.pbMult); S.stats.pbDmg += nd-d; d=nd; flt(id,"✦"+pbTag(),"f-pb"); }
         if(S.oathCharge){ const inc=d; d*=2; S.oathCharge=false; procB("w3","d",inc,"맹세 ×2",id); }
@@ -1688,9 +1742,19 @@ async function resolveTurn(){
         if(d > S.stats.hero21Max) S.stats.hero21Max = d;
       }
       if(id==="mage" && act.k==="m"){
+        if(CI_MODE==="B"){   /* ✦ v1E-B: 마법사 7 포함 21 — PB 앞 가산 */
+          const j = ci777(a.cards), inc = j?21:(ciHas7(a.cards)?7:0);
+          if(inc){ d += inc; S.stats[j?"ciB777":"ciB7"]++; flt(id, j?"🎰 트리플 세븐 +21":"🍀 행운의 기적 +7", "f-bless");
+                   if(j){ flash("gold"); log("트리플 세븐!! 세 장의 7이 하나의 기적이 된다", "l-gold"); } updateCiStats(); }
+        }
         if(S.pbMult>1){ const nd=Math.round(d*S.pbMult); S.stats.pbDmg += nd-d; d=nd; flt(id,"✦"+pbTag(),"f-pb"); }
         if(has("m1")){ const inc=d; d*=2; procB("m1","d",inc,"비전 ×2",id); }
         if(d > S.stats.mage21Max) S.stats.mage21Max = d;
+      }
+      if(CI_MODE==="A"){   /* ✦ v1E-A: 행운의 7 — 파이프라인 최후단 ×1.5 (성물함 경유 ×2, 전투당 1회) */
+        const mlt = ciLuckyMult(id, d>0);
+        if(mlt){ const inc = Math.round(d*mlt)-d; d += inc;
+                 flt(id, (mlt===2?"🍀✨ 재워둔 7 ×2":"🍀 행운의 7 ×1.5")+" +"+inc, "f-bless"); updateCiStats(); }
       }
       if(act.k==="m"){
         S.stats.m21++; flash("gold"); SFX.miracle(); shake();
@@ -1710,7 +1774,18 @@ async function resolveTurn(){
 
     if(act.heal!==undefined){
       let h = act.heal;
+      if(CI_MODE==="B" && act.k==="m" && ciHas7(a.cards)){   /* ✦ v1E-B: 7 포함 성역 — PB 앞 가산 */
+        const j = ci777(a.cards), inc = j?21:7;
+        h += inc; S.stats[j?"ciB777":"ciB7"]++;
+        flt(id, j?"🎰 트리플 세븐 +21":"🍀 행운의 기적 +7", "f-bless");
+        if(j){ flash("gold"); log("트리플 세븐!! 세 장의 7이 하나의 기적이 된다", "l-gold"); } updateCiStats();
+      }
       if(act.k==="m" && S.pbMult>1){ const nh=Math.round(h*S.pbMult); S.stats.pbSup += (nh-h)*aliveIds().length; h=nh; flt(id,"✦"+pbTag(),"f-pb"); }
+      if(CI_MODE==="A"){   /* ✦ v1E-A: 성직자의 행운 — 회복 수치 증폭 (최후단) */
+        const mlt = ciLuckyMult("cleric", h>0);
+        if(mlt){ const inc = Math.round(h*mlt)-h; h += inc;
+                 flt(id, (mlt===2?"🍀✨ 재워둔 7 ×2":"🍀 행운의 7 ×1.5")+" +"+inc, "f-bless"); updateCiStats(); }
+      }
       if(act.k==="m"){
         if(a.cards.length===2){ fxEl("fxGather holy", FIG_X.cleric, FIG_Y, null, 320); await wait(260); }   /* ✦ v1D1: 2장 BJ = 빛 응축… 개화 */
         S.stats.m21++; flash("gold"); SFX.miracle();
@@ -1992,17 +2067,18 @@ async function onDefeat(){
 }
 function newSeed(){
   const ns = (SEED + 1 + Math.floor(performance.now())) % 99999989;
-  location.hash = "s" + ns;
+  location.hash = "s" + ns + (CI_MODE!=="off"? "c"+CI_MODE : "");   /* ✦ v1E: 새 운명에도 실험 모드 유지 */
   location.reload();
 }
 
 /* ============ 부팅 ============ */
 (function boot(){
-  const m = location.hash.match(/^#s(\d+)(?:b(\d))?(?:g(\w\d))?$/);
+  const m = location.hash.match(/^#s(\d+)(?:b(\d))?(?:g(\w\d))?(?:c([AB]))?$/);
   if(m){
     SEED = +m[1];
     if(m[2]!==undefined) S.battle = Math.min(3, +m[2]);
     if(m[3] && BLESS.some(b=>b.id===m[3])) S.bless = [m[3]];
+    if(m[4]) CI_MODE = m[4];   /* ✦ v1E: cA/cB — 없으면 off = v1D2 동일 */
   }
   resetRng();
   refillShoe();
@@ -2010,15 +2086,25 @@ function newSeed(){
   S.enemy = MONSTERS[S.battle]; S.eHp = S.enemy.hp;
   renderAll(); renderFaith(); renderVault();
   const bl0 = S.bless[0] ? BLESS.find(b=>b.id===S.bless[0]) : null;
-  $("seedTag").textContent = `현재 시드 ${SEED} · 전투 ${S.battle+1}부터` + (bl0? ` · 🌟 ${bl0.n} 보유` : "");
+  $("seedTag").textContent = `현재 시드 ${SEED} · 전투 ${S.battle+1}부터` + (bl0? ` · 🌟 ${bl0.n} 보유` : "") + (CI_MODE!=="off"? ` · 🍀CI ${CI_MODE}` : "");
   renderBlessChip();
   $("blessChip").addEventListener("click", showBlessList);
   document.querySelectorAll(".dbg").forEach(btn=>{
     btn.addEventListener("click", ()=>{
-      location.hash = "s"+btn.dataset.s+(btn.dataset.b!=="0" ? "b"+btn.dataset.b : "")+(btn.dataset.g? "g"+btn.dataset.g : "");
+      location.hash = "s"+btn.dataset.s+(btn.dataset.b!=="0" ? "b"+btn.dataset.b : "")+(btn.dataset.g? "g"+btn.dataset.g : "")+(btn.dataset.ci? "c"+btn.dataset.ci : "");
       location.reload();
     });
   });
+  /* ✦ v1E: 카드 개성 모드 토글 — 현재 시드/전투 유지한 채 c 파라미터만 교체 */
+  const ciJump = mode => {
+    location.hash = "s"+SEED+(S.battle? "b"+S.battle : "")+(mode!=="off"? "c"+mode : "");
+    location.reload();
+  };
+  $("ciOff").addEventListener("click", ()=>ciJump("off"));
+  $("ciA").addEventListener("click", ()=>ciJump("A"));
+  $("ciB").addEventListener("click", ()=>ciJump("B"));
+  $(CI_MODE==="A"?"ciA":CI_MODE==="B"?"ciB":"ciOff").classList.add("on");
+  updateCiStats();
   $("startBtn").addEventListener("click", ()=>{
     ac() && ac().resume && ac().resume();
     $("startOv").remove();
