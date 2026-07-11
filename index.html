@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>용사에게 한 장 더 줘 v1G1 — Minimal UI Polish (실험판)</title>
+<title>용사에게 한 장 더 줘 v1G2B — Card Grant & Faith Burn Handfeel (실험판)</title>
 <style>
 :root{
   --abyss:#131120; --altar:#1e1a30; --panel:#262040; --line:#3a3260;
@@ -435,7 +435,7 @@ body{
 }
 .gcard::after{content:"✦";position:absolute;top:2px;left:4px;font-size:8px;color:#b8892a;}
 .gcard.fromVault::after{content:"📦";font-size:8px;}
-.gcard .vHint{
+.gcard .vHint{ /* ✦ v1G2A: 미사용(재워둘까 제거) — 잔존 무해, 렌더 경로 없음 */
   position:absolute;bottom:-17px;left:50%;transform:translateX(-50%);z-index:7;
   font-size:8.5px;font-weight:800;color:var(--burst);background:#14100a;
   border:1px solid var(--divine);border-radius:7px;padding:1px 6px;white-space:nowrap;
@@ -543,10 +543,13 @@ body{
 #optMenu{position:absolute;top:38px;right:6px;z-index:41;display:flex;flex-direction:column;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px;box-shadow:0 4px 18px rgba(0,0,0,.5);}
 #optMenu .opti{border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:7px;padding:7px 12px;font-size:11px;font-family:inherit;text-align:left;}
 #optMenu .opti.dim{color:#6a6488;}
-#lawShelf{position:absolute;top:6px;left:6px;z-index:8;display:flex;gap:4px;}
-.lawChip{border:1px solid var(--line);background:rgba(20,16,32,.72);color:var(--dim);border-radius:9px;padding:2px 7px;font-size:9px;font-family:inherit;line-height:1.5;}
-.lawChip.pulse{animation:lawPulse .7s ease-out;border-color:var(--divine);color:var(--divine);}
-@keyframes lawPulse{0%{transform:scale(1);box-shadow:0 0 0 rgba(240,200,90,0);}30%{transform:scale(1.14);box-shadow:0 0 12px rgba(240,200,90,.8);}100%{transform:scale(1);box-shadow:0 0 0 rgba(240,200,90,0);}}
+/* ✦ v1G2A: 신의 법칙 선반 — 오른쪽 세로, 옵션(⚙ top6/right6) 아래에서 시작. 향후 6개까지 위→아래 누적 */
+#lawShelf{position:absolute;top:40px;right:6px;z-index:8;display:flex;flex-direction:column;gap:5px;align-items:flex-end;max-height:calc(100% - 48px);pointer-events:none;}
+.lawChip{pointer-events:auto;width:30px;height:30px;border:1px solid var(--line);background:rgba(20,16,32,.82);color:var(--dim);border-radius:8px;font-family:inherit;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;position:relative;transition:width .16s ease;}
+.lawChip .lawName{position:absolute;right:34px;top:50%;transform:translateY(-50%);white-space:nowrap;font-size:9.5px;font-weight:700;background:rgba(20,16,32,.92);border:1px solid var(--line);border-radius:6px;padding:2px 6px;color:var(--fg);opacity:0;pointer-events:none;transition:opacity .14s;}
+.lawChip.show .lawName{opacity:1;}
+.lawChip.pulse{border-color:var(--divine);color:var(--divine);animation:lawPulse .7s ease-out;}
+@keyframes lawPulse{0%{transform:scale(1);box-shadow:0 0 0 rgba(240,200,90,0);}30%{transform:scale(1.18);box-shadow:0 0 14px rgba(240,200,90,.85);}100%{transform:scale(1);box-shadow:0 0 0 rgba(240,200,90,0);}}
 #undoBtn{flex:1 1 auto;}
 #ctrlRow #confirmBtn{flex:2 1 auto;margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;}
 #ctrlRow #confirmBtn small{font-size:8.5px;opacity:.85;font-weight:400;}
@@ -571,6 +574,41 @@ body{
 #faithVal{letter-spacing:0;}
 #vaultSlot.recvGlow{animation:vGlow 1.4s ease-in-out infinite;transform:scale(1.08);border-color:var(--divine);box-shadow:0 0 10px rgba(240,200,90,.55),0 0 20px rgba(240,200,90,.25);}
 #vaultSlot.dimTarget{opacity:.3;filter:saturate(.4);}
+/* ✦ v1G2B 손맛 계층 */
+.fxGhostCard{position:fixed;z-index:60;width:34px;height:46px;border-radius:7px;border:1px solid var(--divine);
+  background:#2a2340;color:var(--divine);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;
+  pointer-events:none;transition:transform .22s cubic-bezier(.3,.7,.4,1),opacity .22s ease-in;will-change:transform,opacity;}
+.fxBurnCard{position:fixed;z-index:60;width:34px;height:46px;border-radius:7px;border:1px solid var(--divine);
+  background:#2a2340;color:var(--divine);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;
+  pointer-events:none;animation:burnAway .34s ease-in forwards;}
+@keyframes burnAway{0%{opacity:1;}45%{filter:brightness(1.9) sepia(.55);box-shadow:0 0 14px rgba(240,201,106,.85);}
+  100%{opacity:0;transform:translateY(-6px) scale(.72);filter:brightness(2.3);}}
+.fxEmber{position:fixed;z-index:61;width:9px;height:9px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#fff,var(--divine));box-shadow:0 0 9px rgba(240,201,106,.9);
+  pointer-events:none;transition:transform .26s ease-in,opacity .28s;will-change:transform,opacity;}
+.recvPress{animation:recvPress .26s ease-out;}
+.recvUp{animation:recvUp .32s ease-out;}
+@keyframes recvPress{0%{transform:scale(.985);}55%{transform:scale(1.012);filter:brightness(1.12);}100%{transform:scale(1);}}
+@keyframes recvUp{0%{transform:scale(.98);}45%{transform:scale(1.03);filter:brightness(1.32);}100%{transform:scale(1);}}
+.sum .sumPopIn{display:inline-block;}
+.sumPop{animation:sumPop .2s ease-out;display:inline-block;}
+.sumPopBig{animation:sumPopBig .26s ease-out;display:inline-block;}
+@keyframes sumPop{40%{transform:scale(1.22);}100%{transform:scale(1);}}
+@keyframes sumPopBig{40%{transform:scale(1.42);filter:brightness(1.45);}100%{transform:scale(1);}}
+.actSwap{animation:actSwap .34s ease-out;}
+@keyframes actSwap{0%{opacity:.15;transform:translateY(3px);}55%{opacity:1;filter:brightness(1.7);}100%{filter:none;}}
+#faithBox{position:relative;}
+#faithBox.faithAbsorb{animation:faithBreath .3s ease-out;}
+@keyframes faithBreath{40%{filter:brightness(1.35);text-shadow:0 0 10px rgba(240,201,106,.8);}}
+#faithVal.numPop{animation:sumPop .24s ease-out;}
+.plusOne{position:absolute;right:2px;top:-6px;font-size:9px;color:var(--divine);font-weight:900;
+  animation:plusRise .45s ease-out forwards;pointer-events:none;}
+@keyframes plusRise{from{opacity:1;transform:translateY(0);}to{opacity:0;transform:translateY(-10px);}}
+#ctrlRow #confirmBtn{font-weight:900;letter-spacing:1.5px;}
+@media (prefers-reduced-motion: reduce){
+  .fxGhostCard,.fxEmber,.fxBurnCard,.plusOne{display:none !important;}
+  .recvPress,.recvUp,.sumPop,.sumPopBig,.actSwap,#faithBox.faithAbsorb,#faithVal.numPop{animation:none !important;}
+}
 #ciA.on,#ciB.on,#ciOff.on,#dlA.on,#dlB.on,#dlAB.on,#dlABC.on,#dlOff.on{border-color:var(--divine);color:var(--divine);}
 .dbg{border:1px solid var(--line);background:var(--panel);color:var(--dim);border-radius:8px;padding:5px 8px;font-size:9px;line-height:1.35;font-family:inherit;}
 .dbg:active{transform:scale(.95);}
@@ -650,12 +688,12 @@ body{
       <div id="faithBox">
         <div id="faithLabel">신앙</div>
         <div id="faithVal">🕯 0</div>
-        <div id="giveTag">강림 <b>2</b>/2</div>
+        <div id="giveTag">손길 ● ●</div>
       </div>
     </div>
     <div id="ctrlRow">
       <button class="btn" id="undoBtn">↩ 되돌림</button>
-      <button id="confirmBtn">운명 확정<span id="burnPrev"></span></button>
+      <button id="confirmBtn">운명 확정</button>
       <button class="btn" id="rerollBtn">↻ 리롤 <b class="cost">🕯3</b></button>
       <button class="btn hiddenOv" id="vaultBtn">📦</button>
       <button class="btn hiddenOv" id="burnBtn">🔥</button>
@@ -829,12 +867,93 @@ async function dlProcs(id, act, cards){
   if(plan.chain){ S.stats.dlChain++; flt(id,"⚖️ 법칙 연쇄!","f-gold"); log(`⚖️ 신의 법칙이 연쇄한다 — ${nm}`,"l-gold"); }
   updateDlStats();
 }
+/* ═══ ✦ v1G2B 손맛 엔진 — 전부 표시 전용, 게임 계산 무접촉 ═══
+   손맛 3계층: ① 일반 지급(고스트+착지+팝) ② 행동 변화(밝은 교체+강한 팝) ③ 21=기존 기적 연출 소유(여기서 침범 금지) */
+function grantFeelFx(id, srcRect, nt, preTxt){
+  if(nt===21) return;   /* 기적의 천장 보호 — punch21/flash/SFX.miracle 이 주인 */
+  const a = S.allies[id]; if(!a || a.dead) return;
+  const nTxt = CLASSES[id].act(nt).txt;
+  const up = (nt<22) && (nTxt !== preTxt) && preTxt!=="";   /* 행동명 변화 = 기존 act 데이터만 읽음 (신규 등급체계 없음) */
+  const panel = $("al_"+id);
+  try{   /* 카드 고스트: 손패 → 영웅 패널 (약 220ms, transform/opacity만) */
+    const dst = panel.getBoundingClientRect ? panel.getBoundingClientRect() : null;
+    if(srcRect && dst){
+      const gh = document.createElement("div");
+      gh.className = "fxGhostCard";
+      gh.textContent = a.cards[a.cards.length-1];
+      gh.style.left = (srcRect.left||0)+"px"; gh.style.top = (srcRect.top||0)+"px";
+      document.body.appendChild(gh);
+      requestAnimationFrame(()=>{
+        gh.style.transform = `translate(${(dst.left||0)+(dst.width||0)/2-(srcRect.left||0)-17}px, ${(dst.top||0)+(dst.height||0)*0.55-(srcRect.top||0)-23}px) scale(.5)`;
+        gh.style.opacity = "0";
+      });
+      setTimeout(()=>gh.remove(), 260);
+    }
+  }catch(e){}
+  panel.classList.remove("recvPress","recvUp"); void panel.offsetWidth;
+  panel.classList.add(up? "recvUp" : "recvPress");
+  setTimeout(()=>panel.classList.remove("recvPress","recvUp"), 340);
+  const sm = $("sum_"+id);
+  sm.classList.remove("sumPop","sumPopBig"); void sm.offsetWidth;
+  sm.classList.add(up? "sumPopBig" : "sumPop");
+  setTimeout(()=>sm.classList.remove("sumPop","sumPopBig"), 300);
+  if(up){ const ae=$("act_"+id); ae.classList.remove("actSwap"); void ae.offsetWidth; ae.classList.add("actSwap"); setTimeout(()=>ae.classList.remove("actSwap"), 380); }
+}
+/* 소각: 운명이 신앙으로 돌아간다 — 금빛 연소 + 잔광이 신앙 HUD로 (빨간 화재/폭발/설명문 금지) */
+function burnGhostFx(gi, faceOverride){
+  try{
+    const src = document.getElementById("gc_"+gi);
+    const r = src && src.getBoundingClientRect ? src.getBoundingClientRect() : {left:150,top:700,width:34};
+    const gh = document.createElement("div");
+    gh.className = "fxBurnCard";
+    gh.textContent = faceOverride || (S.god[gi] ? S.god[gi].face : "✦");
+    gh.style.left=(r.left||0)+"px"; gh.style.top=(r.top||0)+"px";
+    document.body.appendChild(gh);
+    setTimeout(()=>gh.remove(), 400);
+    const fbEl = $("faithBox");
+    const fb = fbEl && fbEl.getBoundingClientRect ? fbEl.getBoundingClientRect() : null;
+    const em = document.createElement("div");
+    em.className = "fxEmber";
+    em.style.left=((r.left||0)+(r.width||0)/2)+"px"; em.style.top=((r.top||0)+8)+"px";
+    document.body.appendChild(em);
+    requestAnimationFrame(()=>{
+      if(fb) em.style.transform = `translate(${(fb.left||0)+(fb.width||0)/2-(r.left||0)-(r.width||0)/2}px, ${(fb.top||0)+10-(r.top||0)-8}px) scale(.5)`;
+      em.style.opacity = "0";
+    });
+    setTimeout(()=>em.remove(), 340);
+  }catch(e){}
+}
+function faithAbsorbFx(){   /* 신앙만 반응 — 리롤/법칙 선반 무반응 */
+  const fb=$("faithBox"), fv=$("faithVal");
+  fb.classList.remove("faithAbsorb"); void fb.offsetWidth; fb.classList.add("faithAbsorb"); setTimeout(()=>fb.classList.remove("faithAbsorb"), 340);
+  fv.classList.remove("numPop"); void fv.offsetWidth; fv.classList.add("numPop"); setTimeout(()=>fv.classList.remove("numPop"), 300);
+  const p=document.createElement("span"); p.className="plusOne"; p.textContent="+1";
+  fb.appendChild(p); setTimeout(()=>p.remove(), 480);
+}
+/* ✦ DEV 전용: 소각 연출 반복 프로브 — 상태/신앙/통계 완전 무접촉 (콘솔 burnProbe(3)) */
+window.burnProbe = function(n){
+  n = Math.max(1, Math.min(3, n||1));
+  for(let k=0;k<n;k++) setTimeout(()=>{ burnGhostFx(k, ["7","K","3"][k]); faithAbsorbFx(); }, k*70);
+  return n;
+};
 const LAW_INFO = {A:{ic:"Ⅶ",n:"일곱 번째 운명",d:"7을 내리면 영웅 고유 행동 발동"},B:{ic:"✨",n:"행운의 기적",d:"7 포함 21 → 기적의 메아리"},C:{ic:"✧",n:"축성",d:"성물함에서 꺼낸 7 = 고유 행동 2회"}};
+function lawChipHtml(x){ return `<button class="lawChip" data-law="${x}" title="${LAW_INFO[x].n}">${LAW_INFO[x].ic}<span class="lawName">${LAW_INFO[x].n}</span></button>`; }
 function renderLawShelf(){
   const el = document.getElementById("lawShelf"); if(!el) return;
-  el.innerHTML = DL.split("").map(x=>`<button class="lawChip" data-law="${x}">${LAW_INFO[x].ic} ${LAW_INFO[x].n}</button>`).join("");
-  el.querySelectorAll(".lawChip").forEach(ch=>ch.addEventListener("click", ()=>{ $("guide").textContent = LAW_INFO[ch.dataset.law].ic+" "+LAW_INFO[ch.dataset.law].d; }));
+  el.innerHTML = DL.split("").map(lawChipHtml).join("");   /* 현재 획득 법칙만 — 가짜 빈 슬롯/더미 없음 */
+  el.querySelectorAll(".lawChip").forEach(ch=>ch.addEventListener("click", ()=>{
+    const wasShown = ch.classList.contains("show");
+    el.querySelectorAll(".lawChip").forEach(c=>c.classList.remove("show"));
+    if(!wasShown){ ch.classList.add("show"); $("guide").textContent = LAW_INFO[ch.dataset.law].ic+" "+LAW_INFO[ch.dataset.law].d; }
+  }));
 }
+/* ✦ DEV 전용 하니스: 법칙 N개 가상 렌더 (실제 RUN 데이터·계산과 분리 — 창 콘솔 lawShelfProbe(3) 등) */
+window.lawShelfProbe = function(n){
+  const el = document.getElementById("lawShelf"); if(!el) return;
+  const pool = ["A","B","C","A","B","C"];
+  el.innerHTML = pool.slice(0,Math.max(1,Math.min(6,n))).map(lawChipHtml).join("");
+  return el.querySelectorAll(".lawChip").length;
+};
 function lawPulse(x){ const el=document.getElementById("lawShelf"); if(!el) return; const ch=el.querySelector(`[data-law="${x}"]`); if(ch){ ch.classList.remove("pulse"); void ch.offsetWidth; ch.classList.add("pulse"); } }
 function updateDlStats(){
   const el = document.getElementById("dlStats"); if(!el) return;
@@ -1024,7 +1143,7 @@ function renderAlly(id){
   if(a.dead || a.cards.length===0){ sm.innerHTML=""; $("act_"+id).textContent = a.dead?"":"—"; }
   else{
     sm.innerHTML = `<span class="b-${b}">${t}</span>`;   /* ✦ v1G1: "강함/기본" 라벨 제거 — 숫자 색상만으로 말한다 */
-    $("act_"+id).textContent = "예상: " + CLASSES[id].act(t).txt;
+    $("act_"+id).textContent = CLASSES[id].act(t).txt;   /* ✦ v1G2A: 숫자가 이미 확정한 행동 — "예상:" 제거 */
   }
   const chips=[];
   if(a.poison>0) chips.push(`<span class="chip poison">☠${a.poison}</span>`);
@@ -1053,8 +1172,8 @@ function renderFaith(){
   const fv = $("faithVal");
   fv.textContent = `🕯 ${S.faith}`;   /* ✦ v1G1: 자원 영역 = "지금 몇 개" (분수형 제거 — 비용은 리롤 버튼이 말한다) */
   fv.classList.toggle("ready", S.faith>=3);
-  const gmax = 2;   /* 기본 강림 2회 — 향후 신의 법칙 "강림 +1"이 3으로 늘릴 수 있음 (인장이 자연 확장) */
-  $("giveTag").innerHTML = `강림 ` + Array.from({length:gmax},(_,i)=> i<S.givesLeft? "●":"○").join(" ");
+  const gmax = 2;   /* 신의 손길 기본 2회 — 향후 법칙 "손길 +1"이 gmax를 늘리면 인장이 자연 확장 (● ● ●) */
+  $("giveTag").innerHTML = `손길 ` + Array.from({length:gmax},(_,i)=> i<S.givesLeft? "●":"○").join(" ");
 }
 /* 성물함 예언: [v]는 합계 (21-v)인 아군을 21로 만든다 */
 function vaultForecast(face){
@@ -1104,9 +1223,7 @@ function renderHand(){
     if(g.state==="used") return `<div class="gcard used">${g.face}</div>`;
     if(g.state==="burned") return `<div class="gcard burned">${g.face}</div>`;
     if(g.state==="vaulted") return "";
-    const hint = (!S.vault && !g.fromVault && S.god.filter(x=>x.state==="hand").length>0 && isAmbiguous(g.face))
-      ? `<span class="vHint">📦 재워둘까?</span>` : "";
-    return `<div class="gcard ${S.sel===i?'sel':''} ${g.fromVault?'fromVault':''}" data-i="${i}" id="gc_${i}">${g.face}${hint}</div>`;
+    return `<div class="gcard ${S.sel===i?'sel':''} ${g.fromVault?'fromVault':''}" data-i="${i}" id="gc_${i}">${g.face}</div>`;   /* ✦ v1G2A: "재워둘까?" 텍스트 제거 — 성물함 발광이 대상을 말한다 */
   }).join("");
   handEl.querySelectorAll(".gcard[data-i]").forEach(el=>{
     el.addEventListener("click", ()=>onGodTap(+el.dataset.i));
@@ -1123,14 +1240,9 @@ function renderHand(){
   /* ✦ v1G: 성물함 = 받는 대상 (발광/흐림), 운명 확정에 자동 소각 예고 */
   $("vaultSlot").classList.toggle("recvGlow", selOk && !!selCard && selCard.state==="hand" && !S.vault);
   $("vaultSlot").classList.toggle("dimTarget", selOk && !!selCard && selCard.state==="hand" && !!S.vault);
-  const burnN = S.god.filter(g=>g.state==="hand").length;
-  $("burnPrev").textContent = burnN>0 ? ` · 🕯+${burnN}` : "";
+  /* ✦ v1G2B: 🕯+N 예고 제거 — 소각은 연출이 직접 말한다 (버튼은 결정 실행만) */
   renderFaith(); renderVault();
-  // 첫 애매 카드 발견 온보딩
-  if(!S.onb.vhint && !S.busy && !S.vault && S.god.some(g=>g.state==="hand" && !g.fromVault && isAmbiguous(g.face))){
-    S.onb.vhint = true;
-    toast(`📦 <b>애매한 카드</b>는 재워서 다음 턴의 패로`);
-  }
+  /* ✦ v1G2A: 애매카드 "재워서…" 온보딩 토스트 제거 — 성물함 발광이 대상을 말한다 */
 }
 
 /* ============ 로그/토스트/연출 ============ */
@@ -1440,9 +1552,9 @@ function showOracles(){
     const g7 = DL && S.god[gi].face==="7";
     if(g7 && dlOn("C") && S.god[gi].fromVault) $("guide").textContent = "✧ 축성된 7 — 받는 영웅의 고유 개성이 2회 깨어난다";
     else if(g7 && (dlOn("A")||dlOn("B"))) $("guide").textContent = "🍀 운명의 7 — 받는 영웅의 고유 개성이 깨어난다";
-    else $("guide").textContent = S.god[gi].fromVault ? "성물함 카드 — 강림 제한 없이 줄 수 있다" : "영웅 또는 성물함을 선택하세요 (남은 강림 "+S.givesLeft+")";
+    else $("guide").textContent = S.god[gi].fromVault ? "성물함 카드 — 손길 없이 줄 수 있다" : "영웅 또는 성물함을 선택하세요 (남은 손길 "+S.givesLeft+")";
   }
-  else $("guide").textContent = "강림 소진! 이 카드는 📦보관 / 🔥태우기 / 흘리기";
+  else $("guide").textContent = "손길 소진 — 이 카드는 📦 보관하거나 흘려보낸다";
 }
 
 /* ============ 입력 ============ */
@@ -1458,7 +1570,11 @@ function onAllyTap(id){
   const a = S.allies[id];
   if(a.dead) return;
   const g = S.god[S.sel];
-  if(!g.fromVault && S.givesLeft<=0){ toast("강림은 턴당 <b>2장</b> — 남는 카드는 📦·🔥·흘리기", 2200); return; }
+  /* ✦ v1G2B 표현층 캡처 — 계산 무접촉 */
+  const _srcEl = document.getElementById("gc_"+S.sel);
+  const _srcRect = _srcEl && _srcEl.getBoundingClientRect ? _srcEl.getBoundingClientRect() : null;
+  const _preTxt = (!a.dead && a.cards.length) ? CLASSES[id].act(bestTotal(a.cards)).txt : "";
+  if(!g.fromVault && S.givesLeft<=0){ toast("신의 손길은 턴당 <b>2번</b> — 남는 카드는 📦 또는 흘려보낸다", 2200); return; }
   g.state="used"; g.to=id;
   if(!g.fromVault) S.givesLeft--;
   const asn = {type:"give", gi:S.sel, to:id, fv:!!g.fromVault};
@@ -1499,6 +1615,7 @@ function onAllyTap(id){
   else if(nt>=22){ SFX.bust(); flt(id, nt+"…", "f-dmg"); }
   S.sel=-1;
   renderAlly(id); renderHand(); showOracles();
+  grantFeelFx(id, _srcRect, nt, _preTxt);   /* ✦ v1G2B: 전달·착지 손맛 (표시 전용 — 카드 state=used라 중복 지급 원천 불가) */
 }
 $("burnBtn").addEventListener("click", ()=>{
   if(S.sel<0||S.busy) return;
@@ -1625,14 +1742,25 @@ function undoOnce(){
   }
   SFX.tap();
 }
-$("confirmBtn").addEventListener("click", ()=>{
-  if(S.busy || S.over) return;
-  /* ✦ v1G 자동 소각: 배치도 보관도 안 된 손패는 신앙으로 — [태우기] 버튼 세금 제거 (실험판 한정, 신앙 경제 변화) */
-  const leftovers = S.god.filter(g=>g.state==="hand");
-  if(leftovers.length){
-    for(const g of leftovers){ g.state="burned"; S.faith++; S.stats.burns++; S.stats.faithGained++; }
-    SFX.burn(); renderFaith(); renderHand();
-    log(`남은 카드 ${leftovers.length}장 이 신앙이 되었다 (+${leftovers.length})`, "l-sys");
+$("confirmBtn").addEventListener("click", async ()=>{
+  if(S.busy || S.over || S._burning) return;
+  /* ✦ v1G2B 소각 시퀀스: 카드별 금빛 연소 → 잔광이 신앙으로 → 촛불 반응 + 카드마다 +1 (나라 원안: 카드별 환원)
+     실계산은 카드당 +1 을 연출 박자에 맞춰 실행 — 총합은 기존 일괄 계산과 완전 동일. 소각 조건·획득량 무변경 */
+  const idxs = S.god.map((g,i)=>i).filter(i=>S.god[i].state==="hand");   /* 성물함(vaulted)·지급(used) 절대 비대상 */
+  if(idxs.length){
+    S._burning = true; S.busy = true; renderHand();   /* 입력 잠금: 지급/되돌림/리롤/재확정 전부 busy 게이트 */
+    SFX.burn();
+    for(const i of idxs){
+      S.god[i].state = "burned";
+      burnGhostFx(i);
+      renderHand();
+      await wait(70);   /* 카드 간격 50~90ms — 장수가 느껴지는 연쇄 */
+      S.faith++; S.stats.burns++; S.stats.faithGained++;   /* 실계산 (카드별) */
+      renderFaith(); faithAbsorbFx();
+    }
+    log(`남은 운명 ${idxs.length}장 이 신앙으로 돌아갔다`, "l-sys");
+    await wait(160);
+    S._burning = false; S.busy = false;
   }
   resolveTurn();
 });
