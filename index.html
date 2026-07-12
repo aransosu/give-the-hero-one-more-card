@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>용사에게 한 장 더 줘 v1G2B — Card Grant & Faith Burn Handfeel (실험판)</title>
+<title>용사에게 한 장 더 줘 — v1H1 3×3 Divine Law Runtime Spike</title>
 <style>
 :root{
   --abyss:#131120; --altar:#1e1a30; --panel:#262040; --line:#3a3260;
@@ -628,6 +628,62 @@ body{
 .blItem b{color:var(--divine);display:block;font-size:12px;margin-bottom:1px;}
 .blItem span{color:var(--dim);font-size:10px;line-height:1.4;}
 .rw em{display:block;font-size:8.5px;color:#8f88a8;font-style:normal;letter-spacing:.5px;margin-top:3px;}
+
+/* ═══ ✦ v1G2C 전투서 (Hero Battle Book) — 읽기 전용 참고 페이지 ═══ */
+#lawBookBtn{position:absolute;top:14px;right:14px;z-index:3;border:1px solid var(--line);background:var(--panel);color:var(--dim);border-radius:8px;padding:6px 11px;font-size:11px;font-family:inherit;font-weight:700;}
+#lawBookBtn:active{transform:scale(.95);}
+#bookOv{z-index:60;justify-content:flex-start;padding:0;gap:0;}
+#bookOv .bookHead{position:relative;width:100%;display:flex;align-items:center;justify-content:center;padding:16px 12px 10px;flex:none;}
+#bookOv .bookHead h2{font-size:18px;letter-spacing:1.5px;margin:0;}
+#bookClose{position:absolute;left:12px;top:12px;width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:15px;font-family:inherit;}
+#bookClose:active{transform:scale(.94);}
+#bookTabs{display:flex;gap:5px;width:100%;max-width:360px;padding:0 10px 10px;flex:none;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+#bookTabs::-webkit-scrollbar{display:none;}
+.btab{flex:1 1 0;min-width:64px;border:1px solid var(--line);background:var(--altar);color:var(--dim);border-radius:9px;padding:7px 4px;font-size:11px;font-family:inherit;font-weight:700;white-space:nowrap;}
+.btab .bt-emo{font-size:14px;display:block;margin-bottom:1px;}
+.btab.on{color:var(--ink);background:var(--panel);}
+.btab.on.hero{border-color:var(--divine);box-shadow:inset 0 0 0 1px var(--divine);}
+.btab.on.war{border-color:var(--shield);box-shadow:inset 0 0 0 1px var(--shield);}
+.btab.on.mage{border-color:var(--arcane);box-shadow:inset 0 0 0 1px var(--arcane);}
+.btab.on.cleric{border-color:var(--heal);box-shadow:inset 0 0 0 1px var(--heal);}
+#bookBody{flex:1 1 auto;width:100%;max-width:360px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 14px calc(22px + env(safe-area-inset-bottom,0px));text-align:left;}
+.bkRole{display:flex;align-items:flex-start;gap:9px;background:var(--altar);border:1px solid var(--line);border-radius:11px;padding:11px 13px;margin-bottom:6px;}
+.bkRole .re{font-size:23px;line-height:1;flex:none;}
+.bkRole .rn{font-size:14px;font-weight:800;color:var(--ink);margin-bottom:3px;}
+.bkRole .rn small{font-size:10px;font-weight:500;color:var(--dim);margin-left:5px;}
+.bkRole .rd{font-size:11.5px;color:var(--dim);line-height:1.5;}
+.bkNow{font-size:11.5px;color:var(--dim);padding:7px 12px;margin-bottom:8px;border-radius:9px;background:var(--panel);border:1px solid var(--line);}
+.bkNow b{color:var(--ink);font-size:13px;}
+.bkNow.hero b{color:var(--divine);} .bkNow.war b{color:var(--shield);} .bkNow.mage b{color:var(--arcane);} .bkNow.cleric b{color:var(--heal);}
+.bkTbl{background:var(--altar);border:1px solid var(--line);border-radius:11px;overflow:hidden;}
+.bkR{display:grid;grid-template-columns:56px 1fr;gap:1px 10px;padding:9px 13px;border-top:1px solid rgba(255,255,255,.05);align-items:baseline;position:relative;}
+.bkR:first-child{border-top:none;}
+.bkNum{font-size:12px;font-weight:800;color:var(--dim);letter-spacing:.3px;}
+.bkAct{font-size:12.5px;font-weight:700;color:var(--ink);}
+.bkRes{grid-column:2;font-size:11px;color:var(--dim);line-height:1.45;margin-top:2px;}
+.bkR.m21{background:linear-gradient(90deg,rgba(240,201,106,.14),rgba(240,201,106,.03));border-top:1px solid rgba(240,201,106,.32);}
+.bkR.m21 .bkNum{color:var(--divine);}
+.bkR.m21 .bkAct{color:var(--divine);text-shadow:0 0 8px rgba(240,201,106,.5);}
+.bkR.bust{opacity:.62;}
+.bkR.bust .bkNum,.bkR.bust .bkAct{color:#8f88a8;font-weight:600;}
+.bkR.cur::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:0 2px 2px 0;}
+.bkR.cur.hero::before{background:var(--divine);} .bkR.cur.war::before{background:var(--shield);}
+.bkR.cur.mage::before{background:var(--arcane);} .bkR.cur.cleric::before{background:var(--heal);}
+.bkR.cur{background:rgba(255,255,255,.045);}
+.bkR.cur.m21{background:linear-gradient(90deg,rgba(240,201,106,.2),rgba(240,201,106,.05));}
+.bkMod{grid-column:1 / -1;display:inline-block;justify-self:start;font-size:10px;color:var(--divine);background:rgba(240,201,106,.12);border:1px solid rgba(240,201,106,.3);border-radius:6px;padding:1px 7px;margin-top:6px;}
+.bkNote{font-size:10px;color:#8f88a8;line-height:1.6;padding:11px 4px 2px;}
+.bkNote b{color:var(--divine-deep);font-weight:700;}
+
+/* ═══ ✦ v1G3 Minimal Run Spine — RUN 공식 · 보상 화면 ═══ */
+.runFx{width:100%;max-width:300px;text-align:left;background:linear-gradient(180deg,rgba(240,201,106,.10),rgba(240,201,106,.02));border:1px solid rgba(240,201,106,.35);border-radius:11px;padding:10px 14px;}
+.runFx .rfT{font-size:10px;letter-spacing:2px;color:var(--divine-deep);font-weight:800;margin-bottom:5px;}
+.runFx .rfChain{font-size:12.5px;font-weight:800;color:var(--divine);line-height:1.7;}
+.runFx .rfChain .rfArw{color:#8f88a8;font-weight:400;margin:0 3px;}
+.runFx .rfMeta{font-size:10.5px;color:var(--dim);margin-top:5px;}
+.rwHave{font-size:10px;color:#8f88a8;letter-spacing:.5px;}
+.rwHave b{color:var(--dim);font-weight:700;}
+.rw.picked{border-color:var(--divine);box-shadow:0 0 0 1px var(--divine),0 0 18px rgba(240,201,106,.45);filter:brightness(1.25);transition:filter .12s,box-shadow .12s;}
 .rsep{margin:6px 0 2px;font-size:9px;color:#5a5478;text-align:center;letter-spacing:1px;}
 .rbless{font-size:9.5px;color:var(--divine);text-align:center;line-height:1.5;margin-bottom:2px;}
 .overlay .obtn.boss{
@@ -636,6 +692,22 @@ body{
 }
 .overlay .obtn.boss small{display:block;font-size:9.5px;color:#c088b0;font-weight:400;}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.001s !important;transition-duration:.001s !important;}}
+/* ═══ ✦ v1H1 3×3 Law Runtime ═══ */
+#blessChip{display:none}
+#rerollBtn.sealed{opacity:.35;filter:grayscale(1)}
+.lawChip .prog{position:absolute;bottom:-2px;right:-2px;font-size:7px;background:var(--panel,#262040);border:1px solid var(--line,#3a3260);border-radius:5px;padding:0 2px;color:var(--gold,#f0c96a)}
+.lawChip{position:relative}
+.h1Cmp{margin:8px auto 2px;max-width:330px;font-size:11px;line-height:1.55;color:var(--dim,#9a92b8);background:rgba(0,0,0,.22);border:1px solid var(--line,#3a3260);border-radius:9px;padding:8px 10px;text-align:left;white-space:pre-line}
+.h1Cmp b{color:var(--gold,#f0c96a)}
+.h1Slots{display:flex;gap:7px;justify-content:center;margin:6px 0 2px;flex-wrap:wrap}
+.h1Slot{border:1px solid var(--line,#3a3260);background:var(--panel,#262040);color:inherit;border-radius:9px;padding:7px 9px;font-family:inherit;font-size:11px;font-weight:700;min-width:64px}
+.h1Slot.sel{border-color:var(--gold,#f0c96a);box-shadow:0 0 9px rgba(240,201,106,.4)}
+.h1Slot small{display:block;font-weight:400;font-size:9px;opacity:.75;margin-top:2px}
+.chron{margin:8px auto 0;max-width:330px;text-align:left;font-size:11px;line-height:1.75;color:var(--dim,#9a92b8);border-top:1px dashed var(--line,#3a3260);padding-top:7px}
+.chron b{color:inherit}
+.chron .cg{color:var(--gold,#f0c96a)}
+.rw.h1Off em{opacity:.95}
+.rw.h1Off.dim{opacity:.45}
 </style>
 </head>
 <body>
@@ -707,6 +779,7 @@ body{
     <button class="opti" id="opLab">DEV LAB으로</button>
     <button class="opti" id="opNew">새로운 RUN</button>
     <button class="opti" id="opTitle">타이틀로</button>
+    <button class="opti" id="opBook">전투서</button>
     <button class="opti dim" id="opClose">닫기</button>
   </div>
   <div id="flash"></div>
@@ -719,6 +792,7 @@ body{
   </div>
 
   <div id="lawOv" class="overlay hiddenOv">
+    <button id="lawBookBtn">📖 전투서</button>
     <h2 class="win">시작 신의 법칙</h2>
     <div class="sub">이번 여정에 함께할 법칙 하나를 고른다.\n(명칭·수치는 R&D 중)</div>
     <div class="rewards">
@@ -733,7 +807,9 @@ body{
     <h2 class="win">DEV LAB</h2>
     <div id="labCtl">
       <label>시드 <input id="labSeed" type="number" inputmode="numeric"></label>
-      <label>전투 <select id="labBattle"><option value="0">1 늑대</option><option value="1">2 마녀</option><option value="2">3 해골</option><option value="3">4 마왕</option></select></label>
+      <label>전투 <select id="labBattle"><option value="0">1-1</option><option value="1">1-2</option><option value="2">1-3 지휘관</option><option value="3">2-1</option><option value="4">2-2</option><option value="5">2-3 지휘관</option><option value="6">3-1</option><option value="7">3-2</option><option value="8">3-3 최종</option></select></label>
+      <label>법칙 <input id="labLaws" type="text" placeholder="LA.ne1.dl1"></label>
+      <label>신앙 <input id="labFaith" type="number" inputmode="numeric" value="0"></label>
       <button class="obtn gold" id="labStart">⚔ 바로 전투 시작</button>
       <button class="obtn" id="labTitle">← 타이틀</button>
     </div>
@@ -779,6 +855,15 @@ body{
       </div>
       <div id="seedTag"></div>
     </div>
+  </div>
+
+  <div id="bookOv" class="overlay hiddenOv">
+    <div class="bookHead">
+      <button id="bookClose" aria-label="닫기">✕</button>
+      <h2 class="win">용사의 전투서</h2>
+    </div>
+    <div id="bookTabs"></div>
+    <div id="bookBody"></div>
   </div>
 </div>
 
@@ -826,7 +911,7 @@ function ciLuckyMult(id, hasNum){ /* A안: 이번 턴 신의 7을 받은 영웅�
    B 행운의 기적   — 7 포함 21 → 직업 기적의 메아리
    C 축성          — 성물함에서 나온 7은 축성(✧) → 고유 효과 2회 발동 (C 단독: 축성 7만으로도 개성 발동)
    자연 블랙잭 보호(구조적): 2장 21 = A+10가치라 7 포함 불가 + 강림 7은 3장 이상 → 법칙이 자연 BJ를 건드릴 수 없다 */
-function dlOn(x){ return DL.includes(x); }
+function dlOn(x){ return RUN.activeLaws.includes("L"+x); }   /* ✦ v1H1: 칠성도 RUN.activeLaws 로 판정 (DL은 파생 캐시) */
 function dlRec(id){ return (S.dl7 && S.dl7[id]) || null; }
 function dlPlan(id, act, cards){
   if(!DL) return null;
@@ -997,6 +1082,109 @@ const CLASSES = {
 const ORDER = ["war","hero","mage","cleric"];
 const UI_ORDER = ["hero","war","mage","cleric"];
 
+/* ═══ ✦ v1G2C 전투서 (Hero Battle Book) — 읽기 전용 · CLASSES/band/act 재사용 · 계산 무접촉 ═══
+   단일 정보 원천: 표는 CLASSES[id].act(t)를 순회해 생성한다(하드코딩 0). 표시 전용 메타는
+   역할 한 줄(BOOK_ROLE)과 bust 요약(BOOK_BUST)뿐 — 둘 다 수치 판정에 관여하지 않는다. */
+const BOOK_ROLE = {
+  hero:   "높은 숫자를 완성해 적 하나에게 강한 일격을 가한다.",
+  war:    "파티가 받는 피해를 막고, 도발로 적을 자신에게 끌어당긴다.",
+  mage:   "강한 단일 주문으로 적에게 직접 피해를 준다.",
+  cleric: "파티를 회복하고 독을 정화한다.",
+};
+/* 22+ 과부하 — act 객체엔 없는 실제 후속 효과(resolveTurn bust 분기: 취약/갑옷균열/신앙+1)의 표시 요약.
+   마법사(마력 폭주)는 act에 dmg/self가 있어 bookResult가 직접 처리한다. */
+const BOOK_BUST = {
+  hero:   "행동 실패 · 다음 받는 피해 증가",
+  war:    "행동 실패 · 이번 턴 파티 받는 피해 증가",
+  cleric: "행동 실패 (신앙 +1)",
+};
+function bookResult(a){   /* act() 반환 객체 → 짧고 정확한 결과 문구 (실제 판정과 1:1) */
+  if(a.dmg!==undefined && a.self!==undefined) return `적 1명 ${a.dmg} 피해 · 자신 ${a.self} 피해`;
+  if(a.txt==="완벽 방어") return "이번 턴 적의 행동 전체 무효";
+  if(a.dmg!==undefined) return `적 1명 ${a.dmg} 피해`;
+  if(a.heal!==undefined){
+    let s = `${a.all?"파티 전체":"아군 1명"} ${a.heal} 회복`;
+    if(a.cleanse>=99) s += " · 전체 정화"; else if(a.cleanse) s += ` · 독 ${a.cleanse} 정화`;
+    return s;
+  }
+  if(a.blk!==undefined) return `파티 받는 피해 -${a.blk}` + (a.taunt ? " · 적이 전사를 노림" : "");
+  return "";
+}
+function bookRows(id){   /* act(t) 순회로 실제 구간 자동 생성 — 경계·행동명 전부 코드에서 파생 */
+  const cls = CLASSES[id], rows = [];
+  let start=0, prevTxt=cls.act(0).txt;
+  for(let t=1;t<=21;t++){
+    const cur=cls.act(t).txt;
+    if(cur!==prevTxt){ rows.push({lo:start,hi:t-1,a:cls.act(start)}); start=t; prevTxt=cur; }
+  }
+  rows.push({lo:start,hi:21,a:cls.act(start)});
+  return rows;
+}
+function bookActiveMods(){   /* 지금 실제로 활성인 기적 보정만 반환 (없으면 []) — 없는 미래 보정칸은 안 그린다 */
+  const m=[];
+  if(S.pbMult>1) m.push("파티 블랙잭 "+pbTag());
+  return m;
+}
+let BOOK_INBATTLE=false, BOOK_TAB="hero";
+function renderBook(tab){
+  BOOK_TAB = tab || BOOK_TAB || "hero";
+  $("bookTabs").innerHTML = UI_ORDER.map(id=>{
+    const c=CLASSES[id];
+    return `<button class="btab ${id}${id===BOOK_TAB?" on":""}" data-id="${id}"><span class="bt-emo">${c.emo}</span>${c.name}</button>`;
+  }).join("");
+  $("bookTabs").querySelectorAll(".btab").forEach(b=>b.addEventListener("click",()=>renderBook(b.dataset.id)));
+
+  const id=BOOK_TAB, c=CLASSES[id];
+  const inB = BOOK_INBATTLE && S.allies[id] && !S.allies[id].dead;   /* 시작 법칙 선택 화면(false)엔 현재 숫자 없음 */
+  const cur = inB ? bestTotal(S.allies[id].cards) : null;
+  const rows = bookRows(id);
+  let html = `<div class="bkRole"><div class="re">${c.emo}</div><div><div class="rn">${c.name}<small>HP ${c.hp}</small></div><div class="rd">${BOOK_ROLE[id]}</div></div></div>`;
+  if(inB) html += `<div class="bkNow ${id}">현재 <b>${cur}</b> · ${c.act(cur).txt}</div>`;
+  html += `<div class="bkTbl">`;
+  for(const r of rows){
+    const is21 = (r.lo===21);
+    const on = inB && cur>=r.lo && cur<=r.hi;
+    const rng = (r.lo===r.hi) ? `${r.lo}` : `${r.lo}–${r.hi}`;
+    let mod="";
+    if(is21){
+      const mods = inB ? bookActiveMods() : [];   /* 전투 중 실제 보정이 있을 때만 (기본표는 불변) */
+      if(mods.length) mod = `<span class="bkMod">✨ 현재 ${mods.join(" · ")}</span>`;
+    }
+    html += `<div class="bkR${is21?" m21":""}${on?" cur "+id:""}"><span class="bkNum">${rng}</span><span class="bkAct">${r.a.txt}${is21?" ★":""}</span><span class="bkRes">${bookResult(r.a)}</span>${mod}</div>`;
+  }
+  const bu = c.act(22);
+  html += `<div class="bkR bust"><span class="bkNum">22+</span><span class="bkAct">${bu.txt}</span><span class="bkRes">${BOOK_BUST[id] || bookResult(bu)}</span></div>`;
+  html += `</div>`;
+  /* 21 각주 — 파티 블랙잭 배율은 딜/힐 기적에만 실적용(전사 완벽 방어엔 미적용). 직업별로 정확히 표기. */
+  const pbWord = (id==="cleric") ? "회복이" : (id==="war") ? null : "피해가";
+  const pbLine = pbWord
+    ? `<b>파티 블랙잭</b> — 다른 영웅과 동시에 21이면 ${pbWord} ×1.25 / ×2 / ×4 로 커진다.`
+    : `<b>파티 블랙잭</b> — 완벽 방어는 배율이 없다. 적의 행동을 전부 무효화한다.`;
+  html += `<div class="bkNote">${pbLine}<br><b>자연 블랙잭</b> · 두 장으로 완성한 가장 정밀한 21. 효과는 ${c.name}의 21과 동일. 7이 필요한 법칙과는 함께 완성되지 않는다.</div>`;
+  $("bookBody").innerHTML = html;
+  $("bookBody").scrollTop = 0;
+}
+function openBook(inBattle){ BOOK_INBATTLE=!!inBattle; renderBook(inBattle ? BOOK_TAB : "hero"); $("bookOv").classList.remove("hiddenOv"); }
+function closeBook(){ $("bookOv").classList.add("hiddenOv"); }
+/* DEV: 전투 규칙 ↔ 전투서 표시 자동 정합 (t=0..22 순회) + 상태 무오염 증명 */
+window.battleBookProbe=function(){
+  const snap=JSON.stringify([SEED,S.faith,S.vault,S.god,S.allies,rngState]);
+  let checked=0, fail=0; const bad=[];
+  for(const id of UI_ORDER){
+    const rows=bookRows(id);
+    for(let t=0;t<=22;t++){
+      const real=CLASSES[id].act(t).txt;
+      const shown = (t>=22) ? CLASSES[id].act(22).txt : (rows.find(r=>t>=r.lo&&t<=r.hi)||{}).a && (rows.find(r=>t>=r.lo&&t<=r.hi)).a.txt;
+      checked++;
+      if(shown!==real){ fail++; bad.push(`${id}/${t}: 실제"${real}" ≠ 표시"${shown}"`); }
+    }
+  }
+  const snap2=JSON.stringify([SEED,S.faith,S.vault,S.god,S.allies,rngState]);
+  const dirty = snap!==snap2;
+  console.log(`[battleBookProbe] 대조 ${checked} · 불일치 ${fail} · 상태오염 ${dirty?"발생!":"0"}`, bad);
+  return {checked, fail, stateDirty:dirty, bad};
+};
+
 /* ============ 몬스터 (v0B 압박 조정 반영) ============ */
 const MONSTERS = [
   { id:"wolf", emo:"🐺", name:"검은 늑대", hp:60,
@@ -1156,7 +1344,7 @@ function renderEnemy(){
   if(!S.enemy) return;
   $("sMon").textContent = S.enemy.emo;
   $("enemyName").textContent = S.enemy.name;
-  $("turnTag").textContent = `전투 ${S.battle+1}/3 · 턴 ${S.turn}`;
+  $("turnTag").textContent = `${chLabel(S.battle)} · 턴 ${S.turn}`;
   const pct = Math.max(0, S.eHp/S.enemy.hp*100);
   $("enemyHpBar").style.width = pct+"%";
   /* ✦ v1B2: 연쇄 중 사망 확정이면 HP바가 오버킬 카운터가 된다 */
@@ -1234,7 +1422,8 @@ function renderHand(){
   $("vaultBtn").disabled = !selOk || !!S.vault;
   $("rerollBtn").disabled = !selOk;
   $("rerollBtn").classList.toggle("lack", selOk && S.faith<3);   /* ✦ v1G1: 부족 시 흐림 + 탭하면 안내 */
-  $("rerollBtn").classList.toggle("glow", S.faith>=3 && !S.busy);
+  $("rerollBtn").classList.toggle("glow", S.faith>=3 && !S.busy && !hasLaw("od1"));
+  $("rerollBtn").classList.toggle("sealed", hasLaw("od1"));   /* ✦ v1H1 침묵의 서약 */
   $("undoBtn").disabled = S.assigns.length===0 || S.busy;
   $("confirmBtn").disabled = S.busy;
   /* ✦ v1G: 성물함 = 받는 대상 (발광/흐림), 운명 확정에 자동 소각 예고 */
@@ -1672,6 +1861,7 @@ $("vaultSlot").addEventListener("click", ()=>{
   renderHand(); showOracles();
 });
 $("rerollBtn").addEventListener("click", ()=>{
+  if(hasLaw("od1")){ $("guide").textContent = "🤫 침묵의 서약 — 이번 RUN, 전투 리롤은 봉인되었다 (제단의 계시 교체는 가능)"; SFX.tap(); return; }
   if(S.sel<0||S.busy) return;
   if(S.faith<3){ $("guide").textContent = "신앙이 부족합니다 — 남는 카드가 🕯 이 된다"; return; }
   const g = S.god[S.sel];
@@ -1759,6 +1949,15 @@ $("confirmBtn").addEventListener("click", async ()=>{
       renderFaith(); faithAbsorbFx();
     }
     log(`남은 운명 ${idxs.length}장 이 신앙으로 돌아갔다`, "l-sys");
+    if(hasLaw("ne1")){   /* ✦ v1H1 재의 축복: 이번 턴 지급 0 + 손패 전부 소각 → 🕯 +1 */
+      const burned = S.god.filter(g=>g.state==="burned").length;
+      const gave = S.assigns.some(x=>x.type==="give");
+      if(burned>=3 && !gave){
+        S.faith++; S.stats.faithGained++; procB("ne1","s",1,null);
+        log("재의 축복 — 온전한 봉헌에 신이 응답한다 (🕯 +1)", "l-gold");
+        renderFaith(); faithAbsorbFx();
+      }
+    }
     await wait(160);
     S._burning = false; S.busy = false;
   }
@@ -1917,7 +2116,7 @@ async function resolveTurn(){
   S.busy=true; S.stats.turns++; S._turnDmg=0;
   S.chainLock=false; S._turnOvk=0; S._chainAfterDeath=false;   /* ✦ v1B1 턴 단위 리셋 */
   /* 예고 연계 판정 1: 17+ 도달이면 즉시 인정 (처치 기여는 아래 피해 처리에서) */
-  if(S.linkedGive && S.linkedGive.nt>=17){ S.stats.vaultLinked++; S.linkedGive=null; }
+  if(S.linkedGive && S.linkedGive.nt>=17){ S.stats.vaultLinked++; nv1Proc(); S.linkedGive=null; }
   renderHand();
   document.querySelectorAll(".ally").forEach(el=>el.classList.remove("targetable"));
   document.querySelectorAll(".oracle").forEach(el=>el.classList.add("hidden"));
@@ -1987,7 +2186,7 @@ async function resolveTurn(){
     if(id==="war"){
       if(act.txt==="완벽 방어"){
         if(a.cards.length===2){ figFx(id,"bjCharge",320); await wait(280); }   /* ✦ v1D1: 2장 BJ = 숨 고름… 쾅!! */
-        S.perfectGuard=true; flash("gold"); SFX.miracle(); S.stats.m21++;
+        S.perfectGuard=true; flash("gold"); SFX.miracle(); S.stats.m21++; dl1Tick(id);
         figFx(id,"miracle21",950);
         flt(id,"완벽 방어!","f-gold");
         log(`${nm}: 완벽 방어! 이번 턴 적의 행동 무효`, "l-gold");
@@ -2002,6 +2201,7 @@ async function resolveTurn(){
       else{
         S.block = act.blk;
         if(act.blk>0 && S.warTotal>=17 && has("w1")){ S.block += 4; procB("w1","s",4,"철벽 +4",id); }
+        if(act.blk>0){ const eb = lawFlat(id, act, a.cards, "blk"); if(eb) S.block += eb; }   /* ✦ v1H1: nn2 블록 +4 */
         if(act.taunt) S.taunt=true;
         if(CI_MODE==="A" && S.block>0){   /* ✦ v1E 잔존(도달 불가) */
           const mlt = ciLuckyMult("war", true);
@@ -2019,7 +2219,7 @@ async function resolveTurn(){
     }
 
     if(act.dmg){
-      let d = act.dmg;
+      let d = act.dmg + lawFlat(id, act, a.cards, "dmg");   /* ✦ v1H1: nn2 짝수 +4 · dl1 개화 21+5 — L3 가산(배율 앞) */
       /* ✦ v1D: 직업 액션 문법 — 카드 수 = 연격 수, 2장 21 = 슝~솨삭 (수치 무변경) */
       if(id==="hero"){
         const n = Math.min(4, Math.max(1, a.cards.length));
@@ -2059,7 +2259,7 @@ async function resolveTurn(){
                  flt(id, (mlt===2?"🍀✨ 재워둔 7 ×2":"🍀 행운의 7 ×1.5")+" +"+inc, "f-bless"); updateCiStats(); }
       }
       if(act.k==="m"){
-        S.stats.m21++; flash("gold"); SFX.miracle(); shake();
+        S.stats.m21++; dl1Tick(id); flash("gold"); SFX.miracle(); shake();
         figFx(id,"miracle21",950);
         log(`${nm}: ${act.txt}!! ${d} 피해!`, "l-gold");
         await wait(90); // 히트 스탑
@@ -2070,13 +2270,13 @@ async function resolveTurn(){
       if(id==="mage" && act.k==="m" && has("m3")){ S.chainMagic += 10; flt(id,"연쇄 마력 +10","f-bless"); }
       if(id==="hero" && act.k==="m" && S.eHp<=0 && has("h3")){ S.faith+=2; S.stats.faithGained+=2; procB("h3","s",2,"🕯 신탁 +2",id); renderFaith(); }
       if(S.vaultGivenTo.includes(id) && (S.eHp<=0 || act.k==="m")) S.stats.vaultDecisive++;
-      if(S.linkedGive && S.linkedGive.id===id && S.eHp<=0){ S.stats.vaultLinked++; S.linkedGive=null; }
+      if(S.linkedGive && S.linkedGive.id===id && S.eHp<=0){ S.stats.vaultLinked++; nv1Proc(); S.linkedGive=null; }
       if(S.eHp<=0 && !S.chainLock) break;   /* ✦ v1B1: 기적 연쇄면 즉시 종료하지 않는다 */
       continue;
     }
 
     if(act.heal!==undefined){
-      let h = act.heal;
+      let h = act.heal + lawFlat(id, act, a.cards, "heal");   /* ✦ v1H1 */
       if(CI_MODE==="B" && act.k==="m" && ciHas7(a.cards)){   /* ✦ v1E-B: 7 포함 성역 — PB 앞 가산 */
         const j = ci777(a.cards), inc = j?21:7;
         h += inc; S.stats[j?"ciB777":"ciB7"]++;
@@ -2091,7 +2291,7 @@ async function resolveTurn(){
       }
       if(act.k==="m"){
         if(a.cards.length===2){ fxEl("fxGather holy", FIG_X.cleric, FIG_Y, null, 320); await wait(260); }   /* ✦ v1D1: 2장 BJ = 빛 응축… 개화 */
-        S.stats.m21++; flash("gold"); SFX.miracle();
+        S.stats.m21++; dl1Tick(id); flash("gold"); SFX.miracle();
         figFx(id,"miracle21",950);
         fxEl("fxPillar", null, null, null, 900);   /* ✦ v1D 성역 빛기둥 · ✦ v1D2 버그픽스: 인라인 (0,0)이 좌상단 "노란 네모"의 정체였다 */
         healWave(true);
@@ -2233,7 +2433,7 @@ const BLESS = [
   {id:"c2", cls:"cleric", n:"징벌의 성좌",   d:"초과 회복 50% → 신성 피해",             tag:"회복 · 신성"},
   {id:"c3", cls:"cleric", n:"성역의 메아리", d:"성직자 21 → 신앙 +2",                   tag:"21 · 신앙"},
 ];
-function has(id){ return S.bless.includes(id); }
+function has(id){ return RUN.activeLaws.includes(id); }   /* ✦ v1H1: 축복→법칙 통합 — 단일 진실 = RUN.activeLaws */
 function procB(bid, kind, val, txt, hostId){
   S.stats.blessProcs++;
   const v = Math.max(0, Math.round(val||0));
@@ -2274,16 +2474,142 @@ function showReward(then){
     });
   });
 }
+/* ═══ ✦ v1G3 Minimal Run Spine — RUN 척추 (계산 무접촉 · flow 레이어)
+   Flow: 타이틀 → 새 여정(새 시드) → 시작 법칙 1택(시드 유지) → 전투1(늑대) → 신의 계시(남은 법칙 2택1)
+        → 전투2(마녀) → 마지막 보상(남은 법칙 vs 신앙+3) → 보스(마왕) → RUN 결과(이번 RUN 공식)
+   b2(해골 기사)는 스파인 밖 — DEV 진입 시 기존 "세 마물 격파"+보너스 보스 경로 그대로 보존.
+   DL 문자열 = 획득 순서 그대로(부트 파서도 순서 보존) → 선반·공식 순서가 공짜로 성립. */
+const RUN = {   /* ✦ v1H1 단일 소스 RUN 계약 (§8) — DOM은 상태 원본이 아니다 */
+  bIdx:0, activeLaws:[], lawHistory:[], removedLaws:[],
+  lawRT:{ dl1:{n:0,bloom:false} },
+  altarIndex:0, altarRedraw:0, lastRemoved:null, trackedSet:"", doneAltars:{},
+  spend:{ redraw:0, inscribe:0 }, replaces:0, lock:false, result:null, _odB:-1 };
+const SPINE_LABEL = b => chLabel(b);   /* ✦ v1H1: 9전투 라벨 위임 */
+function lawRemaining(){ return ["A","B","C"].filter(x=>!DL.includes(x)); }
+function grantLaw(x){   /* 획득 = DL 뒤에 append (순서 보존) + 선반 갱신 + 새 칩 펄스 */
+  if(DL.includes(x)) return false;   /* 중복 법칙 구조적 차단 */
+  DL += x;
+  renderLawShelf(); updateDlStats();
+  const chips = document.querySelectorAll("#lawShelf .lawChip");
+  const last = chips[chips.length-1];
+  if(last){ last.classList.add("pulse"); setTimeout(()=>last.classList.remove("pulse"), 720); }
+  return true;
+}
+function haveLine(){ return DL ? "보유 법칙 — " + DL.split("").map(x=>LAW_INFO[x].ic+" <b>"+LAW_INFO[x].n+"</b>").join(" · ") : "보유 법칙 없음"; }
+function lawCardHtml(x, em){ return `<button class="rw spineLaw" data-law="${x}"><b>${LAW_INFO[x].ic} ${LAW_INFO[x].n}</b><span>${LAW_INFO[x].d}</span><em>${em}</em></button>`; }
+function spineBookBtn(ov){   /* 보상 화면 전투서 진입 (§6) — 전투 종료 후라 기본표(false) */
+  const b = document.createElement("button");
+  b.id=""; b.className=""; b.textContent="📖 전투서";
+  b.style.cssText = $("lawBookBtn") ? "" : "";
+  b.setAttribute("style","position:absolute;top:14px;right:14px;z-index:3;border:1px solid var(--line);background:var(--panel);color:var(--dim);border-radius:8px;padding:6px 11px;font-size:11px;font-family:inherit;font-weight:700;");
+  b.addEventListener("click", ()=>openBook(false));
+  ov.appendChild(b);
+}
+function showLawReward1(){   /* 전투 1 승리 → 신의 계시: 시작 때 고르지 않은 법칙 중 1택 */
+  if(RUN.r1){ nextBattle(1); return; }   /* 이중 진입 가드 — 보상은 정확히 1회 */
+  const ov = document.createElement("div"); ov.className="overlay";
+  const rem = lawRemaining();
+  ov.innerHTML = `<h2 class="win">신의 계시</h2>
+    <div class="sub">${S.enemy.name} 을(를) 물리쳤다.\n이번 RUN의 공식에 법칙 한 조각을 더한다.</div>
+    <div class="rwHave">${haveLine()}</div>
+    <div class="rewards">${rem.map(x=>lawCardHtml(x,"둘 중 하나 — 이번 RUN 내내 함께한다")).join("")}</div>`;
+  spineBookBtn(ov);
+  $("app").appendChild(ov);
+  ov.querySelectorAll(".spineLaw").forEach(btn=>btn.addEventListener("click", ()=>{
+    if(RUN.lock || RUN.r1) return;
+    RUN.lock = true; RUN.r1 = true;
+    grantLaw(btn.dataset.law);
+    btn.classList.add("picked");
+    setTimeout(()=>{ ov.remove(); RUN.lock=false; nextBattle(1); }, 420);   /* 300~500ms 규격 — 다음 전투 지연 없음 */
+  }));
+}
+function showLawReward2(){   /* 전투 2 승리 → 마지막 보상: 남은 법칙 vs 신앙 +3 */
+  if(RUN.r2){ showBossIntro(); return; }
+  const ov = document.createElement("div"); ov.className="overlay";
+  const rem = lawRemaining();
+  const lawOpt = rem.length ? lawCardHtml(rem[0], "이번 RUN의 세 번째 법칙을 완성한다") : "";
+  ov.innerHTML = `<h2 class="win">마지막 보상</h2>
+    <div class="sub">${S.enemy.name} 을(를) 물리쳤다.\n보스전이 다가온다 — 마지막 선택이다.</div>
+    <div class="rwHave">${haveLine()}</div>
+    <div class="rewards">${lawOpt}
+      <button class="rw" id="spineFaith"><b>🕯 신앙을 모은다</b><span>보스전을 앞두고 신앙 +3을 얻는다.</span><em>리롤의 연료 — 카드 탐색력을 높인다</em></button>
+    </div>`;
+  spineBookBtn(ov);
+  $("app").appendChild(ov);
+  const done = ()=>{ setTimeout(()=>{ ov.remove(); RUN.lock=false; showBossIntro(); }, 420); };
+  ov.querySelectorAll(".spineLaw").forEach(btn=>btn.addEventListener("click", ()=>{
+    if(RUN.lock || RUN.r2) return;
+    RUN.lock = true; RUN.r2 = true; RUN.lastChoice = "law";
+    grantLaw(btn.dataset.law);
+    btn.classList.add("picked");
+    done();
+  }));
+  ov.querySelector("#spineFaith").addEventListener("click", function(){
+    if(RUN.lock || RUN.r2) return;
+    RUN.lock = true; RUN.r2 = true; RUN.lastChoice = "faith";
+    S.faith += 3; renderFaith();                                   /* §14 허용된 유일한 신규 수치 */
+    $("faithBox").classList.add("faithAbsorb");                    /* 신앙 HUD 짧은 반응 — 소각 연출(잔광 비행) 미재사용 */
+    setTimeout(()=>$("faithBox").classList.remove("faithAbsorb"), 340);
+    this.classList.add("picked");
+    done();
+  });
+}
+function showBossIntro(){   /* 보스 진입 짧은 전환 — 스토리/컷신 없음 */
+  const ov = document.createElement("div"); ov.className="overlay";
+  ov.innerHTML = `<h2 class="win">보스전</h2>
+    <div class="sub">네가 만든 법칙이 시험받는다.</div>
+    <div class="rwHave">${haveLine()}${RUN.lastChoice==="faith" ? " · 🕯 신앙 +3" : ""}</div>
+    <button class="obtn gold" id="bossGo">⚔ 시험을 받는다</button>`;
+  $("app").appendChild(ov);
+  /* ✦ 창발 씨앗 구현(제거 용이한 표현층): 내 법칙들이 위→아래 순차 점등 — 세로 도미노의 첫 실전 */
+  const chips = document.querySelectorAll("#lawShelf .lawChip");
+  chips.forEach((ch,i)=>setTimeout(()=>{ ch.classList.add("pulse"); setTimeout(()=>ch.classList.remove("pulse"),700); }, 220+i*140));
+  ov.querySelector("#bossGo").addEventListener("click", ()=>{
+    if(RUN.lock) return; RUN.lock = true;
+    ov.remove(); RUN.lock = false;
+    nextBattle(3);   /* 해골(2) 건너뜀 — 스파인 [0,1,3] */
+  });
+}
+function runFormulaHtml(win){   /* 결과 상단 "이번 RUN 공식" — 획득 순서 그대로 */
+  const chain = DL
+    ? DL.split("").map(x=>LAW_INFO[x].ic+" "+LAW_INFO[x].n).join(`<span class="rfArw">→</span>`)
+      + (RUN.lastChoice==="faith" ? `<span class="rfArw">→</span>🕯 신앙 +3` : "")
+    : (RUN.lastChoice==="faith" ? `🕯 신앙 +3` : "기준 동작 (법칙 없음)");
+  return `<div class="runFx"><div class="rfT">이번 RUN 공식</div><div class="rfChain">${chain}</div>
+    <div class="rfMeta">${win?"승리":"패배"} · ${SPINE_LABEL(S.battle)} 도달</div></div>`;
+}
+/* ✦ DEV 하니스 — 15개 스파인 상태 점프 (플레이 화면 상시 버튼 0 · 저장 API 사용 0)
+   리로드형(1~3,6,9)은 새 부팅 = 상태/RNG 자연 초기화. 합성형(4,5,7,8,10~15)은 화면 검증용으로
+   DL/RUN/S.battle만 세팅 후 렌더 — 통계에 쓰기 없음(결과 화면은 현재 통계를 읽기만 한다). */
+window.runSpineJump = function(n){
+  const go = h => { location.hash = h; location.reload(); };
+  const synth = (dl, b, fn)=>{ DL = dl; S.battle = b; RUN.r1 = b>=1; RUN.r2 = b>=3; renderLawShelf(); updateDlStats(); fn(); };
+  switch(n){
+    case 1: go("s"+SEED+"xt"); break;                          /* 타이틀 */
+    case 2: go("s"+SEED+"xw"); break;                          /* 시작 법칙 선택 */
+    case 3: go("s"+SEED+"dAxb"); break;                        /* 전투 1 시작 */
+    case 4: case 5: synth("A", 0, showLawReward1); break;      /* 전투1 승리 직후 = 첫 보상 */
+    case 6: go("s"+SEED+"b1dABxb"); break;                     /* 전투 2 시작 */
+    case 7: case 8: synth("AB", 1, showLawReward2); break;     /* 전투2 승리 직후 = 마지막 보상 */
+    case 9: go("s"+SEED+"b3dABCxb"); break;                    /* 보스 시작 */
+    case 10: synth("ABC", 3, ()=>{ RUN.lastChoice="law"; showClear(true); }); break;   /* 보스 승리 결과 */
+    case 11: synth("A", 0, ()=>onDefeat()); break;             /* 전투 1 패배 결과 */
+    case 12: synth("AB", 1, ()=>onDefeat()); break;            /* 전투 2 패배 결과 */
+    case 13: synth("AB", 3, ()=>{ RUN.lastChoice="faith"; onDefeat(); }); break;       /* 보스 패배 결과 */
+    case 14: synth("ABC", 3, ()=>{ RUN.lastChoice="law"; showClear(true); }); break;   /* 법칙 3개 결과 */
+    case 15: synth("AB", 3, ()=>{ RUN.lastChoice="faith"; showClear(true); }); break;  /* 법칙 2개+신앙 결과 */
+    default: console.log("runSpineJump(1~15): 1타이틀 2법칙선택 3전투1 4/5보상1 6전투2 7/8보상2 9보스 10보스승리 11~13패배(전1/전2/보스) 14법칙3결과 15법칙2+신앙결과");
+  }
+};
+
 function reportHtml(){
   const st = S.stats;
   let mvp = "—", mv = 0;
   for(const k in st.blessVal){
     if(st.blessVal[k] > mv){ mv = st.blessVal[k]; const b = BLESS.find(x=>x.id===k); if(b) mvp = `${b.n} (${mv})`; }
   }
-  const blist = S.bless.length
-    ? S.bless.map(id=>{ const b=BLESS.find(x=>x.id===id); return CLASSES[b.cls].emo+" "+b.n; }).join(" · ")
-    : "없음";
-  const lawLine = DL ? DL.split("").map(x=>LAW_INFO[x].ic+" "+LAW_INFO[x].n).join(" · ") : "없음 (기준 동작)";
+  const blist = "v1H1 — 축복은 신의 법칙으로 통합되었다";
+  const lawLine = RUN.activeLaws.length ? RUN.activeLaws.map(x=>POOL16[x].ic+" "+POOL16[x].n).join(" · ") : "없음 (기준 동작)";
   return `<div class="report">
     <div class="rline"><span>신의 법칙</span><b>${lawLine}</b></div>
     <div class="rline"><span>법칙 발동 (개성/메아리/연쇄)</span><b>${st.dlT1} / ${st.dlT2} / ${st.dlChain}</b></div>
@@ -2318,12 +2644,14 @@ async function onVictory(){
   SFX.win();
   S.busy=true;
   await wait(600);
-  if(S.battle>=3){ showClear(true); return; }     /* 보스 격파 */
-  if(S.battle===2){ showClear(false); return; }   /* 3마물 격파 → 보스 선택지 */
-  showReward(()=>nextBattle());
+  if(S.battle>=3){ showClear(true); return; }     /* 보스 격파 → RUN 결과 */
+  if(S.battle===2){ showClear(false); return; }   /* (스파인 외) DEV 진입 전용 — 기존 세 마물 격파+보너스 보스 경로 보존 */
+  if(S.battle===0){ showLawReward1(); return; }   /* ✦ v1G3: 전투 1 → 신의 계시 (남은 법칙 2택1) */
+  showLawReward2();                                /* ✦ v1G3: 전투 2 → 마지막 보상 (법칙 vs 신앙+3) */
 }
-function nextBattle(){
-  S.battle++; S.turn=1;
+function nextBattle(to){
+  S.battle = (to!==undefined) ? to : S.battle+1;   /* ✦ v1G3: 스파인 점프(1→3) 지원 — 무인자 호출은 기존과 동일 */
+  S.turn=1;
   S.chainMagic = 0; S.oathCharge = false;   /* 전투 한정 축복 초기화 */
   for(const id of aliveIds()){ const a=S.allies[id]; a.hp=Math.min(a.max, a.hp+8); }
   log(`— 승리의 은총 · 전원 +8 —`, "l-heal");
@@ -2343,9 +2671,10 @@ function showClear(finalBoss){
   const bossOffer = !finalBoss && S.battle===2;
   ov.innerHTML = `<h2 class="win">${finalBoss? "마왕의 그림자 소멸":"세 마물 격파"}</h2>
     <div class="sub">총 ${S.stats.turns}턴 · 생존: ${survivorNames()}</div>
+    ${finalBoss? runFormulaHtml(true) : ""}
     ${reportHtml()}
     ${bossOffer? `<button class="obtn boss" id="bossBtn">👑 보너스 보스 도전 — 마왕의 그림자 (HP 900)<br><small>축복을 하나 더 받고 시작한다</small></button>` : ""}
-    <div class="sub">${finalBoss? "신이여, 숫자는 터졌는가?":"신이여, 예고를 읽고 패를 재웠는가?"}</div>
+    <div class="sub">${finalBoss? "신이여, 숫자는 터졌는가?\n같은 시드 = 같은 카드. 다른 법칙이 다른 운명을 만든다.":"신이여, 예고를 읽고 패를 재웠는가?"}</div>
     <button class="obtn gold" id="againBtn">같은 운명 다시 (동일 시드)</button>
     <button class="obtn" id="newBtn">새로운 운명 (시드 변경)</button>
     <button class="obtn" id="titleBtn1">타이틀로</button>`;
@@ -2354,7 +2683,11 @@ function showClear(finalBoss){
     ov.remove(); S.over=false;
     showReward(()=>nextBattle());
   });
-  ov.querySelector("#againBtn").addEventListener("click", ()=>location.reload());
+  /* ✦ v1G3: 스파인 결과의 재도전 = 같은 시드 + 법칙 재선택(xw) — "다른 선택이 다른 운명을 만든다".
+     b2(DEV 세 마물) 화면은 기존 reload(해시 유지) 그대로. */
+  ov.querySelector("#againBtn").addEventListener("click", ()=>{
+    if(finalBoss){ location.hash="s"+SEED+"xw"; location.reload(); } else location.reload();
+  });
   ov.querySelector("#newBtn").addEventListener("click", ()=>{ newSeed(); });
   ov.querySelector("#titleBtn1").addEventListener("click", ()=>{ location.hash="s"+SEED+"xt"; location.reload(); });
   S.over=true;
@@ -2365,54 +2698,441 @@ async function onDefeat(){
   const ov = document.createElement("div");
   ov.className="overlay";
   ov.innerHTML = `<h2 class="lose">파티 전멸</h2>
-    <div class="sub">전투 ${S.battle+1} · ${S.turn}턴째에 무너졌다.</div>
+    <div class="sub">${SPINE_LABEL(S.battle)} · ${S.turn}턴째에 무너졌다.</div>
+    ${runFormulaHtml(false)}
     ${reportHtml()}
     <div class="sub">같은 시드 = 같은 카드.\n다른 선택이 다른 운명을 만든다.</div>
     <button class="obtn gold" id="retryBtn">다시 강림한다 (동일 시드)</button>
     <button class="obtn" id="newBtn2">새로운 운명 (시드 변경)</button>
     <button class="obtn" id="titleBtn2">타이틀로</button>`;
   $("app").appendChild(ov);
-  ov.querySelector("#retryBtn").addEventListener("click", ()=>location.reload());
+  /* ✦ v1G3: 스파인 전투 패배 재도전 = 같은 시드 + 법칙 재선택(xw) · b2(DEV)는 기존 reload */
+  ov.querySelector("#retryBtn").addEventListener("click", ()=>{
+    if(S.battle===2) location.reload();
+    else { location.hash="s"+SEED+"xw"; location.reload(); }
+  });
   ov.querySelector("#newBtn2").addEventListener("click", ()=>{ newSeed(); });
   ov.querySelector("#titleBtn2").addEventListener("click", ()=>{ location.hash="s"+SEED+"xt"; location.reload(); });
   S.over=true;
 }
 function newSeed(){
   const ns = (SEED + 1 + Math.floor(performance.now())) % 99999989;
-  location.hash = "s" + ns + (DL? "d"+DL : "") + "xb";   /* ✦ v1F 법칙 유지 · ✦ v1G 전투 직행 */
+  location.hash = "s" + ns + "xw";   /* ✦ v1G3: 새 RUN = 새 시드 + 법칙 재선택 — 이전 법칙/신앙/통계 잔존 0 (기존: DL 유지 xb 직행) */
   location.reload();
 }
 
+
+/* ═══════════════════════════════════════════════════════════════
+   ✦ v1H1 3×3 Divine Law Runtime Spike — 통합 모듈 (막코딩 허용 구역)
+   원칙: RUN.activeLaws = 단일 진실 · 제단 RNG = 전투 RNG와 완전 분리(FNV1a+LCG)
+        · 메아리/환급 재귀 금지(기존 dlHit·정산 1회 귀속 계승) · 함수 선언 오버라이드로 v1G3 흐름 계층 대체
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 9전투 계획 — 기존 4 몬스터 템플릿 재사용·파생 (§4: 신규 메커니즘 0) ── */
+const BATTLE_PLAN = [
+  {t:0, n:"굶주린 늑대",            hp:60},
+  {t:0, n:"어스름 늑대",            hp:85},
+  {t:1, n:"숲의 마녀 — 지휘관",     hp:150, cmd:1},
+  {t:1, n:"재의 마녀",              hp:180},
+  {t:2, n:"해골 기사",              hp:230},
+  {t:2, n:"백골 지휘관 — 지휘관",   hp:310, cmd:1},
+  {t:2, n:"묘지의 거령",            hp:350},
+  {t:1, n:"심연의 마녀",            hp:400},
+  {t:3, n:"마왕의 그림자 — 최종",   hp:900, boss:1},
+];
+function chOf(b){ return Math.floor(Math.min(8,b)/3)+1; }
+function btOf(b){ return Math.min(8,b)%3+1; }
+function chLabel(b){ const p=BATTLE_PLAN[Math.min(8,b)]; return `${chOf(b)}-${btOf(b)}`+(p.boss?" 최종":p.cmd?" 지휘관":""); }
+function enemyFor(b){ const p=BATTLE_PLAN[Math.min(8,b)]; const tpl=MONSTERS[p.t]; return Object.assign({}, tpl, {name:p.n, hp:p.hp}); }
+const ALTAR_AT = { "0":"free", "2":"paid", "5":"paid", "6":"edit" };   /* 승리한 전투 인덱스 → 제단 (표준안 §5) */
+const CH_TOAST = { 3:"— 2장 · 조합의 장 —", 6:"— 3장 · 편집의 장 —" };
+
+/* ── 첫 플레이어블 풀 16종 (§3) — 기존 자산은 BLESS/LAW_INFO 원문 재사용 ── */
+const POOL16 = {};
+(function(){
+  const seven = [["LA","A",4,"number"],["LB","B",4,"bj21"],["LC","C",4,"vault"]];
+  for(const [id,k,band,fam] of seven) POOL16[id] = {id, ic:LAW_INFO[k].ic, n:LAW_INFO[k].n, d:LAW_INFO[k].d, band, fam, hero:null, cx:"C2", seven:true};
+  const olds = [["h1",4,"hero","hero"],["h3",2,"economy","hero"],["w1",2,"hero","war"],["w2",4,"hero","war"],
+                ["m2",4,"hero","mage"],["m3",4,"hero","mage"],["c1",2,"hero","cleric"],["c2",4,"hero","cleric"]];
+  for(const [id,band,fam,hero] of olds){ const b = BLESS.find(x=>x.id===id);
+    POOL16[id] = {id, ic:CLASSES[hero].emo, n:b.n, d:b.d, band, fam, hero, cx:"C2"}; }
+  POOL16.ne1 = {id:"ne1", ic:"🕯", n:"재의 축복",   d:"한 턴 손패 3장을 전부 소각(지급 0)하면 신앙 +1 추가", band:2, fam:"economy", hero:null, cx:"C2"};
+  POOL16.od1 = {id:"od1", ic:"🤫", n:"침묵의 서약", d:"전투 리롤 봉인 · 매 전투 시작 신앙 +2 (제단 교체는 가능)", band:2, fam:"oddball", hero:null, cx:"C2"};
+  POOL16.nv1 = {id:"nv1", ic:"📦", n:"예고 응답",   d:"예고 연계 성공(다음 턴 17+ 또는 처치 기여) 시 신앙 +2", band:2, fam:"vault", hero:null, cx:"C2"};
+  POOL16.nn2 = {id:"nn2", ic:"➁", n:"짝수의 맹약", d:"영웅의 모든 카드가 짝수면 그 행동 +4 (A는 홀수)", band:2, fam:"number", hero:null, cx:"C2"};
+  POOL16.dl1 = {id:"dl1", ic:"⏳", n:"느린 기적",   d:"RUN에서 21을 10회 이루면 개화 — 이후 모든 21 +5", band:6, fam:"delayed", hero:null, cx:"C4", noFree:true};
+})();
+const POOL_IDS = Object.keys(POOL16);
+
+/* ── 법칙 보유·교체·연대기 (§7·§8) ── */
+function hasLaw(id){ return RUN.activeLaws.includes(id); }
+function syncDL(){ DL = RUN.activeLaws.filter(x=>x==="LA"||x==="LB"||x==="LC").map(x=>x[1]).join(""); }
+function posLabel(){ return chLabel(S.battle); }
+function recordLawHistory(ev){ RUN.lawHistory.push(ev); }
+function addLaw(id, price, src){
+  if(!POOL16[id] || RUN.activeLaws.includes(id) || RUN.activeLaws.length>=4) return false;
+  RUN.activeLaws.push(id); syncDL();
+  recordLawHistory({t:src||"gain", id, price:price||0, at:posLabel()});
+  if(price){ S.faith -= price; RUN.spend.inscribe += price; renderFaith(); }
+  renderLawShelf(); updateDlStats();
+  const chips = document.querySelectorAll("#lawShelf .lawChip");
+  const last = chips[chips.length-1];
+  if(last){ last.classList.add("pulse"); setTimeout(()=>last.classList.remove("pulse"), 720); }
+  return true;
+}
+function removeLawState(id){   /* 제거 정책(§9-6): 누적은 소멸 · 상속 없음 */
+  if(id==="dl1"){ RUN.lawRT.dl1 = {n:0, bloom:false}; }
+  if(id==="m3"){ S.chainMagic = 0; }
+}
+function replaceLawFn(oldId, newId, price){
+  const i = RUN.activeLaws.indexOf(oldId); if(i<0) return false;
+  removeLawState(oldId);
+  RUN.activeLaws.splice(i,1); RUN.removedLaws.push(oldId); RUN.lastRemoved = oldId;
+  RUN.activeLaws.push(newId); syncDL();
+  RUN.replaces++;
+  recordLawHistory({t:"replace", id:newId, removed:oldId, price:price||0, at:posLabel()});
+  if(price){ S.faith -= price; RUN.spend.inscribe += price; renderFaith(); }
+  renderLawShelf(); updateDlStats();
+  return true;
+}
+function bootLaws(arr){ for(const id of (arr||[])){ if(POOL16[id] && !RUN.activeLaws.includes(id) && RUN.activeLaws.length<4){ RUN.activeLaws.push(id); recordLawHistory({t:RUN.lawHistory.length?"boot":"start", id, price:0, at:"부팅"}); } } syncDL(); }
+function grantLaw(x){ return addLaw(POOL16[x]? x : ("L"+x), 0, "gain"); }   /* 레거시 호환 */
+
+/* ── 선반 오버라이드: 전 법칙 렌더 + dl1 진행도 ── */
+function renderLawShelf(){
+  const el = $("lawShelf"); if(!el) return;
+  el.innerHTML = RUN.activeLaws.map(id=>{
+    const L = POOL16[id];
+    const prog = (id==="dl1" && !RUN.lawRT.dl1.bloom) ? `<span class="prog">${RUN.lawRT.dl1.n}/10</span>`
+               : (id==="dl1" && RUN.lawRT.dl1.bloom) ? `<span class="prog">✦</span>` : "";
+    return `<button class="lawChip" data-law="${id}" title="${L.n} — ${L.d}">${L.ic}${prog}</button>`;
+  }).join("");
+  el.querySelectorAll(".lawChip").forEach(ch=>ch.addEventListener("click", ()=>{
+    const L = POOL16[ch.dataset.law]; toast(`${L.ic} <b>${L.n}</b> — ${L.d}`, 2600);
+  }));
+}
+function haveLine(){ return RUN.activeLaws.length ? "보유 법칙 — " + RUN.activeLaws.map(id=>POOL16[id].ic+" <b>"+POOL16[id].n+"</b>").join(" · ") : "보유 법칙 없음"; }
+
+/* ── 신규 법칙 훅 본체 (§10) ── */
+function allEven(cards){
+  if(!cards || !cards.length) return false;
+  for(const f of cards){ if(f==="A") return false; const v = (f==="J"||f==="Q"||f==="K") ? 10 : +f; if(v%2) return false; }
+  return true;
+}
+function lawFlat(id, act, cards, kind){   /* L3 가산 — 배율(PB/맹세/성좌) 앞 */
+  let b = 0;
+  if(hasLaw("nn2") && allEven(cards)){ b += 4; procB("nn2", kind==="dmg"?"d":"s", 4, "➁ 짝수 +4", id); }
+  if(hasLaw("dl1") && RUN.lawRT.dl1.bloom && act && act.k==="m" && kind!=="blk"){ b += 5; procB("dl1", kind==="dmg"?"d":"s", 5, "⏳ 개화 +5", id); }
+  return b;
+}
+function dl1Tick(id){
+  if(!hasLaw("dl1") || RUN.lawRT.dl1.bloom) return;
+  const r = RUN.lawRT.dl1; r.n++;
+  renderLawShelf();
+  if(r.n>=10){
+    r.bloom = true; renderLawShelf();
+    flash("gold"); SFX.miracle();
+    log("느린 기적이 개화했다 — 재워둔 시간이 힘이 된다 (이후 모든 21 +5)", "l-gold");
+    toast("⏳ <b>느린 기적 — 개화!!</b> 이후 모든 21 +5", 3200);
+  }
+}
+function nv1Proc(){
+  if(!hasLaw("nv1")) return;
+  S.faith += 2; S.stats.faithGained += 2; procB("nv1","s",2,null);
+  log("예고 응답 — 예고를 읽은 자에게 🕯 +2", "l-gold");
+  renderFaith(); faithAbsorbFx();
+}
+function battleStartLaws(){
+  if(RUN._odB===S.battle) return; RUN._odB = S.battle;
+  if(hasLaw("od1")){ S.faith += 2; S.stats.faithGained += 2; procB("od1","s",2,null);
+    log("침묵의 서약 — 말 없는 자에게 신이 먼저 온다 (🕯 +2)", "l-gold"); renderFaith(); }
+}
+
+/* ── 제단 RNG (전투 rng()와 완전 분리 · §6 상태 해시) ── */
+function altarHash(salt){
+  return ["s"+SEED, "c"+chOf(S.battle), "b"+btOf(S.battle), "a"+RUN.altarIndex,
+          "L"+RUN.activeLaws.join("."), "rm"+(RUN.lastRemoved||""), "rd"+RUN.altarRedraw,
+          "tk"+(RUN.trackedSet||""), salt?("x"+salt):""].join("|");
+}
+function aRng(str){
+  let h = 2166136261>>>0;
+  for(let i=0;i<str.length;i++){ h ^= str.charCodeAt(i); h = Math.imul(h,16777619)>>>0; }
+  return ()=>{ h = (Math.imul(h,1664525)+1013904223)>>>0; return h/4294967296; };
+}
+function makeAltarOffers(mode, salt){   /* 연결1 + 확장1 + 혼돈1 (§6) — 최적 보장은 하지 않는다 */
+  const r = aRng(altarHash(salt));
+  const owned = new Set(RUN.activeLaws);
+  let pool = POOL_IDS.filter(id=>!owned.has(id) && id!==RUN.lastRemoved);
+  if(mode==="free") pool = pool.filter(id=>!POOL16[id].noFree);
+  const fams = new Set(RUN.activeLaws.map(id=>POOL16[id].fam));
+  const heroes = new Set(RUN.activeLaws.map(id=>POOL16[id].hero).filter(Boolean));
+  const linked = pool.filter(id=>fams.has(POOL16[id].fam) || (POOL16[id].hero && heroes.has(POOL16[id].hero)));
+  const expand = pool.filter(id=>!fams.has(POOL16[id].fam));
+  const pick = (arr, not)=>{ const c = arr.filter(id=>!not.includes(id)); return c.length ? c[Math.floor(r()*c.length)] : null; };
+  const out = [];
+  const a = pick(linked, out) || pick(pool, out); if(a) out.push(a);
+  const b = pick(expand, out) || pick(pool, out); if(b) out.push(b);
+  const c = pick(pool, out); if(c) out.push(c);
+  const hs = out.map(id=>POOL16[id].hero);
+  if(out.length===3 && hs[0] && hs[0]===hs[1] && hs[1]===hs[2]){
+    const alt = pick(pool.filter(id=>POOL16[id].hero!==hs[0]), out); if(alt) out[2] = alt;
+  }
+  return out.map(id=>POOL16[id]);
+}
+
+/* ── 제단 UI (§5·§6·§7 교체 절차 10단계) — 상점 언어 0 ── */
+function openAltar(mode, after){
+  RUN.altarIndex++; RUN.altarRedraw = 0; RUN.lastRemoved = null;
+  let offers = makeAltarOffers(mode);
+  let prevKey = offers.map(o=>o.id).join(",");
+  const ov = document.createElement("div"); ov.className = "overlay";
+  $("app").appendChild(ov);
+  let picked = -1, stage = "pick", repl = null, canLeave = (mode!=="free");
+  const TITLE = mode==="free" ? "신의 계시" : mode==="edit" ? "편집의 제단" : "신탁의 제단";
+  const SUB = mode==="free" ? "세 계시가 내려온다 — 하나가 무료로 새겨진다."
+            : mode==="edit" ? "3장 — 공식을 퇴고한다. 4칸이 찼다면 하나를 지우고 새긴다.\n(새 법칙 가격만 지불 · 덮어쓰기 수수료 없음 · 환불 없음)"
+            : "모인 신앙으로 최대 한 법칙을 새길 수 있다.";
+  const full = ()=>RUN.activeLaws.length>=4;
+  const price = o => mode==="free" ? 0 : o.band;
+  function offerCard(o,i){
+    const p = price(o);
+    const em = mode==="free" ? "무료 — 하나를 받는다" : `필요한 신앙 🕯 ${p}`;
+    const dim = (mode!=="free" && S.faith < p) ? " dim" : "";
+    return `<button class="rw h1Off${picked===i?" picked":""}${dim}" data-i="${i}" data-law="${o.id}"><b>${o.ic} ${o.n}</b><span>${o.d}</span><em>${em}</em></button>`;
+  }
+  function render(){
+    const o = picked>=0 ? offers[picked] : null;
+    let mid = "";
+    if(stage==="replace" && o){
+      mid = `<div class="sub">4칸이 가득 찼다 — <b>${o.n}</b> 을(를) 새기려면 하나를 지워야 한다.</div>
+        <div class="h1Slots">${RUN.activeLaws.map(id=>{const L=POOL16[id];return `<button class="h1Slot${repl===id?" sel":""}" data-r="${id}">${L.ic} ${L.n}<small>${RUN.lawHistory[0]&&RUN.lawHistory[0].id===id?"첫 언약":"&nbsp;"}</small></button>`;}).join("")}</div>
+        ${repl? `<div class="h1Cmp">지운다 — <b>${POOL16[repl].ic} ${POOL16[repl].n}</b>: ${POOL16[repl].d}\n새긴다 — <b>${o.ic} ${o.n}</b>: ${o.d}</div>` : `<div class="h1Cmp">지울 법칙을 고른다…</div>`}`;
+    }
+    else if(stage==="vow" && o){
+      mid = `<div class="h1Cmp"><b>“첫 언약을 지웁니다.”</b>\n${POOL16[repl].ic} ${POOL16[repl].n} — 이 RUN 을 함께 시작한 법칙이다.\n정말 지우고 <b>${o.n}</b> 을(를) 새기겠는가?</div>`;
+    }
+    const btns =
+      stage==="pick" ? `
+        <button class="obtn gold" id="alInscribe" ${o? (mode!=="free" && S.faith<price(o) ? "disabled":"") : "disabled"}>${mode==="free" ? "계시를 받는다" : o? `법칙을 새긴다 — 🕯 ${price(o)}` : "법칙을 새긴다"}</button>
+        <button class="obtn" id="alRedraw" ${S.faith<2? "disabled":""}>계시를 바꾼다 — 🕯 2</button>
+        ${canLeave? `<button class="obtn" id="alKeep">신앙을 간직하고 떠난다</button>` : ""}`
+      : stage==="replace" ? `
+        <button class="obtn gold" id="alConfirm" ${repl? "":"disabled"}>교체를 확정한다 — 🕯 ${price(o)}</button>
+        <button class="obtn" id="alBack">돌아간다</button>`
+      : `
+        <button class="obtn gold" id="alVowYes">지운다</button>
+        <button class="obtn" id="alVowNo">아직은…</button>`;
+    ov.innerHTML = `<h2 class="win">${TITLE}</h2>
+      <div class="sub">${SUB}</div>
+      <div class="rwHave">${haveLine()} · 🕯 ${S.faith}</div>
+      ${stage==="pick" ? `<div class="rewards">${offers.map(offerCard).join("")}</div>` : ""}
+      ${mid}${btns}`;
+    spineBookBtn(ov);
+    bind();
+  }
+  function inscribeFx(cb){   /* 신앙→법칙 역류 — 촛불에서 빛이 흘러 새겨진다 (v1G2B 반대 방향) */
+    try{
+      const fb = $("faithBox").getBoundingClientRect(), ap = $("app").getBoundingClientRect();
+      for(let k=0;k<4;k++) setTimeout(()=>fxEl("fxRise", (fb.left+fb.width/2-ap.left)/ap.width*100, (fb.top-ap.top)/ap.height*100, null, 460, "🕯"), k*70);
+    }catch(e){}
+    $("faithBox").classList.add("faithAbsorb");
+    setTimeout(()=>$("faithBox").classList.remove("faithAbsorb"), 340);
+    setTimeout(cb, 430);
+  }
+  function finish(){ ov.remove(); if(after) after(); }
+  function doInscribe(){
+    const o = offers[picked]; const p = price(o);
+    if(mode!=="free" && S.faith < p) return;
+    if(full()){ stage = "replace"; repl = null; render(); return; }
+    RUN.lock = true;
+    inscribeFx(()=>{ addLaw(o.id, p, mode==="free" ? "gain" : "inscribe"); RUN.lock = false; finish(); });
+  }
+  function doReplace(){
+    const o = offers[picked]; const p = price(o);
+    if(S.faith < p || !repl) return;
+    if(RUN.lawHistory.length && RUN.lawHistory[0].id===repl && stage!=="vow"){ stage = "vow"; render(); return; }   /* 시작 법칙 = 특별 확인 1회 */
+    RUN.lock = true;
+    inscribeFx(()=>{ replaceLawFn(repl, o.id, p); RUN.lock = false; finish(); });
+  }
+  function bind(){
+    ov.querySelectorAll(".h1Off").forEach(btn=>btn.addEventListener("click", ()=>{ picked = +btn.dataset.i; render(); }));
+    ov.querySelectorAll(".h1Slot").forEach(btn=>btn.addEventListener("click", ()=>{ repl = btn.dataset.r; render(); }));
+    const q = id => ov.querySelector("#"+id);
+    q("alInscribe") && q("alInscribe").addEventListener("click", ()=>{ if(picked>=0 && !RUN.lock) doInscribe(); });
+    q("alRedraw") && q("alRedraw").addEventListener("click", ()=>{
+      if(S.faith < 2 || RUN.lock) return;
+      S.faith -= 2; RUN.spend.redraw += 2; renderFaith();
+      RUN.altarRedraw++;
+      let next = makeAltarOffers(mode), s = 0;
+      while(next.map(o=>o.id).join(",")===prevKey && s<6){ s++; next = makeAltarOffers(mode, s); }   /* 같은 후보 반복 금지 */
+      offers = next; prevKey = offers.map(o=>o.id).join(","); picked = -1;
+      SFX.reroll(); render();
+    });
+    q("alKeep") && q("alKeep").addEventListener("click", ()=>{ if(!RUN.lock){ recordLawHistory({t:"pass", at:posLabel()}); finish(); } });
+    q("alConfirm") && q("alConfirm").addEventListener("click", ()=>{ if(!RUN.lock) doReplace(); });
+    q("alBack") && q("alBack").addEventListener("click", ()=>{ stage = "pick"; repl = null; render(); });
+    q("alVowYes") && q("alVowYes").addEventListener("click", ()=>{ if(!RUN.lock) doReplace(); });
+    q("alVowNo") && q("alVowNo").addEventListener("click", ()=>{ stage = "replace"; render(); });
+  }
+  render();
+}
+
+/* ── 흐름 오버라이드: 9전투 + 제단 배치 (§2·§5) ── */
+async function onVictory(){
+  SFX.win();
+  S.busy = true;
+  await wait(600);
+  if(S.battle>=8){ showClear(true); return; }
+  const key = String(S.battle);
+  const proceed = ()=>{ const nx = S.battle+1; if(nx===8) showBossIntroH1(); else nextBattle(nx); };
+  if(ALTAR_AT[key] && !RUN.doneAltars[key]){ RUN.doneAltars[key] = true; openAltar(ALTAR_AT[key], proceed); }
+  else proceed();
+}
+function nextBattle(to){
+  S.battle = (to!==undefined) ? to : S.battle+1;
+  RUN.bIdx = S.battle;
+  S.turn = 1;
+  S.chainMagic = 0; S.oathCharge = false;
+  for(const id of aliveIds()){ const a = S.allies[id]; a.hp = Math.min(a.max, a.hp+8); }
+  log(`— 승리의 은총 · 전원 +8 —`, "l-heal");
+  S.enemy = enemyFor(S.battle);
+  S.eHp = S.enemy.hp;
+  $("sMon").classList.remove("doomed");
+  if(CH_TOAST[S.battle]) toast(CH_TOAST[S.battle], 2400);
+  log(`— ${chLabel(S.battle)} · ${S.enemy.name} 출현 —`, "l-sys");
+  S.busy = false;
+  battleStartLaws();
+  startTurn();
+}
+function showBossIntroH1(){
+  const ov = document.createElement("div"); ov.className = "overlay";
+  ov.innerHTML = `<h2 class="win">최종 보스</h2>
+    <div class="sub">아홉 번째 전투 — 네가 만든 공식이 시험받는다.</div>
+    <div class="rwHave">${haveLine()}</div>
+    <button class="obtn gold" id="bossGo">⚔ 시험을 받는다</button>`;
+  $("app").appendChild(ov);
+  const chips = document.querySelectorAll("#lawShelf .lawChip");
+  chips.forEach((ch,i)=>setTimeout(()=>{ ch.classList.add("pulse"); setTimeout(()=>ch.classList.remove("pulse"),700); }, 220+i*140));
+  ov.querySelector("#bossGo").addEventListener("click", ()=>{ if(RUN.lock) return; ov.remove(); nextBattle(8); });
+}
+
+/* ── 결과: 최종 공식 + 연대기 (§12) ── */
+function chronHtml(){
+  if(!RUN.lawHistory.length) return "";
+  const line = ev=>{
+    const L = ev.id ? POOL16[ev.id] : null;
+    if(ev.t==="start") return `⚑ <b class="cg">${L.ic} ${L.n}</b> — 첫 언약`;
+    if(ev.t==="boot")  return `⚙ ${L.ic} ${L.n} (DEV)`;
+    if(ev.t==="gain")  return `＋ <b>${L.ic} ${L.n}</b> (무료 · ${ev.at})`;
+    if(ev.t==="inscribe") return `＋ <b>${L.ic} ${L.n}</b> (🕯${ev.price} · ${ev.at})`;
+    if(ev.t==="replace"){ const R = POOL16[ev.removed]; return `⟲ <b>${R.n}</b> 을(를) 지우고 <b class="cg">${L.ic} ${L.n}</b> (🕯${ev.price} · ${ev.at})`; }
+    if(ev.t==="pass")  return `… 신앙을 간직하고 지나쳤다 (${ev.at})`;
+    return "";
+  };
+  return `<div class="chron"><b>법칙의 연대기</b><br>${RUN.lawHistory.map(line).filter(Boolean).join("<br>")}</div>`;
+}
+function runFormulaHtml(win){
+  const chain = RUN.activeLaws.length
+    ? RUN.activeLaws.map(id=>POOL16[id].ic+" "+POOL16[id].n).join(`<span class="rfArw">→</span>`)
+    : "기준 동작 (법칙 없음)";
+  return `<div class="runFx"><div class="rfT">이번 RUN의 최종 공식 (${RUN.activeLaws.length}/4)</div><div class="rfChain">${chain}</div>
+    <div class="rfMeta">${win?"승리":"패배"} · ${chLabel(S.battle)} 도달 · 교체 ${RUN.replaces}회</div></div>` + chronHtml();
+}
+function spendHtml(){
+  const st = S.stats;
+  return `<div class="report">
+    <div class="rline"><span>총 신앙 획득</span><b>${st.faithGained}</b></div>
+    <div class="rline"><span>전투 리롤 소비 / 계시 교체 / 법칙 새김</span><b>🕯${st.rerolls*3} / 🕯${RUN.spend.redraw} / 🕯${RUN.spend.inscribe}</b></div>
+    <div class="rline"><span class="hlt">최종 잔여 신앙</span><b class="hlt">🕯 ${S.faith}</b></div>
+    ${(hasLaw("dl1")||RUN.removedLaws.includes("dl1"))? `<div class="rline"><span>느린 기적</span><b>${RUN.lawRT.dl1.bloom? "개화 ✦" : RUN.lawRT.dl1.n+"/10"}</b></div>` : ""}
+  </div>`;
+}
+function showClear(finalBoss){
+  const ov = document.createElement("div");
+  ov.className = "overlay";
+  ov.innerHTML = `<h2 class="win">${finalBoss? "마왕의 그림자 소멸":"승리"}</h2>
+    <div class="sub">총 ${S.stats.turns}턴 · 생존: ${survivorNames()}</div>
+    ${runFormulaHtml(true)}
+    ${spendHtml()}
+    ${reportHtml()}
+    <div class="sub">아홉 전투 — 신이여, 공식은 완성되었는가?\n같은 시드 = 같은 카드. 다른 법칙이 다른 운명을 만든다.</div>
+    <button class="obtn gold" id="againBtn">같은 운명 다시 (동일 시드)</button>
+    <button class="obtn" id="newBtn">새로운 운명 (시드 변경)</button>
+    <button class="obtn" id="titleBtn1">타이틀로</button>`;
+  $("app").appendChild(ov);
+  ov.querySelector("#againBtn").addEventListener("click", ()=>{ location.hash="s"+SEED+"xw"; location.reload(); });
+  ov.querySelector("#newBtn").addEventListener("click", ()=>{ newSeed(); });
+  ov.querySelector("#titleBtn1").addEventListener("click", ()=>{ location.hash="s"+SEED+"xt"; location.reload(); });
+  S.over = true;
+}
+async function onDefeat(){
+  SFX.lose();
+  await wait(500);
+  const ov = document.createElement("div");
+  ov.className = "overlay";
+  ov.innerHTML = `<h2 class="lose">파티 전멸</h2>
+    <div class="sub">${chLabel(S.battle)} · ${S.turn}턴째에 무너졌다.</div>
+    ${runFormulaHtml(false)}
+    ${spendHtml()}
+    ${reportHtml()}
+    <div class="sub">같은 시드 = 같은 카드.\n다른 선택이 다른 운명을 만든다.</div>
+    <button class="obtn gold" id="retryBtn">다시 강림한다 (동일 시드)</button>
+    <button class="obtn" id="newBtn2">새로운 운명 (시드 변경)</button>
+    <button class="obtn" id="titleBtn2">타이틀로</button>`;
+  $("app").appendChild(ov);
+  ov.querySelector("#retryBtn").addEventListener("click", ()=>{ location.hash="s"+SEED+"xw"; location.reload(); });
+  ov.querySelector("#newBtn2").addEventListener("click", ()=>{ newSeed(); });
+  ov.querySelector("#titleBtn2").addEventListener("click", ()=>{ location.hash="s"+SEED+"xt"; location.reload(); });
+  S.over = true;
+}
+
+/* ── DEV 탐사 장치 (§13) — 해시 #dev 또는 콘솔 ── */
+window.H1 = {
+  jump: (c,b)=>{ const i=(c-1)*3+(b-1); location.hash = "s"+SEED+"i"+i+(RUN.activeLaws.length? "q"+RUN.activeLaws.join(".") : "")+(S.faith? "f"+S.faith : "")+"xb"; location.reload(); },
+  setFaith: n=>{ S.faith = Math.max(0, n|0); renderFaith(); },
+  setLaws: a=>{ RUN.activeLaws.length=0; RUN.lawHistory.length=0; RUN.removedLaws.length=0; RUN.lawRT.dl1={n:0,bloom:false}; S.chainMagic=0; bootLaws(a); renderLawShelf(); updateDlStats(); renderFaith(); },
+  openAltar: m=>openAltar(m==="edit"? "edit" : m==="free"? "free" : "paid", ()=>{}),
+  offers: m=>makeAltarOffers(m||"paid"),
+  setLawProgress: (id,n)=>{ if(id==="dl1"){ RUN.lawRT.dl1.n = Math.max(0,n|0); RUN.lawRT.dl1.bloom = RUN.lawRT.dl1.n>=10; renderLawShelf(); } },
+  showResult: (win)=>{ (win===false)? onDefeat() : showClear(true); }
+};
+window.__H1 = { get RUN(){return RUN}, get S(){return S}, get DL(){return DL}, get SEED(){return SEED},
+  POOL16, BATTLE_PLAN, ALTAR_AT, altarHash, makeAltarOffers, allEven, lawFlat, dl1Tick, nv1Proc, battleStartLaws,
+  hasLaw, addLaw, replaceLawFn, removeLawState, bestTotal, chLabel, enemyFor, openBook };   /* 검사 전용 — UI 미사용 */
+window.runSpineJump = function(){ console.log("v1H1: window.H1 사용 — jump(c,b) setFaith(n) setLaws([...]) openAltar('free|paid|edit') setLawProgress('dl1',n) showResult(win)"); };
+
 /* ============ 부팅 ============ */
 (function boot(){
-  const m = location.hash.match(/^#s(\d+)(?:b(\d))?(?:g(\w\d))?(?:d([ABC]{1,3}))?(?:x([tbl]))?$/);
-  let VIEW = "t";   /* ✦ v1G 라우팅: t=타이틀(기본) · b=전투 직행 · l=DEV LAB */
+  const m = location.hash.match(/^#s(\d+)(?:i(\d))?(?:q([A-Za-z0-9_.]+?))?(?:f(\d+))?(?:d([ABC]{1,3}))?(?:x([tblw]))?(?:dev)?$/);   /* ✦ v1H1: i=전투 인덱스(0~8) q=법칙 목록 f=신앙 */
+  let VIEW = "t";   /* ✦ v1G 라우팅: t=타이틀(기본) · b=전투 직행 · l=DEV LAB · ✦ v1G3 w=시작 법칙 선택 */
   if(m){
     SEED = +m[1];
-    if(m[2]!==undefined) S.battle = Math.min(3, +m[2]);
-    if(m[3] && BLESS.some(b=>b.id===m[3])) S.bless = [m[3]];
-    if(m[4]) DL = ["A","B","C"].filter(x=>m[4].includes(x)).join("");   /* ✦ v1F: dA/dAB/dABC — 없으면 off = v1D2 동일 */
-    if(m[5]) VIEW = m[5];
+    if(m[2]!==undefined) S.battle = Math.min(8, +m[2]);
+    if(m[3]) bootLaws(m[3].split("."));
+    if(m[4]!==undefined) S.faith = Math.max(0, +m[4]);
+    if(m[5]) bootLaws([...new Set(m[5])].map(x=>"L"+x));   /* 레거시 dABC = 칠성 시작 프리셋 */
+    if(m[6]) VIEW = m[6];
   }
+  for(const k of Object.keys(ALTAR_AT)) if(+k < S.battle) RUN.doneAltars[k]=true;   /* ✦ v1H1: 부팅 위치 이전 제단은 소비된 것으로 */
+  RUN.bIdx = S.battle;
   const BOOT_B = S.battle;   /* "같은 시드로 다시" 기준점 */
   resetRng();
   refillShoe();
   initAllies();
-  S.enemy = MONSTERS[S.battle]; S.eHp = S.enemy.hp;
+  S.enemy = enemyFor(S.battle); S.eHp = S.enemy.hp;
   renderAll(); renderFaith(); renderVault();
-  const bl0 = S.bless[0] ? BLESS.find(b=>b.id===S.bless[0]) : null;
-  $("seedTag").textContent = `현재 시드 ${SEED} · 전투 ${S.battle+1}부터` + (bl0? ` · 🌟 ${bl0.n} 보유` : "") + (DL? ` · ⚖️법칙 ${DL.split("").join("+")}` : "");
+  $("seedTag").textContent = `시드 ${SEED} · ${chLabel(S.battle)}부터 · 법칙 ${RUN.activeLaws.length}/4`;
   renderBlessChip();
   $("blessChip").addEventListener("click", showBlessList);
   document.querySelectorAll(".dbg").forEach(btn=>{
     btn.addEventListener("click", ()=>{
-      location.hash = "s"+btn.dataset.s+(btn.dataset.b!=="0" ? "b"+btn.dataset.b : "")+(btn.dataset.g? "g"+btn.dataset.g : "")+(btn.dataset.dl? "d"+btn.dataset.dl : "")+"xb";
+      location.hash = "s"+btn.dataset.s+(btn.dataset.b!=="0" ? "i"+btn.dataset.b : "")+(btn.dataset.dl? "d"+btn.dataset.dl : "")+"xb";
       location.reload();
     });
   });
   /* ✦ v1F: 신의 법칙 프리셋 — 현재 시드/전투 유지한 채 d 파라미터만 교체 */
   const dlJump = laws => {
-    location.hash = "s"+SEED+(S.battle? "b"+S.battle : "")+(laws? "d"+laws : "")+"xb";
+    location.hash = "s"+SEED+(S.battle? "i"+S.battle : "")+(laws? "d"+laws : "")+"xb";
     location.reload();
   };
   $("dlOff").addEventListener("click", ()=>dlJump(""));
@@ -2430,33 +3150,43 @@ function newSeed(){
   const show = id => { for(const o of ["titleOv","lawOv","labOv"]) $(o).classList.toggle("hiddenOv", o!==id); };
   const hideAll = () => { for(const o of ["titleOv","lawOv","labOv"]) $(o).classList.add("hiddenOv"); };
   document.addEventListener("pointerdown", ()=>{ ac() && ac().resume && ac().resume(); }, {once:true});
-  $("journeyBtn").addEventListener("click", ()=>show("lawOv"));
+  $("journeyBtn").addEventListener("click", ()=>{   /* ✦ v1G3: 여정마다 새 운명 — 새 시드는 여기서 확정, 법칙 선택은 시드 무소비 */
+    const ns = (SEED + 1 + Math.floor(performance.now())) % 99999989;
+    location.hash = "s"+ns+"xw"; location.reload();
+  });
   $("lawBack").addEventListener("click", ()=>show("titleOv"));
   $("labLink").addEventListener("click", ()=>show("labOv"));
   $("labTitle").addEventListener("click", ()=>show("titleOv"));
   document.querySelectorAll(".lawPick").forEach(btn=>btn.addEventListener("click", ()=>{
-    const ns = (SEED + 1 + Math.floor(performance.now())) % 99999989;   /* 여정마다 새 운명 (기존 newSeed 공식) */
-    location.hash = "s"+ns+"d"+btn.dataset.law+"xb"; location.reload();
+    location.hash = "s"+SEED+"qL"+btn.dataset.law+"xb"; location.reload();   /* ✦ v1H1: 시작 = 칠성 1택 무료 (q 문법) */
   }));
   $("labSeed").value = SEED; $("labBattle").value = String(S.battle);
   $("labStart").addEventListener("click", ()=>{
     const sd = Math.max(1, Math.floor(+$("labSeed").value || SEED));
     const bt = +$("labBattle").value || 0;
-    location.hash = "s"+sd+(bt? "b"+bt : "")+(DL? "d"+DL : "")+"xb"; location.reload();
+    const lw = ($("labLaws").value||"").trim();
+    const ft = Math.max(0, +$("labFaith").value||0);
+    location.hash = "s"+sd+(bt? "i"+bt : "")+(lw? "q"+lw : "")+(ft? "f"+ft : "")+"xb"; location.reload();
   });
   /* ⚙ 옵션 메뉴 */
   $("optBtn").addEventListener("click", ()=>$("optMenu").classList.toggle("hiddenOv"));
   $("opClose").addEventListener("click", ()=>$("optMenu").classList.add("hiddenOv"));
+  /* ✦ v1G2C 전투서 진입점 — 법칙 선택 화면(기본표) · 전투 중 옵션(현재 숫자 포함) · 닫기 */
+  $("lawBookBtn").addEventListener("click", ()=>openBook(false));
+  $("opBook").addEventListener("click", ()=>{ $("optMenu").classList.add("hiddenOv"); openBook(true); });
+  $("bookClose").addEventListener("click", closeBook);
   const go = h => { location.hash = h; location.reload(); };
-  $("opRetry").addEventListener("click", ()=>go("s"+SEED+(S.battle?"b"+S.battle:"")+(DL?"d"+DL:"")+"xb"));
-  $("opSame").addEventListener("click",  ()=>go("s"+SEED+(BOOT_B?"b"+BOOT_B:"")+(DL?"d"+DL:"")+"xb"));
-  $("opLab").addEventListener("click",   ()=>go("s"+SEED+(S.battle?"b"+S.battle:"")+(DL?"d"+DL:"")+"xl"));
+  /* ✦ v1H1: RUN 중간 상태는 저장되지 않는다 — 재시작 = 시작 법칙 재선택 (KNOWN_DEBT §RUN비저장) */
+  $("opRetry").addEventListener("click", ()=>go("s"+SEED+"xw"));
+  $("opSame").addEventListener("click",  ()=>go("s"+SEED+"xw"));
+  $("opLab").addEventListener("click",   ()=>go("s"+SEED+"xl"));
   $("opNew").addEventListener("click",   ()=>{ newSeed(); });
   $("opTitle").addEventListener("click", ()=>go("s"+SEED+"xt"));
   /* 라우팅 실행 */
   renderLawShelf();
-  if(VIEW==="b"){ hideAll(); startTurn(); }
+  if(VIEW==="b"){ hideAll(); battleStartLaws(); startTurn(); }
   else if(VIEW==="l"){ show("labOv"); }
+  else if(VIEW==="w"){ show("lawOv"); }   /* ✦ v1G3: 시작 법칙 선택 직행 — 새 여정·재도전의 착지점 */
   else { show("titleOv"); }
 })();
 </script>
