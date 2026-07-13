@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v1H1VS1A1 · Multiply Reveal Mobile Overlay Ownership Fix 01 · 부모 v1H1VS1A(1086087f045b24512f2817ec247711ad)에서 분기 · 연출 랩 진입 시 레이어/입력 독점 핫픽스 · 게임 계산·연출·수치 무변경 · 공식 승격 HOLD · commit/push 0 -->
+<!-- v1H1VS1A1B · DEV→Reveal Transition Regression Fix 01B · 부모 v1H1VS1A1(67291526565ab0d8f5e0310202b7d4bc)에서 분기 · 연출 랩 버튼(class=dbg,data-s없음)이 boot 시드-리로드 핸들러를 발화해 타이틀로 튀던 회귀 수정 · 게임 계산·연출·수치·CSS 무변경 · 공식 승격 HOLD · commit/push 0 -->
 <!-- v1H1VS1 · Combat Choice Vertical Slice 01 · 기회비용 보스(종말4턴+방벽300) × 다중 표적 × 강화 파티BJ(실험) · v1H1(0528301bf1e6017731c67d8ba32cabc6)에서 분기 · 모드 c=CONTROL(기준선) p/b/i · 공식 승격 HOLD · commit/push 0 -->
 <html lang="ko">
 <head>
@@ -839,7 +839,7 @@ body.reveal-lab-open{overflow:hidden !important;overscroll-behavior:none;}
         <button class="dbg" data-s="38" data-b="8" data-laws="h1.m3.LB.h3" data-faith="12" data-mode="i">INTEGRATED<br>전부 결합</button>
       </div>
       <div id="dbgRowLab" style="display:flex;gap:5px;justify-content:center;margin-top:2px;">
-        <button class="dbg" id="labRevealBtn" onclick="__LAB && __LAB.open()" style="background:#2a2140;color:#ffd27a;border-color:#5a4a80;">✦ 연출 랩<br>Multiply Reveal Lab</button>
+        <button class="dbg" id="labRevealBtn" onclick="event.preventDefault();event.stopImmediatePropagation();__LAB && __LAB.open()" style="background:#2a2140;color:#ffd27a;border-color:#5a4a80;">✦ 연출 랩<br>Multiply Reveal Lab</button>
       </div>
       <div id="dbgTitle4">— v1F 신의 법칙 (실험 · 기본 off = v1D2 동일) —</div>
       <div id="dbgRow4">
@@ -3553,6 +3553,7 @@ if(/lab=reveal/.test(location.hash)) setTimeout(()=>{ if($("app")) LAB.open(); }
   $("blessChip").addEventListener("click", showBlessList);
   document.querySelectorAll(".dbg").forEach(btn=>{
     btn.addEventListener("click", ()=>{
+      if(!btn.dataset.s) return;   /* 01B: 시드 없는 .dbg(연출 랩·법칙 프리셋)는 boot 시드-리로드에서 제외 — 각자 전용 핸들러 사용 */
       location.hash = "s"+btn.dataset.s+(btn.dataset.b!=="0" ? "i"+btn.dataset.b : "")+(btn.dataset.laws? "q"+btn.dataset.laws : "")+(btn.dataset.faith? "f"+btn.dataset.faith : "")+(btn.dataset.mode? "m"+btn.dataset.mode : "")+(btn.dataset.wall? "w"+btn.dataset.wall : "")+(btn.dataset.doomk? "k"+btn.dataset.doomk : "")+(btn.dataset.dl? "d"+btn.dataset.dl : "")+"xb";
       location.reload();
     });
