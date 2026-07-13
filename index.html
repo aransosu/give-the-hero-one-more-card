@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+<!-- v1H1Q1 · Monster Question Spike 01 · 3-3 보스 질문 구조만 변경 · v1H1(0528301bf1e6017731c67d8ba32cabc6)에서 분기 · 그 외 게임 계산 무변경 · 공식 승격/commit/push 0 -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>용사에게 한 장 더 줘 — v1H1A Human Run Telemetry</title>
+<title>용사에게 한 장 더 줘 — v1H1 3×3 Divine Law Runtime Spike</title>
 <style>
 :root{
   --abyss:#131120; --altar:#1e1a30; --panel:#262040; --line:#3a3260;
@@ -708,29 +709,6 @@ body{
 .chron .cg{color:var(--gold,#f0c96a)}
 .rw.h1Off em{opacity:.95}
 .rw.h1Off.dim{opacity:.45}
-/* ═══ ✦ v1H1A Human Run Telemetry (DEV) ═══ */
-.tmDev{margin:12px auto 4px;max-width:340px;text-align:left;border:1px dashed var(--line,#3a3260);border-radius:11px;background:rgba(0,0,0,.28);overflow:hidden}
-.tmDev>summary{cursor:pointer;list-style:none;padding:9px 12px;font-size:11px;font-weight:800;color:var(--dim,#9a92b8);letter-spacing:.04em;background:rgba(255,255,255,.03)}
-.tmDev>summary::-webkit-details-marker{display:none}
-.tmDev>summary::before{content:"▸ ";color:var(--gold,#f0c96a)}
-.tmDev[open]>summary::before{content:"▾ "}
-.tmBody{padding:8px 12px 12px}
-.tmRow{display:flex;justify-content:space-between;gap:10px;font-size:11px;line-height:1.9;color:var(--dim,#9a92b8);border-bottom:1px solid rgba(255,255,255,.04)}
-.tmRow b{color:var(--gold,#f0c96a);font-variant-numeric:tabular-nums}
-.tmH{font-size:10px;font-weight:800;color:var(--gold,#f0c96a);margin:9px 0 2px;letter-spacing:.05em;opacity:.85}
-.tmMono{font-size:10.5px;line-height:1.75;color:var(--dim,#9a92b8);font-variant-numeric:tabular-nums}
-.tmQ{margin-top:9px}
-.tmQ .tmH{margin-bottom:5px}
-.tmOpts{display:flex;flex-wrap:wrap;gap:5px}
-.tmOpt{border:1px solid var(--line,#3a3260);background:var(--panel,#262040);color:var(--dim,#9a92b8);border-radius:8px;padding:5px 9px;font-family:inherit;font-size:10.5px;font-weight:600;cursor:pointer}
-.tmOpt.sel{border-color:var(--gold,#f0c96a);color:var(--gold,#f0c96a);box-shadow:0 0 7px rgba(240,201,106,.35)}
-.tmMemo{width:100%;box-sizing:border-box;margin-top:6px;background:rgba(0,0,0,.3);border:1px solid var(--line,#3a3260);border-radius:8px;color:inherit;font-family:inherit;font-size:11px;padding:6px 8px;resize:vertical;min-height:34px}
-.tmBtn{margin-top:9px;width:100%;border:1px solid var(--gold,#f0c96a);background:rgba(240,201,106,.08);color:var(--gold,#f0c96a);border-radius:9px;padding:8px;font-family:inherit;font-size:11px;font-weight:800;cursor:pointer}
-.tmBtn:active{transform:scale(.98)}
-.tmTag{display:inline-block;font-size:9px;font-weight:800;border-radius:6px;padding:1px 6px;margin-left:6px}
-.tmTag.full{background:rgba(120,220,140,.15);color:#8fe0a0}
-.tmTag.part{background:rgba(240,160,100,.15);color:#f0a064}
-.tmCopyArea{width:100%;box-sizing:border-box;margin-top:7px;height:120px;background:#0d0b18;border:1px solid var(--line,#3a3260);border-radius:8px;color:#c9c2e0;font-family:ui-monospace,Menlo,monospace;font-size:9.5px;line-height:1.5;padding:7px;display:none}
 </style>
 </head>
 <body>
@@ -844,6 +822,12 @@ body{
         <button class="dbg" data-s="2" data-b="2">🛡 전사 완벽 방어<br>해골 · 턴1 [K] 재우기</button>
         <button class="dbg" data-s="5" data-b="1">✨ 성직자 성역<br>마녀 · 턴1 [J] 재우기</button>
         <button class="dbg" data-s="38" data-b="0">⚔ 결정타 준비<br>늑대 · 턴1 [6] 재우기</button>
+      </div>
+      <div id="dbgTitleQ1" style="font-size:9px;color:#b07393;letter-spacing:1px;">— Q1 몬스터 질문 · 종말 앞의 배분 (3-3 직행) —</div>
+      <div id="dbgRowQ1" style="display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:340px;">
+        <button class="dbg" data-s="38" data-b="8" data-laws="h1.m3.LB.h3" data-faith="12">공식 A<br>용사검·연쇄마력·행운·마무리</button>
+        <button class="dbg" data-s="7" data-b="8" data-laws="w2.w1.c1.nv1" data-faith="12">공식 B<br>완벽방어·철벽·자비·예고응답</button>
+        <button class="dbg" data-s="6" data-b="8" data-laws="h1.w2.LB.nv1" data-faith="12">공식 C<br>용사검·완벽방어·행운·예고응답</button>
       </div>
       <div id="dbgTitle4">— v1F 신의 법칙 (실험 · 기본 off = v1D2 동일) —</div>
       <div id="dbgRow4">
@@ -1228,9 +1212,9 @@ const MONSTERS = [
     ]},
   { id:"boss", emo:"😈", name:"마왕의 그림자", hp:900,
     intents:[
-      {n:"암흑 파동", txt:"파티 전체 <b>12</b> 피해", hint:"", type:"aoe", dmg:12},
-      {n:"침식 선고", txt:"HP 가장 높은 아군에게 <b>22</b> 피해", hint:"블록·보호막으로 버텨라", type:"highest", dmg:22},
+      {n:"종말의 전조", txt:"파티 전체 <b>8</b> 피해", hint:"다음 턴 종말의 일격 — 완벽 방어로 무효 · 그 전에 끝낼 수도", type:"aoe", dmg:8},
       {n:"종말의 일격", txt:"파티 전체 <b>24</b> 피해", hint:"전사 21=무효 · 전사 17+=절반 · 16↓=직격", type:"doom", dmg:24},
+      {n:"침식 선고", txt:"HP 가장 높은 아군에게 <b>22</b> 피해", hint:"블록·보호막으로 버텨라", type:"highest", dmg:22},
     ]},
 ];
 
@@ -1989,8 +1973,6 @@ $("confirmBtn").addEventListener("click", async ()=>{
 
 /* ============ 턴 시작 ============ */
 function startTurn(){
-  if(S.turn===1) TM.battleBegin(S.battle, S.enemy && S.enemy.name);
-  TM.phase("battle");
   S.turn===1 && log(`${S.enemy.name} 이(가) 나타났다!`, "l-sys");
   S.taunt=false; S.perfectGuard=false; S.block=0; S.armorCrack=false; S.warTotal=0;
   S.givesLeft = 2;
@@ -2908,7 +2890,6 @@ function makeAltarOffers(mode, salt){   /* 연결1 + 확장1 + 혼돈1 (§6) —
 /* ── 제단 UI (§5·§6·§7 교체 절차 10단계) — 상점 언어 0 ── */
 function openAltar(mode, after){
   RUN.altarIndex++; RUN.altarRedraw = 0; RUN.lastRemoved = null;
-  TM.altarBegin(mode, offersIdsFor(mode));
   let offers = makeAltarOffers(mode);
   let prevKey = offers.map(o=>o.id).join(",");
   const ov = document.createElement("div"); ov.className = "overlay";
@@ -2965,7 +2946,7 @@ function openAltar(mode, after){
     setTimeout(()=>$("faithBox").classList.remove("faithAbsorb"), 340);
     setTimeout(cb, 430);
   }
-  function finish(){ TM.altarEnd({picked:(picked>=0?offers[picked].id:null), redraws:RUN.altarRedraw, passed:(picked<0), paid:(mode==="free"?0:(picked>=0?offers[picked].band:0)), removed:RUN.lastRemoved, activeAtEntry:RUN.activeLaws.length, mode}); TM.phase("transition"); ov.remove(); if(after) after(); }
+  function finish(){ ov.remove(); if(after) after(); }
   function doInscribe(){
     const o = offers[picked]; const p = price(o);
     if(mode!=="free" && S.faith < p) return;
@@ -3005,7 +2986,6 @@ function openAltar(mode, after){
 
 /* ── 흐름 오버라이드: 9전투 + 제단 배치 (§2·§5) ── */
 async function onVictory(){
-  TM.battleEnd(true);
   SFX.win();
   S.busy = true;
   await wait(600);
@@ -3016,7 +2996,6 @@ async function onVictory(){
   else proceed();
 }
 function nextBattle(to){
-  TM.phase("transition");
   S.battle = (to!==undefined) ? to : S.battle+1;
   RUN.bIdx = S.battle;
   S.turn = 1;
@@ -3033,7 +3012,6 @@ function nextBattle(to){
   startTurn();
 }
 function showBossIntroH1(){
-  TM.phase("transition");
   const ov = document.createElement("div"); ov.className = "overlay";
   ov.innerHTML = `<h2 class="win">최종 보스</h2>
     <div class="sub">아홉 번째 전투 — 네가 만든 공식이 시험받는다.</div>
@@ -3077,7 +3055,6 @@ function spendHtml(){
   </div>`;
 }
 function showClear(finalBoss){
-  if(finalBoss) TM.finish(true);
   const ov = document.createElement("div");
   ov.className = "overlay";
   ov.innerHTML = `<h2 class="win">${finalBoss? "마왕의 그림자 소멸":"승리"}</h2>
@@ -3085,7 +3062,6 @@ function showClear(finalBoss){
     ${runFormulaHtml(true)}
     ${spendHtml()}
     ${reportHtml()}
-    ${TM.devSectionHtml()}
     <div class="sub">아홉 전투 — 신이여, 공식은 완성되었는가?\n같은 시드 = 같은 카드. 다른 법칙이 다른 운명을 만든다.</div>
     <button class="obtn gold" id="againBtn">같은 운명 다시 (동일 시드)</button>
     <button class="obtn" id="newBtn">새로운 운명 (시드 변경)</button>
@@ -3094,12 +3070,9 @@ function showClear(finalBoss){
   ov.querySelector("#againBtn").addEventListener("click", ()=>{ location.hash="s"+SEED+"xw"; location.reload(); });
   ov.querySelector("#newBtn").addEventListener("click", ()=>{ newSeed(); });
   ov.querySelector("#titleBtn1").addEventListener("click", ()=>{ location.hash="s"+SEED+"xt"; location.reload(); });
-  TM.bindDev(ov);
   S.over = true;
 }
 async function onDefeat(){
-  TM.battleEnd(false);
-  TM.finish(false);
   SFX.lose();
   await wait(500);
   const ov = document.createElement("div");
@@ -3109,7 +3082,6 @@ async function onDefeat(){
     ${runFormulaHtml(false)}
     ${spendHtml()}
     ${reportHtml()}
-    ${TM.devSectionHtml()}
     <div class="sub">같은 시드 = 같은 카드.\n다른 선택이 다른 운명을 만든다.</div>
     <button class="obtn gold" id="retryBtn">다시 강림한다 (동일 시드)</button>
     <button class="obtn" id="newBtn2">새로운 운명 (시드 변경)</button>
@@ -3118,13 +3090,12 @@ async function onDefeat(){
   ov.querySelector("#retryBtn").addEventListener("click", ()=>{ location.hash="s"+SEED+"xw"; location.reload(); });
   ov.querySelector("#newBtn2").addEventListener("click", ()=>{ newSeed(); });
   ov.querySelector("#titleBtn2").addEventListener("click", ()=>{ location.hash="s"+SEED+"xt"; location.reload(); });
-  TM.bindDev(ov);
   S.over = true;
 }
 
 /* ── DEV 탐사 장치 (§13) — 해시 #dev 또는 콘솔 ── */
 window.H1 = {
-  jump: (c,b)=>{ TM.markPartial(); const i=(c-1)*3+(b-1); location.hash = "s"+SEED+"i"+i+(RUN.activeLaws.length? "q"+RUN.activeLaws.join(".") : "")+(S.faith? "f"+S.faith : "")+"xb"; location.reload(); },
+  jump: (c,b)=>{ const i=(c-1)*3+(b-1); location.hash = "s"+SEED+"i"+i+(RUN.activeLaws.length? "q"+RUN.activeLaws.join(".") : "")+(S.faith? "f"+S.faith : "")+"xb"; location.reload(); },
   setFaith: n=>{ S.faith = Math.max(0, n|0); renderFaith(); },
   setLaws: a=>{ RUN.activeLaws.length=0; RUN.lawHistory.length=0; RUN.removedLaws.length=0; RUN.lawRT.dl1={n:0,bloom:false}; S.chainMagic=0; bootLaws(a); renderLawShelf(); updateDlStats(); renderFaith(); },
   openAltar: m=>openAltar(m==="edit"? "edit" : m==="free"? "free" : "paid", ()=>{}),
@@ -3136,233 +3107,6 @@ window.__H1 = { get RUN(){return RUN}, get S(){return S}, get DL(){return DL}, g
   POOL16, BATTLE_PLAN, ALTAR_AT, altarHash, makeAltarOffers, allEven, lawFlat, dl1Tick, nv1Proc, battleStartLaws,
   hasLaw, addLaw, replaceLawFn, removeLawState, bestTotal, chLabel, enemyFor, openBook };   /* 검사 전용 — UI 미사용 */
 window.runSpineJump = function(){ console.log("v1H1: window.H1 사용 — jump(c,b) setFaith(n) setLaws([...]) openAltar('free|paid|edit') setLawProgress('dl1',n) showResult(win)"); };
-
-
-/* ═══════════════════════════════════════════════════════════════
-   ✦ v1H1A Human Run Telemetry — 관측 전용 모듈 (게임 상태 밖 완전 격리)
-   계약: 게임 계산/카드 RNG/제단 RNG/setTimeout 무접촉 · TM은 어떤 게임 값도 쓰지 않는다(읽기만)
-        시간은 performance.now() · Page Visibility로 백그라운드 제외 · 저장/전송 0
-   ═══════════════════════════════════════════════════════════════ */
-const TM = (function(){
-  const now = ()=> (performance && performance.now) ? performance.now() : Date.now();
-  const S0 = ()=>({ turns:0, rerolls:0, faithGained:0, m21:0, natBj:0, pbTimes:0, pbMax:0 });
-  const snap = ()=>{ const s=S.stats; return { turns:s.turns, rerolls:s.rerolls, faithGained:s.faithGained, m21:s.m21, natBj:s.natBj, pbTimes:s.pbTimes, pbMax:s.pbMax }; };
-  const T = {
-    startedAt:0, activeMs:0, phase:null, phaseAt:0,
-    phaseMs:{ battle:0, revelation:0, altar:0, editAltar:0, transition:0 },
-    battleMs:[], altarMs:[], hiddenMs:0, hiddenCount:0, hiddenAt:0,
-    finished:false, ok:false, partial:false, seed:0, startBattle:0,
-    nextRunDesire:null, memorable:null, memo:"",
-    _cur:null, _snap:null, _mockMs:0
-  };
-  const PHASE_KEY = { battle:"battle", revelation:"revelation", altar:"altar", edit_altar:"editAltar", transition:"transition" };
-
-  function settle(){   /* 현재 phase 경과를 누적하고 시계 리셋 (중복 방지: phaseAt=0이면 무동작) */
-    if(!T.phase || !T.phaseAt) return;
-    const k = PHASE_KEY[T.phase]; if(k) T.phaseMs[k] += now() - T.phaseAt;
-    T.phaseAt = 0;
-  }
-  function setPhase(p){
-    if(T.finished || T.hiddenAt) { T.phase = p; return; }   /* 숨김 중엔 시계 안 돎 */
-    settle();
-    T.phase = p; T.phaseAt = now();
-  }
-
-  const api = {
-    runStart(seed, battle){
-      T.startedAt = now(); T.seed = seed; T.startBattle = battle;
-      T.finished = false; T.partial = (battle>0);   /* 1-1 아닌 곳에서 시작 = 부분 */
-    },
-    phase(p){ setPhase(p); },
-    battleBegin(bIdx, name){
-      T._cur = { idx:bIdx, name:name||("전투 "+(bIdx+1)), at:now(), ms:0, win:null };
-      T._snap = snap();
-    },
-    battleEnd(win){
-      if(!T._cur) return;
-      settle();   /* battle phase 마감 후 기록 */
-      const d = snap(), s = T._snap || S0();
-      T._cur.win = win; T._cur.ms = (T.phaseMs.battle); // 누적 battle 총합은 아래서 개별화
-      T.battleMs.push({
-        pos: chLabel(T._cur.idx), name:T._cur.name, idx:T._cur.idx, win,
-        ms: Math.max(0, now() - T._cur.at),   /* 이 전투 벽시계(숨김 제외분은 phase 총합과 함께 해석) */
-        turns: d.turns - s.turns, rerolls: d.rerolls - s.rerolls,
-        faith: d.faithGained - s.faithGained,
-        m21: d.m21 - s.m21, natBj: d.natBj - s.natBj,
-        pb: d.pbTimes - s.pbTimes, pbMax: d.pbMax
-      });
-      T._cur = null;
-    },
-    altarBegin(mode, offerIds){
-      setPhase(mode==="edit" ? "edit_altar" : "altar");
-      T._alt = { mode, at:now(), offers:(offerIds||[]).slice() };
-    },
-    altarEnd(info){
-      const k = (info.mode==="edit") ? "editAltar" : "altar";
-      const before = T.phaseMs[k];
-      settle();
-      const spent = T.phaseMs[k] - before;
-      T.altarMs.push({
-        pos: chLabel(S.battle), type:(info.mode==="free"?"무료 계시":info.mode==="edit"?"편집 제단":"유료 제단"),
-        ms: Math.max(0, now() - (T._alt? T._alt.at : now())),
-        offers:(T._alt? T._alt.offers:[]), redraws:info.redraws||0,
-        picked:info.picked, passed:!!info.passed, paid:info.paid||0,
-        removed:info.removed||null, activeAtEntry:info.activeAtEntry
-      });
-      T._alt = null;
-    },
-    finish(ok){
-      if(T.finished) return;   /* finish 1회 보장 */
-      settle();
-      T.finished = true; T.ok = ok;
-      T.activeMs = T.phaseMs.battle + T.phaseMs.revelation + T.phaseMs.altar + T.phaseMs.editAltar + T.phaseMs.transition + T._mockMs;
-    },
-    markPartial(){ T.partial = true; },
-
-    /* ── Page Visibility: 백그라운드/화면잠금 구간 제외 ── */
-    onHide(){ if(T.finished) return; if(T.hiddenAt) return; settle(); T.hiddenAt = now(); T.hiddenCount++; },
-    onShow(){ if(T.finished) return; if(!T.hiddenAt) return; T.hiddenMs += now() - T.hiddenAt; T.hiddenAt = 0; if(T.phase) T.phaseAt = now(); },
-
-    /* ── DEV 재현 훅 ── */
-    reset(){ Object.assign(T, { startedAt:0, activeMs:0, phase:null, phaseAt:0,
-      phaseMs:{battle:0,revelation:0,altar:0,editAltar:0,transition:0}, battleMs:[], altarMs:[],
-      hiddenMs:0, hiddenCount:0, hiddenAt:0, finished:false, ok:false, partial:false,
-      nextRunDesire:null, memorable:null, memo:"", _cur:null, _snap:null, _alt:null, _mockMs:0 }); },
-    start(){ api.runStart(SEED, S.battle); },
-    pause(){ api.onHide(); }, resume(){ api.onShow(); },
-    finishNow(){ api.finish(true); }, report(){ return buildReport(); },
-    setMockElapsed(min){ T._mockMs = Math.max(0, (+min||0)*60000); },
-    _T:T,
-
-    /* ── 시간 포맷 ── */
-    devSectionHtml(){ return devHtml(); },
-    bindDev(ov){ bind(ov); }
-  };
-
-  function mmss(ms){ const s=Math.round((ms||0)/1000); const m=Math.floor(s/60); return (m<10?"0":"")+m+":"+((s%60)<10?"0":"")+(s%60); }
-
-  function longest(arr, key){ let mx=null; for(const x of arr){ if(!mx || x[key]>mx[key]) mx=x; } return mx; }
-
-  function chapterMs(){
-    const ch={1:0,2:0,3:0};
-    for(const b of T.battleMs){ ch[Math.floor(b.idx/3)+1]+= b.ms; }
-    for(const a of T.altarMs){ const c=+String(a.pos).split("-")[0]; if(ch[c]!==undefined) ch[c]+=a.ms; }
-    return ch;
-  }
-
-  const DESIRE = [
-    ["A","다른 법칙 조합"],["B","못 이룬 조합 재도전"],["C","더 어려운 적"],["D","새 법칙 발견"],
-    ["E","제약·도전"],["F","기록 경신"],["G","지금은 쉬고 싶다"],["H","직접 입력"]
-  ];
-  const MEM = ["4인 파티 블랙잭","여러 21 연쇄","자연 블랙잭","완벽 방어·반격","성물함 준비 성공","신앙을 건 리롤","법칙 획득","법칙 교체","보스 처치","직접 입력"];
-
-  function devHtml(){
-    const ch = chapterMs();
-    const lb = longest(T.battleMs,"ms"), la = longest(T.altarMs,"ms");
-    const boss = T.battleMs.find(b=>b.idx===8);
-    const tag = T.partial ? `<span class="tmTag part">DEV_JUMP · partial</span>` : `<span class="tmTag full">fullHumanRun</span>`;
-    const battleRows = T.battleMs.map(b=>`${b.pos.padEnd? b.pos : b.pos} ${mmss(b.ms)}  <span style="opacity:.6">${b.turns}턴·리롤${b.rerolls}·21×${b.m21}${b.pb?`·PB×${b.pb}`:""}</span>`).join("<br>");
-    const altarRows = T.altarMs.map(a=>`${a.pos} ${a.type} ${mmss(a.ms)}  <span style="opacity:.6">${a.passed?"지나침":a.picked? (POOL16[a.picked]?POOL16[a.picked].n:a.picked):"—"}${a.redraws?`·교체${a.redraws}`:""}${a.removed?`·−${POOL16[a.removed]?POOL16[a.removed].n:a.removed}`:""}</span>`).join("<br>") || "—";
-    const desireOpts = DESIRE.map(([k,v])=>`<button class="tmOpt" data-desire="${k}">${k}. ${v}</button>`).join("");
-    const memOpts = MEM.map(v=>`<button class="tmOpt" data-mem="${v}">${v}</button>`).join("");
-    return `<details class="tmDev"><summary>DEV · HUMAN RUN TELEMETRY ${tag}</summary><div class="tmBody">
-      <div class="tmRow"><span>RUN 실제 플레이</span><b>${mmss(T.activeMs)}</b></div>
-      <div class="tmRow"><span>백그라운드 제외</span><b>${mmss(T.hiddenMs)} · ${T.hiddenCount}회</b></div>
-      <div class="tmRow"><span>전투</span><b>${mmss(T.phaseMs.battle)}</b></div>
-      <div class="tmRow"><span>계시·제단</span><b>${mmss(T.phaseMs.altar + T.phaseMs.editAltar)}</b></div>
-      <div class="tmRow"><span>기타 전환</span><b>${mmss(T.phaseMs.transition)}</b></div>
-      <div class="tmH">장별</div>
-      <div class="tmRow"><span>1장</span><b>${mmss(ch[1])}</b></div>
-      <div class="tmRow"><span>2장</span><b>${mmss(ch[2])}</b></div>
-      <div class="tmRow"><span>3장</span><b>${mmss(ch[3])}</b></div>
-      <div class="tmH">하이라이트</div>
-      <div class="tmRow"><span>가장 긴 전투</span><b>${lb? lb.pos+" · "+mmss(lb.ms):"—"}</b></div>
-      <div class="tmRow"><span>가장 긴 고민</span><b>${la? la.pos+" "+la.type.replace(" ","")+" · "+mmss(la.ms):"—"}</b></div>
-      <div class="tmRow"><span>최종 보스전</span><b>${boss? mmss(boss.ms):"—"}</b></div>
-      <div class="tmH">전투별</div><div class="tmMono">${battleRows||"—"}</div>
-      <div class="tmH">제단별</div><div class="tmMono">${altarRows}</div>
-      <div class="tmQ"><div class="tmH">지금 바로 다음 RUN에서 해보고 싶은 것은?</div>
-        <div class="tmOpts" id="tmDesire">${desireOpts}</div>
-        <textarea class="tmMemo" id="tmMemo" placeholder="H·직접 입력 시 메모…" style="display:none"></textarea></div>
-      <div class="tmQ"><div class="tmH">이번 RUN에서 가장 기억에 남은 순간은?</div>
-        <div class="tmOpts" id="tmMem">${memOpts}</div></div>
-      <button class="tmBtn" id="tmCopy">📋 관측 결과 복사</button>
-      <textarea class="tmCopyArea" id="tmCopyArea" readonly></textarea>
-    </div></details>`;
-  }
-
-  function buildReport(){
-    const ch = chapterMs();
-    const boss = T.battleMs.find(b=>b.idx===8);
-    const st = S.stats;
-    const desire = T.nextRunDesire ? (DESIRE.find(d=>d[0]===T.nextRunDesire)||["",""])[1] : "미선택";
-    const L = RUN.activeLaws.map(id=>POOL16[id]?POOL16[id].n:id).join(" · ") || "없음";
-    const lines = [];
-    lines.push("[v1H1A Human Run Report]");
-    lines.push("표본: " + (T.partial ? "DEV_JUMP (partialRun)" : "fullHumanRun"));
-    lines.push("시드: " + T.seed);
-    lines.push("결과: " + (T.ok ? "승리" : "패배"));
-    lines.push("실제 플레이 시간: " + mmss(T.activeMs) + " (백그라운드 제외 " + mmss(T.hiddenMs) + "/" + T.hiddenCount + "회)");
-    lines.push("1장 / 2장 / 3장: " + mmss(ch[1]) + " / " + mmss(ch[2]) + " / " + mmss(ch[3]));
-    lines.push("전투 / 제단: " + mmss(T.phaseMs.battle) + " / " + mmss(T.phaseMs.altar+T.phaseMs.editAltar));
-    lines.push("최종 보스전: " + (boss? mmss(boss.ms):"—"));
-    lines.push("최종 공식: " + L);
-    lines.push("법칙 교체: " + RUN.replaces + "회");
-    lines.push("총 신앙 획득: " + st.faithGained);
-    lines.push("전투 리롤 소비: 🕯" + (st.rerolls*3));
-    lines.push("계시 교체 소비: 🕯" + RUN.spend.redraw);
-    lines.push("법칙 새김 소비: 🕯" + RUN.spend.inscribe);
-    lines.push("잔여 신앙: 🕯" + S.faith);
-    lines.push("21 / 자연BJ / PB: " + st.m21 + " / " + st.natBj + " / " + st.pbTimes);
-    lines.push("최대 PB: " + (st.pbMax||"—") + "인");
-    lines.push("다음 RUN 욕망: " + desire + (T.nextRunDesire==="H"&&T.memo? (" — "+T.memo):""));
-    lines.push("가장 기억에 남은 순간: " + (T.memorable||"미선택"));
-    lines.push("직접 메모: " + (T.memo||"—"));
-    lines.push("");
-    lines.push("전투별 시간:");
-    for(const b of T.battleMs) lines.push(`${b.pos} ${mmss(b.ms)} (${b.turns}턴·리롤${b.rerolls}·신앙+${b.faith}·21×${b.m21}${b.pb?`·PB×${b.pb}`:""})`);
-    lines.push("");
-    lines.push("제단별 시간:");
-    for(const a of T.altarMs) lines.push(`${a.pos} ${a.type} ${mmss(a.ms)} — ${a.passed?"지나침":(a.picked?(POOL16[a.picked]?POOL16[a.picked].n:a.picked):"—")}${a.paid?` (🕯${a.paid})`:""}${a.removed?` / −${POOL16[a.removed]?POOL16[a.removed].n:a.removed}`:""}${a.redraws?` · 계시교체${a.redraws}`:""}`);
-    return lines.join("\n");
-  }
-
-  function bind(ov){
-    const memo = ov.querySelector("#tmMemo");
-    ov.querySelectorAll("#tmDesire .tmOpt").forEach(b=>b.addEventListener("click", ()=>{
-      ov.querySelectorAll("#tmDesire .tmOpt").forEach(x=>x.classList.remove("sel"));
-      b.classList.add("sel"); T.nextRunDesire = b.dataset.desire;
-      if(memo) memo.style.display = (b.dataset.desire==="H") ? "block" : "none";
-    }));
-    ov.querySelectorAll("#tmMem .tmOpt").forEach(b=>b.addEventListener("click", ()=>{
-      ov.querySelectorAll("#tmMem .tmOpt").forEach(x=>x.classList.remove("sel"));
-      b.classList.add("sel"); T.memorable = b.dataset.mem;
-    }));
-    if(memo) memo.addEventListener("input", ()=>{ T.memo = memo.value; });
-    const copyBtn = ov.querySelector("#tmCopy"), area = ov.querySelector("#tmCopyArea");
-    copyBtn && copyBtn.addEventListener("click", async ()=>{
-      const txt = buildReport();
-      let done=false;
-      try{ if(navigator.clipboard && navigator.clipboard.writeText){ await navigator.clipboard.writeText(txt); done=true; } }catch(e){}
-      if(done){ copyBtn.textContent = "✓ 복사됨"; setTimeout(()=>copyBtn.textContent="📋 관측 결과 복사", 1500); }
-      else { area.style.display="block"; area.value=txt; area.focus(); area.select(); copyBtn.textContent="↑ 아래 텍스트를 길게 눌러 복사"; }
-    });
-  }
-
-  return api;
-})();
-/* Page Visibility — 게임 루프 무접촉, 시계만 정지/재개 */
-document.addEventListener("visibilitychange", ()=>{ if(document.hidden) TM.onHide(); else TM.onShow(); });
-window.addEventListener("pagehide", ()=>TM.onHide());
-window.addEventListener("pageshow", ()=>TM.onShow());
-window.TM = TM;
-/* DEV 콘솔 별칭 */
-window.telemetryReset=()=>TM.reset(); window.telemetryStart=()=>TM.start();
-window.telemetryPause=()=>TM.pause(); window.telemetryResume=()=>TM.resume();
-window.telemetryFinish=()=>TM.finishNow(); window.telemetryReport=()=>{ const r=TM.report(); console.log(r); return r; };
-window.setMockElapsed=m=>TM.setMockElapsed(m); window.showTelemetryResult=()=>{ TM.finishNow(); showClear(true); };
-/* 제단 후보 id만 얻는 헬퍼 (openAltar 진입 훅 전용 — makeAltarOffers는 결정론이라 부작용 없음) */
-function offersIdsFor(mode){ try{ return makeAltarOffers(mode).map(o=>o.id); }catch(e){ return []; } }
 
 /* ============ 부팅 ============ */
 (function boot(){
@@ -3389,7 +3133,7 @@ function offersIdsFor(mode){ try{ return makeAltarOffers(mode).map(o=>o.id); }ca
   $("blessChip").addEventListener("click", showBlessList);
   document.querySelectorAll(".dbg").forEach(btn=>{
     btn.addEventListener("click", ()=>{
-      location.hash = "s"+btn.dataset.s+(btn.dataset.b!=="0" ? "i"+btn.dataset.b : "")+(btn.dataset.dl? "d"+btn.dataset.dl : "")+"xb";
+      location.hash = "s"+btn.dataset.s+(btn.dataset.b!=="0" ? "i"+btn.dataset.b : "")+(btn.dataset.laws? "q"+btn.dataset.laws : "")+(btn.dataset.faith? "f"+btn.dataset.faith : "")+(btn.dataset.dl? "d"+btn.dataset.dl : "")+"xb";
       location.reload();
     });
   });
@@ -3447,7 +3191,7 @@ function offersIdsFor(mode){ try{ return makeAltarOffers(mode).map(o=>o.id); }ca
   $("opTitle").addEventListener("click", ()=>go("s"+SEED+"xt"));
   /* 라우팅 실행 */
   renderLawShelf();
-  if(VIEW==="b"){ TM.runStart(SEED, S.battle); hideAll(); battleStartLaws(); startTurn(); }
+  if(VIEW==="b"){ hideAll(); battleStartLaws(); startTurn(); }
   else if(VIEW==="l"){ show("labOv"); }
   else if(VIEW==="w"){ show("lawOv"); }   /* ✦ v1G3: 시작 법칙 선택 직행 — 새 여정·재도전의 착지점 */
   else { show("titleOv"); }
