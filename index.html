@@ -836,6 +836,9 @@ body{
         <button class="dbg" data-s="38" data-b="8" data-laws="h1.m3.LB.h3" data-faith="12" data-mode="b">BOSS ONLY<br>종말·표적만</button>
         <button class="dbg" data-s="38" data-b="8" data-laws="h1.m3.LB.h3" data-faith="12" data-mode="i">INTEGRATED<br>전부 결합</button>
       </div>
+      <div id="dbgRowLab" style="display:flex;gap:5px;justify-content:center;margin-top:2px;">
+        <button class="dbg" onclick="__LAB && __LAB.open()" style="background:#2a2140;color:#ffd27a;border-color:#5a4a80;">✦ 연출 랩<br>Multiply Reveal Lab</button>
+      </div>
       <div id="dbgTitle4">— v1F 신의 법칙 (실험 · 기본 off = v1D2 동일) —</div>
       <div id="dbgRow4">
         <button class="dbg" id="dlOff">끔<br>기준 동작</button>
@@ -2023,19 +2026,22 @@ const wait = ms => new Promise(r=>setTimeout(r,ms));
 function aliveIds(){ return UI_ORDER.filter(id=>!S.allies[id].dead); }
 function dmgEnemy(n){
   if(VS.active){   /* ✦ VS1: 그로기 증폭 → 방벽 흡수 → 초과 본체 (기준선 모드에서는 이 블록 미진입) */
-    if(VS.groggy>0 && n>0){ const nn=Math.round(n*1.5); if(nn>n){ flt("enemy","😵 ×1.5","f-pb"); n=nn; } }
+    RV.hit(n);
+    if(VS.groggy>0 && n>0){ const nn=Math.round(n*1.5); if(nn>n){ flt("enemy","😵 ×1.5","f-pb"); n=nn; RV.groggy(n); } }
     if(VS.wall>0 && n>0){
       const w = Math.min(VS.wall, n);
       VS.wall -= w; VSTM.wallDmg += w; n -= w;
       log(`🛡 방벽에 ${w} 피해 (잔여 ${VS.wall}/${VS.wallMax})`, "l-sys");
-      if(VS.wall<=0) vsWallBreak();
+      RV.wall(w, VS.wall);
+      if(VS.wall<=0){ vsWallBreak(); RV.brk(); }
       vsRenderBar();
       if(n<=0) return;
       VSTM.overflow += n;
       log(`⚡ 초과 ${n} — 본체로 이어진다!`, "l-gold");
+      RV.overflow(n);
     }
     if(VS._bjTier>=2) VSTM.bjDmg[VS._bjTier] += n;
-  }
+  } else RV.hit(n);
   const before = S.eHp;
   S.eHp -= n;
   if(VS.active && before>0 && S.eHp<=0 && !VSTM.killTurn){ VSTM.killTurn = S.turn; }
@@ -2268,27 +2274,29 @@ async function resolveTurn(){
         else await mageBolt(act.dmg>=14 ? 3 : 1);
       }
       /* ── 🌟 축복 피해 파이프라인: 가산 → 맹세 ×2 → 배율 ×2 ── */
-      if(id==="mage" && S.chainMagic>0){ d += S.chainMagic; procB("m3","d",S.chainMagic,"연쇄 +"+S.chainMagic,id); }
+      if(id==="mage" && S.chainMagic>0){ if(act.k==="m") RV.heroStart("mage", d); d += S.chainMagic; procB("m3","d",S.chainMagic,"연쇄 +"+S.chainMagic,id); RV.at("m3", d); }
       if(id==="hero" && act.k==="m"){
+        RV.heroStart("hero", d);
         if(CI_MODE==="B"){   /* ✦ v1E-B: 기적의 재료 — 7 포함 21 가산 (PB·맹세·용맹 배율에 실린다) */
           const j = ci777(a.cards), inc = j?21:(ciHas7(a.cards)?7:0);
           if(inc){ d += inc; S.stats[j?"ciB777":"ciB7"]++; flt(id, j?"🎰 트리플 세븐 +21":"🍀 행운의 기적 +7", "f-bless");
                    if(j){ flash("gold"); log("트리플 세븐!! 세 장의 7이 하나의 기적이 된다", "l-gold"); } updateCiStats(); }
         }
-        if(has("h1")){ d += 20; procB("h1","d",20,"성검 +20",id); }
-        if(S.pbMult>1){ const nd=Math.round(d*S.pbMult); S.stats.pbDmg += nd-d; d=nd; flt(id,"✦"+pbTag(),"f-pb"); }
-        if(S.oathCharge){ const inc=d; d*=2; S.oathCharge=false; procB("w3","d",inc,"맹세 ×2",id); }
-        if(has("h2")){ const inc=d; d*=2; procB("h2","d",inc,"용맹 ×2",id); }
+        if(has("h1")){ d += 20; procB("h1","d",20,"성검 +20",id); RV.at("h1", d); }
+        if(S.pbMult>1){ const nd=Math.round(d*S.pbMult); S.stats.pbDmg += nd-d; d=nd; flt(id,"✦"+pbTag(),"f-pb"); RV.pb(S.pbMult, d); }
+        if(S.oathCharge){ const inc=d; d*=2; S.oathCharge=false; procB("w3","d",inc,"맹세 ×2",id); RV.at("w3", d); }
+        if(has("h2")){ const inc=d; d*=2; procB("h2","d",inc,"용맹 ×2",id); RV.at("h2", d); }
         if(d > S.stats.hero21Max) S.stats.hero21Max = d;
       }
       if(id==="mage" && act.k==="m"){
+        if(S.chainMagic<=0) RV.heroStart("mage", d);
         if(CI_MODE==="B"){   /* ✦ v1E-B: 마법사 7 포함 21 — PB 앞 가산 */
           const j = ci777(a.cards), inc = j?21:(ciHas7(a.cards)?7:0);
           if(inc){ d += inc; S.stats[j?"ciB777":"ciB7"]++; flt(id, j?"🎰 트리플 세븐 +21":"🍀 행운의 기적 +7", "f-bless");
                    if(j){ flash("gold"); log("트리플 세븐!! 세 장의 7이 하나의 기적이 된다", "l-gold"); } updateCiStats(); }
         }
-        if(S.pbMult>1){ const nd=Math.round(d*S.pbMult); S.stats.pbDmg += nd-d; d=nd; flt(id,"✦"+pbTag(),"f-pb"); }
-        if(has("m1")){ const inc=d; d*=2; procB("m1","d",inc,"비전 ×2",id); }
+        if(S.pbMult>1){ const nd=Math.round(d*S.pbMult); S.stats.pbDmg += nd-d; d=nd; flt(id,"✦"+pbTag(),"f-pb"); RV.pb(S.pbMult, d); }
+        if(has("m1")){ const inc=d; d*=2; procB("m1","d",inc,"비전 ×2",id); RV.at("m1", d); }
         if(d > S.stats.mage21Max) S.stats.mage21Max = d;
       }
       if(CI_MODE==="A"){   /* ✦ v1E-A: 행운의 7 — 파이프라인 최후단 ×1.5 (성물함 경유 ×2, 전투당 1회) */
@@ -3228,11 +3236,13 @@ function vsMageAoe(d){
       VSTM.auxKillTurns.push({n:ax.n, turn:S.turn, by:"mage"});
       log(`💥 ${ax.n} 소멸! — 마법이 전장을 지운다`, "l-gold");
       vsEvent(`T${S.turn} ${ax.n} 소멸(마법사 광역)`);
+      RV.aoe(ax.n, d, 0, true);
     } else {
       log(`${ax.n} 에게 ${d} 피해 (${ax.hp}/${ax.max})`, "l-hit");
+      RV.aoe(ax.n, d, ax.hp, false);
     }
   }
-  if(carried>0) log(`⚡ 처치 초과 ${carried} — 본체로 이월`, "l-gold");
+  if(carried>0){ log(`⚡ 처치 초과 ${carried} — 본체로 이월`, "l-gold"); RV.carry(carried); }
   dmgEnemy(d + carried);
   vsRenderBar();
 }
@@ -3325,6 +3335,169 @@ async function vsAuxPhase(){
   vsRenderBar();
 }
 window.__VS = { get VS(){ return VS; }, get TM(){ return VSTM; }, get MODE(){ return VSMODE; }, hit:n=>dmgEnemy(n) };   /* R&D 관측·검사 전용 노출 */
+
+/* ═══════════ ✦ VS1a: Multiply Reveal 레코더 (Dev Presentation Lab) ═══════════
+   실제 피해 파이프라인의 각 계층 값을 "순수 읽기"로 기록한다. 게임 상태·계산·순서를 바꾸지 않음.
+   RV.on=true 일 때만 push → 평상시·CONTROL은 완전 무영향(§6 정직 계약). 숫자는 실제 d에서 직접 채취. */
+const RV = {
+  on:false, steps:[], cur:null,
+  LABEL:{ h1:"성검의 축복", w3:"수호자의 맹세", h2:"용맹의 성좌", m1:"비전 증폭", m3:"연쇄 마력" },
+  KIND: { h1:"add", w3:"mul", h2:"mul", m1:"mul", m3:"add" },
+  reset(){ this.steps=[]; this.cur=null; },
+  heroStart(id, base){ if(!this.on) return; this.cur=id; this.steps.push({t:"hero", id, base}); },
+  at(bid, after){ if(!this.on) return; this.steps.push({t:"law", id:this.cur, bid, kind:this.KIND[bid]||"add", label:this.LABEL[bid]||bid, after}); },
+  pb(mult, after){ if(!this.on || !(mult>1)) return; this.steps.push({t:"pb", id:this.cur, mult, after}); },
+  hit(raw){ if(!this.on) return; this.steps.push({t:"hit", id:this.cur, raw}); },
+  groggy(after){ if(!this.on) return; this.steps.push({t:"groggy", after}); },
+  wall(absorbed, remain){ if(!this.on) return; this.steps.push({t:"wall", absorbed, remain}); },
+  brk(){ if(!this.on) return; this.steps.push({t:"break"}); },
+  overflow(amt){ if(!this.on) return; this.steps.push({t:"overflow", amt}); },
+  aoe(name, dmg, remain, killed){ if(!this.on) return; this.steps.push({t:"aoe", name, dmg, remain, killed:!!killed}); },
+  carry(amt){ if(!this.on) return; this.steps.push({t:"carry", amt}); },
+};
+window.__RV = RV;
+
+/* ═══════════ ✦ VS1a: Multiply Reveal Lab — 텍스트 연출 비교 ═══════════
+   실제 캡처 이벤트(REVEAL_DATA)를 L0~L3 × 리듬으로 재생. 게임 계산 무접촉(읽기 전용 데이터).
+   타이머는 gen 세대 토큰으로 무효화 → 다시보기 연타·상황 전환·닫기 시 중첩 0. */
+const REVEAL_DATA = {"situations":[{"id":"S1","name":"평범한 단일 행동","desc":"작은 10단위 피해 · 배율 없음 — 긴 연출이 방해되는 기준","laws":[],"cards":{"hero":"3 8 (11)","war":"A Q (21)","mage":"4 A (15)","cleric":"9 10 (19)"},"pbCount":1,"wallBefore":0,"wallAfter":0,"wallBroken":false,"bodyDmg":14,"wallDmg":0,"finalTotal":14,"steps":[{"t":"hit","id":null,"raw":10},{"t":"hit","id":null,"raw":4}]},{"id":"S2","name":"2인 파티 블랙잭","desc":"50~100대 · 짧은 증폭 리듬","laws":["h1"],"cards":{"hero":"3 8 (11)","war":"A Q (21)","mage":"4 A (15)","cleric":"9 10 (19)"},"pbCount":2,"wallBefore":0,"wallAfter":0,"wallBroken":false,"bodyDmg":111,"wallDmg":0,"finalTotal":111,"steps":[{"t":"hero","id":"hero","base":30},{"t":"law","id":"hero","bid":"h1","kind":"add","label":"성검의 축복","after":50},{"t":"pb","id":"hero","mult":1.5,"after":75},{"t":"hit","id":"hero","raw":75},{"t":"hero","id":"mage","base":24},{"t":"pb","id":"mage","mult":1.5,"after":36},{"t":"hit","id":"mage","raw":36}]},{"id":"S3","name":"3인 파티 블랙잭","desc":"방벽에 의미 있는 피해 · 여기서 만족? 4인을 더 노릴까?","laws":["h1"],"cards":{"hero":"3 8 (11)","war":"A Q (21)","mage":"4 A (15)","cleric":"9 10 (19)"},"pbCount":3,"wallBefore":300,"wallAfter":30,"wallBroken":false,"bodyDmg":0,"wallDmg":270,"finalTotal":270,"steps":[{"t":"hero","id":"hero","base":30},{"t":"law","id":"hero","bid":"h1","kind":"add","label":"성검의 축복","after":50},{"t":"pb","id":"hero","mult":3,"after":150},{"t":"hit","id":"hero","raw":150},{"t":"wall","absorbed":150,"remain":150},{"t":"hero","id":"mage","base":24},{"t":"pb","id":"mage","mult":3,"after":72},{"t":"aoe","name":"방벽의 촉수","dmg":72,"remain":0,"killed":true},{"t":"aoe","name":"재앙의 촉수","dmg":72,"remain":0,"killed":true},{"t":"carry","amt":48},{"t":"hit","id":"mage","raw":120},{"t":"wall","absorbed":120,"remain":30}]},{"id":"S4","name":"4인 파티 블랙잭","desc":"영웅 행동·법칙·파티 배율이 모두 드러나는 강한 피해(본체 직격)","laws":["h1"],"cards":{"hero":"3 8 (11)","war":"A Q (21)","mage":"4 A (15)","cleric":"9 10 (19)"},"pbCount":4,"wallBefore":0,"wallAfter":0,"wallBroken":false,"bodyDmg":444,"wallDmg":0,"finalTotal":444,"steps":[{"t":"hero","id":"hero","base":30},{"t":"law","id":"hero","bid":"h1","kind":"add","label":"성검의 축복","after":50},{"t":"pb","id":"hero","mult":6,"after":300},{"t":"hit","id":"hero","raw":300},{"t":"hero","id":"mage","base":24},{"t":"pb","id":"mage","mult":6,"after":144},{"t":"hit","id":"mage","raw":144}]},{"id":"S5","name":"방벽 파괴 + 초과 이월 + 그로기","desc":"와장창!! · 초과 본체 이월 · 종말 취소 · 적의 틈","laws":["h1"],"cards":{"hero":"3 8 (11)","war":"A Q (21)","mage":"4 A (15)","cleric":"9 10 (19)"},"pbCount":4,"wallBefore":300,"wallAfter":0,"wallBroken":true,"bodyDmg":504,"wallDmg":300,"finalTotal":804,"steps":[{"t":"hero","id":"hero","base":30},{"t":"law","id":"hero","bid":"h1","kind":"add","label":"성검의 축복","after":50},{"t":"pb","id":"hero","mult":6,"after":300},{"t":"hit","id":"hero","raw":300},{"t":"wall","absorbed":300,"remain":0},{"t":"break"},{"t":"hero","id":"mage","base":24},{"t":"pb","id":"mage","mult":6,"after":144},{"t":"aoe","name":"방벽의 촉수","dmg":144,"remain":0,"killed":true},{"t":"aoe","name":"재앙의 촉수","dmg":144,"remain":0,"killed":true},{"t":"carry","amt":192},{"t":"hit","id":"mage","raw":336},{"t":"groggy","after":504}]},{"id":"S6","name":"신의 공식 피날레 (법칙 연계)","desc":"법칙 연계 4인 · 700~1000 · 자릿수가 바뀌는 감정","laws":["h1","h2","m3"],"cards":{"hero":"A 10 (21)","war":"A 10 (21)","mage":"A 10 (21)","cleric":"A 10 (21)"},"pbCount":4,"wallBefore":300,"wallAfter":0,"wallBroken":true,"bodyDmg":1044,"wallDmg":300,"finalTotal":1344,"steps":[{"t":"hero","id":"hero","base":30},{"t":"law","id":"hero","bid":"h1","kind":"add","label":"성검의 축복","after":50},{"t":"pb","id":"hero","mult":6,"after":300},{"t":"hit","id":"hero","raw":300},{"t":"wall","absorbed":300,"remain":0},{"t":"break"},{"t":"hero","id":"mage","base":24},{"t":"law","id":"mage","bid":"m3","kind":"add","label":"연쇄 마력","after":44},{"t":"pb","id":"mage","mult":6,"after":264},{"t":"aoe","name":"방벽의 촉수","dmg":264,"remain":0,"killed":true},{"t":"aoe","name":"재앙의 촉수","dmg":264,"remain":0,"killed":true},{"t":"carry","amt":432},{"t":"hit","id":"mage","raw":696},{"t":"groggy","after":1044}]}]};
+const LAB = {
+  gen:0, si:0, level:2, rhythm:"RHYTHM", showDbg:false, el:null,
+  RH:{ FAST:{step:160,long:200,final:340}, RHYTHM:{step:270,long:330,final:620}, DRAMATIC:{step:430,long:500,final:1150} },
+  EMO:{hero:"\u2694",war:"\uD83D\uDEE1",mage:"\uD83D\uDD2E",cleric:"\u2728"},
+  NM:{hero:"\uC6A9\uC0AC",war:"\uC804\uC0AC",mage:"\uB9C8\uBC95\uC0AC",cleric:"\uC131\uC9C1\uC790"},
+  open(){
+    if(this.el) this.el.remove();
+    const ov=document.createElement("div"); ov.id="revealLab"; this.el=ov;
+    ov.style.cssText="position:fixed;inset:0;z-index:400;background:#0c0a14;color:#e8e0d0;display:flex;flex-direction:column;font-family:inherit;overflow:hidden;max-width:100vw;";
+    ov.innerHTML=`
+      <div style="padding:8px 10px 5px;border-bottom:1px solid #2a2438;flex:0 0 auto;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <b style="font-size:12.5px;color:#ffd27a;">\u2726 \uC5F0\uCD9C \uB7A9 \u2014 \uACF1\uC148\uC774 \uBCF4\uC774\uB294\uAC00</b>
+          <button id="labClose" style="font-size:11px;padding:3px 9px;background:#221c34;color:#bfa8ff;border:1px solid #4a3a70;border-radius:5px;">\uC804\uD22C\uB85C \u2715</button>
+        </div>
+        <div id="labSit" style="display:flex;gap:3px;flex-wrap:wrap;margin-top:6px;"></div>
+        <div style="display:flex;gap:5px;margin-top:5px;align-items:center;flex-wrap:wrap;">
+          <div id="labLevel" style="display:flex;gap:3px;"></div>
+          <span style="flex:1;min-width:4px;"></span>
+          <div id="labRhythm" style="display:flex;gap:3px;"></div>
+        </div>
+      </div>
+      <div id="labStage" style="flex:1 1 auto;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;justify-content:center;min-height:0;"></div>
+      <div id="labDbg" style="font-size:9px;color:#6a5a80;padding:3px 12px;border-top:1px solid #201b30;line-height:1.4;flex:0 0 auto;"></div>
+      <div style="padding:7px 10px calc(7px + env(safe-area-inset-bottom));border-top:1px solid #2a2438;display:flex;gap:6px;flex:0 0 auto;">
+        <button id="labPrev" style="font-size:13px;padding:8px 11px;background:#1a1628;color:#cbb;border:1px solid #383050;border-radius:6px;">\u25C0</button>
+        <button id="labReplay" style="flex:1;font-size:13px;font-weight:700;padding:8px;background:#2a2140;color:#ffd27a;border:1px solid #5a4a80;border-radius:6px;">\u25B6 \uB2E4\uC2DC \uBCF4\uAE30</button>
+        <button id="labNext" style="font-size:13px;padding:8px 11px;background:#1a1628;color:#cbb;border:1px solid #383050;border-radius:6px;">\u25B6</button>
+        <button id="labDbgT" style="font-size:11px;padding:8px 9px;background:#141020;color:#6a5a80;border:1px solid #2a2438;border-radius:6px;">\u24D8</button>
+      </div>`;
+    $("app").appendChild(ov);
+    ov.querySelector("#labClose").onclick=()=>this.close();
+    ov.querySelector("#labReplay").onclick=()=>this.play();
+    ov.querySelector("#labPrev").onclick=()=>{ this.si=(this.si+REVEAL_DATA.situations.length-1)%REVEAL_DATA.situations.length; this.refresh(); };
+    ov.querySelector("#labNext").onclick=()=>{ this.si=(this.si+1)%REVEAL_DATA.situations.length; this.refresh(); };
+    ov.querySelector("#labDbgT").onclick=()=>{ this.showDbg=!this.showDbg; this.renderDbg(); };
+    this.refresh();
+  },
+  close(){ this.gen++; if(this.el){ this.el.remove(); this.el=null; } if(/lab=reveal/.test(location.hash)) location.hash=""; },
+  chip(txt,on){ return `<span data-v="${txt}" style="font-size:10.5px;padding:3px 7px;border-radius:4px;cursor:pointer;border:1px solid #383050;${on?'background:#4a3a70;color:#fff;':'background:#1a1628;color:#9a8ab0;'}">${txt}</span>`; },
+  refresh(){
+    const S=REVEAL_DATA.situations;
+    this.el.querySelector("#labSit").innerHTML=S.map((s,i)=>this.chip(s.id,i===this.si)).join("");
+    this.el.querySelector("#labLevel").innerHTML=["L0","L1","L2","L3"].map((l,i)=>this.chip(l,i===this.level)).join("");
+    this.el.querySelector("#labRhythm").innerHTML=["FAST","RHYTHM","DRAMATIC"].map(r=>this.chip(r,r===this.rhythm)).join("");
+    this.el.querySelector("#labSit").querySelectorAll("span").forEach((e,i)=>e.onclick=()=>{this.si=i;this.refresh();});
+    this.el.querySelector("#labLevel").querySelectorAll("span").forEach((e,i)=>e.onclick=()=>{this.level=i;this.refresh();});
+    this.el.querySelector("#labRhythm").querySelectorAll("span").forEach(e=>e.onclick=()=>{this.rhythm=e.dataset.v;this.refresh();});
+    this.renderDbg(); this.play();
+  },
+  renderDbg(){
+    const s=REVEAL_DATA.situations[this.si], d=this.el.querySelector("#labDbg");
+    if(!this.showDbg){ d.textContent="\u24D8 \uAC1C\uBC1C\uC790 \uC815\uBCF4 \uC228\uAE40 (\u24D8 \uB85C \uD45C\uC2DC) \u2014 \uC5F0\uCD9C \uAC10\uC815 \uBC29\uD574 \uBC29\uC9C0"; return; }
+    d.innerHTML=`<b>${s.id}</b> ${s.desc} \u00B7 \uBC95\uCE59 ${s.laws.join(",")||"\uC5C6\uC74C"} \u00B7 \uD30C\uD2F0 ${s.pbCount}\uC778 \u00B7 \uBC29\uBCBD ${s.wallBefore}\u2192${s.wallAfter} \u00B7 \uC2E4\uC81C \uCD1D ${s.finalTotal} (\uBC29\uBCBD ${s.wallDmg}+\uBCF8\uCCB4 ${s.bodyDmg})`;
+  },
+  perHero(steps){
+    const map={}, order=[];
+    for(let i=0;i<steps.length;i++){
+      const st=steps[i];
+      if(st.t==="hit"){
+        const id=st.id||"?";
+        let dealt=st.raw;
+        if(steps[i+1] && steps[i+1].t==="groggy") dealt=steps[i+1].after;
+        if(!(id in map)){ map[id]=0; order.push(id); }
+        map[id]+=dealt;
+      }
+    }
+    return order.map(id=>({id, dealt:map[id]}));
+  },
+  buildLines(s, level){
+    const T=s.finalTotal;
+    if(level===0) return [{txt:"\uCD1D "+T+" \uD53C\uD574!", cls:"final", value:T, final:true}];
+    if(level===1){
+      const per=this.perHero(s.steps);
+      const L=per.map(h=>({txt:(this.EMO[h.id]||"\u2022")+" "+(this.NM[h.id]||h.id)+"\uC758 \uAE30\uC801  "+h.dealt, cls:"hero"}));
+      L.push({txt:"\uCD1D "+T+" \uD53C\uD574!", cls:"final", value:T, final:true});
+      return L;
+    }
+    const L=[]; let run=0;
+    for(const st of s.steps){
+      if(st.t==="hero"){ run=st.base; L.push({txt:(this.EMO[st.id]||"\u2022")+" "+(this.NM[st.id]||st.id)+"  \u00B7  \uAE30\uC801 "+st.base, cls:"hero"}); }
+      else if(st.t==="law"){ const inc=st.after-run; const seg=st.kind==="mul"?("\u00D7"+Math.max(2,Math.round(st.after/(run||1)))):("+"+inc); run=st.after; L.push({txt:"\u3000\u2726 "+st.label+" "+seg+"  \u27F6 "+st.after, cls:"bless"}); }
+      else if(st.t==="pb"){ run=st.after; L.push({txt:"\u3000\u2726\u2726 \uD30C\uD2F0\uC758 \uD569\uC77C \u00D7"+st.mult+"  \u27F6 "+st.after, cls:"pb"}); }
+      else if(st.t==="hit"){ L.push({txt:"\u3000\u2694 \uBA85\uC911 "+st.raw, cls:"dim"}); run=st.raw; }
+      else if(st.t==="groggy"){ run=st.after; L.push({txt:"\u3000\uD83D\uDE35 \uADF8\uB85C\uAE30 \u00D71.5  \u27F6 "+st.after, cls:"gap"}); }
+      else if(st.t==="wall"){ L.push({txt:"\u3000\uD83D\uDEE1 \uBC29\uBCBD \uD761\uC218 "+st.absorbed+"  (\uC794\uC5EC "+st.remain+")", cls:"gap"}); }
+      else if(st.t==="break"){ L.push({txt:"\u3000\uD83D\uDCA5 \uC640\uC7A5\uCC3D!!  \uBC29\uBCBD \uBD95\uAD34 \u00B7 \uC885\uB9D0 \uCDE8\uC18C", cls:"gap", pop:true}); }
+      else if(st.t==="overflow"){ L.push({txt:"\u3000\u26A1 \uCD08\uACFC "+st.amt+" \uBCF8\uCCB4\uB85C!", cls:"gap"}); }
+      else if(st.t==="aoe"){ L.push({txt:"\u3000\uD83D\uDD2E "+st.name+"  "+st.dmg+(st.killed?" \uC18C\uBA78":(" (\uC794\uC5EC "+st.remain+")")), cls:"dim"}); }
+      else if(st.t==="carry"){ L.push({txt:"\u3000\u26A1 \uCC98\uCE58 \uCD08\uACFC "+st.amt+" \uC774\uC6D4", cls:"gap"}); }
+    }
+    L.push({txt:"\uCD1D "+T+" \uD53C\uD574!", cls:"final", value:T, final:true});
+    return L;
+  },
+  play(){
+    this.gen++; const g=this.gen;
+    const stage=this.el.querySelector("#labStage"); stage.innerHTML="";
+    const s=REVEAL_DATA.situations[this.si];
+    const lines=this.buildLines(s, this.level);
+    const R=this.RH[this.rhythm];
+    const rep=this.el.querySelector("#labReplay"); rep.disabled=true; rep.style.opacity=".55";
+    let t=0;
+    lines.forEach((ln,i)=>{
+      let dly = i===0?0 : (ln.final?R.final : (ln.cls==="gap"||ln.cls==="pb"||ln.cls==="hero")?R.long : R.step);
+      if(this.level===3 && i>0 && (ln.final||ln.cls==="pb"||ln.cls==="gap")) dly += R.long;
+      t+=dly;
+      setTimeout(()=>{ if(g!==this.gen) return; this.emit(stage, ln, g); }, t);
+    });
+    setTimeout(()=>{ if(g!==this.gen) return; rep.disabled=false; rep.style.opacity="1"; }, t+(this.level===0?150:700));
+  },
+  emit(stage, ln, g){
+    const div=document.createElement("div");
+    const big = ln.final ? (this.level===3?2.5:this.level===0?2.0:2.1) : 1;
+    const sz = ln.final ? Math.round(13*big) : (ln.cls==="hero"?12.5:12);
+    let col="#c8bfd8";
+    if(ln.cls==="final") col="#ffe27a"; else if(ln.cls==="hero") col="#cfe0ff"; else if(ln.cls==="pb") col="#ffd27a"; else if(ln.cls==="gap") col="#ff9a6a"; else if(ln.cls==="dim") col="#8a7fa0";
+    div.style.cssText="font-size:"+sz+"px;line-height:1.5;margin:1px 0;color:"+col+";"
+      +(ln.cls==="final"?"font-weight:900;text-align:center;margin-top:10px;letter-spacing:.5px;":ln.cls==="hero"?"font-weight:700;margin-top:7px;":ln.cls==="pb"?"font-weight:800;":ln.cls==="gap"?"font-weight:700;":"");
+    if(ln.final && ln.value){ div.textContent="\uCD1D 0 \uD53C\uD574!"; this.countUp(div, ln.value, g); }
+    else div.textContent=ln.txt;
+    if(div.animate){
+      div.animate([{opacity:0,transform:"translateY(4px) scale(.96)"},{opacity:1,transform:"none"}],{duration:190,easing:"ease-out"});
+      if(ln.final||ln.pop||ln.cls==="pb") div.animate([{transform:"scale(1)"},{transform:"scale(1.14)"},{transform:"scale(1)"}],{duration:340,easing:"ease-out",delay:60});
+    }
+    stage.appendChild(div); stage.scrollTop=stage.scrollHeight;
+  },
+  countUp(el, val, g){
+    const dur=(this.level===3?900:this.level===0?300:520), t0=Date.now();
+    const tick=()=>{ if(g!==this.gen) return; const p=Math.min(1,(Date.now()-t0)/dur); const cur=Math.round(val*(1-(1-p)*(1-p)));
+      el.textContent="\uCD1D "+cur+" \uD53C\uD574!"; if(p<1) requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+  },
+};
+window.__LAB = LAB;
+window.__REVEAL = REVEAL_DATA;
+window.addEventListener("hashchange", ()=>{ if(/lab=reveal/.test(location.hash) && !document.getElementById("revealLab")) LAB.open(); });
+if(/lab=reveal/.test(location.hash)) setTimeout(()=>{ if($("app")) LAB.open(); }, 70);
 
 (function boot(){
   const m = location.hash.match(/^#s(\d+)(?:i(\d))?(?:q([A-Za-z0-9_.]+?))?(?:f(\d+))?(?:m([cpbi]))?(?:w(\d+))?(?:k(\d))?(?:d([ABC]{1,3}))?(?:x([tblw]))?(?:dev)?$/);   /* ✦ v1H1: i=전투 q=법칙 f=신앙 · ✦ VS1: m=연구모드 w/k=DEV 오버라이드 */
