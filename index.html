@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v1H1Q1 · Monster Question Spike 01 · 3-3 보스 질문 구조만 변경 · v1H1(0528301bf1e6017731c67d8ba32cabc6)에서 분기 · 그 외 게임 계산 무변경 · 공식 승격/commit/push 0 -->
+<!-- v1H1VS1 · Combat Choice Vertical Slice 01 · 기회비용 보스(종말4턴+방벽300) × 다중 표적 × 강화 파티BJ(실험) · v1H1(0528301bf1e6017731c67d8ba32cabc6)에서 분기 · 모드 c=CONTROL(기준선) p/b/i · 공식 승격 HOLD · commit/push 0 -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -823,11 +823,18 @@ body{
         <button class="dbg" data-s="5" data-b="1">✨ 성직자 성역<br>마녀 · 턴1 [J] 재우기</button>
         <button class="dbg" data-s="38" data-b="0">⚔ 결정타 준비<br>늑대 · 턴1 [6] 재우기</button>
       </div>
-      <div id="dbgTitleQ1" style="font-size:9px;color:#b07393;letter-spacing:1px;">— Q1 몬스터 질문 · 종말 앞의 배분 (3-3 직행) —</div>
-      <div id="dbgRowQ1" style="display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:340px;">
-        <button class="dbg" data-s="38" data-b="8" data-laws="h1.m3.LB.h3" data-faith="12">공식 A<br>용사검·연쇄마력·행운·마무리</button>
-        <button class="dbg" data-s="7" data-b="8" data-laws="w2.w1.c1.nv1" data-faith="12">공식 B<br>완벽방어·철벽·자비·예고응답</button>
-        <button class="dbg" data-s="6" data-b="8" data-laws="h1.w2.LB.nv1" data-faith="12">공식 C<br>용사검·완벽방어·행운·예고응답</button>
+      <div id="dbgTitleVS" style="font-size:9px;color:#e0a45f;letter-spacing:1px;">— VS1 종말의 방벽 · Dev Showcase (3-3 직행 · 결정론) —</div>
+      <div id="dbgRowVS" style="display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:340px;">
+        <button class="dbg" data-s="38" data-b="8" data-laws="h1.m3.LB.h3" data-faith="12" data-mode="i">A 공격 계획 시작<br>종말4 · 방벽 300</button>
+        <button class="dbg" data-s="109" data-b="8" data-laws="h1.m3.LB.h3" data-faith="9" data-mode="i">B 4인 근접<br>종말4 · 리롤의 유혹</button>
+        <button class="dbg" data-s="6" data-b="8" data-laws="h1.w2.LB.nv1" data-faith="12" data-mode="i" data-wall="260" data-doomk="2">C 방어 전환<br>종말2 · 방벽 260</button>
+        <button class="dbg" data-s="12" data-b="8" data-laws="h1.w2.LB.nv1" data-faith="6" data-mode="i" data-wall="40" data-doomk="1">D 마지막 결단<br>종말1 · 방벽 40</button>
+      </div>
+      <div id="dbgRowVS2" style="display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:340px;">
+        <button class="dbg" data-s="38" data-b="8" data-laws="h1.m3.LB.h3" data-faith="12">CONTROL<br>기준선 · 동일 시드</button>
+        <button class="dbg" data-s="38" data-b="8" data-laws="h1.m3.LB.h3" data-faith="12" data-mode="p">PBJ ONLY<br>강화 배수만</button>
+        <button class="dbg" data-s="38" data-b="8" data-laws="h1.m3.LB.h3" data-faith="12" data-mode="b">BOSS ONLY<br>종말·표적만</button>
+        <button class="dbg" data-s="38" data-b="8" data-laws="h1.m3.LB.h3" data-faith="12" data-mode="i">INTEGRATED<br>전부 결합</button>
       </div>
       <div id="dbgTitle4">— v1F 신의 법칙 (실험 · 기본 off = v1D2 동일) —</div>
       <div id="dbgRow4">
@@ -878,6 +885,8 @@ body{
 "use strict";
 /* ============ 결정론 유틸 (시드 LCG · 난수 API 0건) ============ */
 let SEED = 20260710;
+let VSMODE = "c";                  /* ✦ VS1: 연구 모드 — c=CONTROL(기준선) p=강화PBJ만 b=종말보스만 i=통합 */
+const VSDEV = { w:null, k:null };  /* ✦ VS1: DEV 전용 오버라이드 — 해시 w=방벽 k=종말카운트 (쇼케이스 C/D) */
 let CI_MODE = "off";   /* ✦ v1E 잔존 상수 — v1F에서 해시 c 파라미터를 제거해 항상 off(도달 불가). A/B 비교는 v1E 프로토타입에서 */
 let DL = "";           /* ✦ v1F 신의 법칙: 보유 축복 집합 문자열("A"~"ABC") · 해시 d 파라미터 · 빈 문자열=off=v1D2 동일 */
 let rngState = SEED;
@@ -1212,9 +1221,9 @@ const MONSTERS = [
     ]},
   { id:"boss", emo:"😈", name:"마왕의 그림자", hp:900,
     intents:[
-      {n:"종말의 전조", txt:"파티 전체 <b>8</b> 피해", hint:"다음 턴 종말의 일격 — 완벽 방어로 무효 · 그 전에 끝낼 수도", type:"aoe", dmg:8},
-      {n:"종말의 일격", txt:"파티 전체 <b>24</b> 피해", hint:"전사 21=무효 · 전사 17+=절반 · 16↓=직격", type:"doom", dmg:24},
+      {n:"암흑 파동", txt:"파티 전체 <b>12</b> 피해", hint:"", type:"aoe", dmg:12},
       {n:"침식 선고", txt:"HP 가장 높은 아군에게 <b>22</b> 피해", hint:"블록·보호막으로 버텨라", type:"highest", dmg:22},
+      {n:"종말의 일격", txt:"파티 전체 <b>24</b> 피해", hint:"전사 21=무효 · 전사 17+=절반 · 16↓=직격", type:"doom", dmg:24},
     ]},
 ];
 
@@ -1775,6 +1784,7 @@ function onAllyTap(id){
   if(!g.fromVault) S.givesLeft--;
   const asn = {type:"give", gi:S.sel, to:id, fv:!!g.fromVault};
   S.assigns.push(asn);
+  if(VS.active){ VSTM.alloc[id]++; vsEvent(`T${S.turn} [${g.face}]→${CLASSES[id].name}`); }   /* ✦ VS1 */
   a.cards.push(g.face);
   a.godCards.push(a.cards.length-1);
   const nt = bestTotal(a.cards);
@@ -1839,6 +1849,7 @@ function vaultStore(gi){   /* ✦ v1G: 보관 로직 함수화 — 성물함 직
   S.vault = g.face;
   S.vaultMeta = { turn:S.turn, battle:S.battle, previewName:S.enemy.intents[(S.intentIdx+1)%S.enemy.intents.length].n };
   S.stats.vaultStores++;
+  if(VS.active){ VSTM.vaultIn.push(g.face); vsEvent(`T${S.turn} 성물함⊳ [${g.face}]`); }   /* ✦ VS1 */
   S.assigns.push({type:"vault", gi});
   SFX.vault();
   log(`[${g.face}] 를 성물함에 봉인 — 다음 턴의 패가 된다`, "l-sys");
@@ -1861,6 +1872,7 @@ $("vaultSlot").addEventListener("click", ()=>{
   S.god.push({face, state:"hand", fromVault:true, origin:"vault"});
   S.vaultMetaUsed = { linked };
   S.stats.vaultRetrieves++;
+  if(VS.active){ VSTM.vaultOut.push(face); vsEvent(`T${S.turn} 성물함⊲ [${face}]`); }   /* ✦ VS1 */
   S.assigns.push({type:"unvault", gi:S.god.length-1, meta, linked});
   SFX.vault();
   log(`성물함에서 [${face}] 를 꺼냈다${linked?" (예고 연계!)":""}`, "l-sys");
@@ -1877,6 +1889,7 @@ $("rerollBtn").addEventListener("click", ()=>{
   g.face = draw();
   g.origin = "reroll";
   S.stats.rerolls++;
+  if(VS.active){ VSTM.rerolls++; const _k = VS.doomActive? String(VS.doom) : "after"; VSTM.rerollByCount[_k]=(VSTM.rerollByCount[_k]||0)+1; if(VS.doomActive && VS.wall>0) VSTM.faithAttack += 3; vsEvent(`T${S.turn} 리롤 [${oldFace}]→[${g.face}] (신앙-3 · 카운트 ${VS.doomActive?VS.doom:"해소"})`); }   /* ✦ VS1 */
   S.assigns.push({type:"reroll", gi:S.sel, oldFace, oldOrigin, cost:3});
   SFX.reroll();
   const el = $("gc_"+S.sel);
@@ -1989,6 +2002,7 @@ function startTurn(){
   S.sel=-1; S.assigns=[];
   S.intentIdx = (S.turn-1) % S.enemy.intents.length;
   renderAll(); showOracles(); updateVignette();
+  vsTurnStart();   /* ✦ VS1: 종말 카운트 대형 표시(4!!→1!!!!!) + 상시 바 갱신 */
   /* 예고 연계 기회 — 재운 카드가 "그 예고"를 마주한 턴에 21을 만들 수 있으면 알림 */
   if(S.vault && S.vaultMeta){
     const mt = S.vaultMeta;
@@ -2008,8 +2022,23 @@ function startTurn(){
 const wait = ms => new Promise(r=>setTimeout(r,ms));
 function aliveIds(){ return UI_ORDER.filter(id=>!S.allies[id].dead); }
 function dmgEnemy(n){
+  if(VS.active){   /* ✦ VS1: 그로기 증폭 → 방벽 흡수 → 초과 본체 (기준선 모드에서는 이 블록 미진입) */
+    if(VS.groggy>0 && n>0){ const nn=Math.round(n*1.5); if(nn>n){ flt("enemy","😵 ×1.5","f-pb"); n=nn; } }
+    if(VS.wall>0 && n>0){
+      const w = Math.min(VS.wall, n);
+      VS.wall -= w; VSTM.wallDmg += w; n -= w;
+      log(`🛡 방벽에 ${w} 피해 (잔여 ${VS.wall}/${VS.wallMax})`, "l-sys");
+      if(VS.wall<=0) vsWallBreak();
+      vsRenderBar();
+      if(n<=0) return;
+      VSTM.overflow += n;
+      log(`⚡ 초과 ${n} — 본체로 이어진다!`, "l-gold");
+    }
+    if(VS._bjTier>=2) VSTM.bjDmg[VS._bjTier] += n;
+  }
   const before = S.eHp;
   S.eHp -= n;
+  if(VS.active && before>0 && S.eHp<=0 && !VSTM.killTurn){ VSTM.killTurn = S.turn; }
   S._turnDmg = (S._turnDmg||0) + n;
   if(n > S.stats.maxHit) S.stats.maxHit = n;
   if(S._turnDmg > S.stats.maxTurnDmg) S.stats.maxTurnDmg = S._turnDmg;
@@ -2139,7 +2168,9 @@ async function resolveTurn(){
 
   /* ══ ✦ 파티 블랙잭 판정 (v1B) — 동시 21 인원 = 이번 턴의 배율 ══ */
   S.pbCount = UI_ORDER.filter(id=>!S.allies[id].dead && acts[id] && acts[id].k==="m").length;
-  S.pbMult  = S.pbCount>=4? 4 : S.pbCount===3? 2 : S.pbCount===2? 1.25 : 1;
+  const _pbT = (VSMODE==="p"||VSMODE==="i") ? {2:1.5, 3:3, 4:6} : {2:1.25, 3:2, 4:4};   /* ✦ VS1: 강화 파티BJ 실험 프리셋 — 기준선(c/b)은 현행 그대로 */
+  S.pbMult  = _pbT[Math.min(4,S.pbCount)] || 1;
+  if(VS.active && S.pbCount>=2){ VSTM.bj[Math.min(4,S.pbCount)]++; VS._bjTier=Math.min(4,S.pbCount); vsEvent(`T${S.turn} 파티BJ ${S.pbCount}인 ×${S.pbMult}`); }
   S.chainLock = S.pbCount>=2;   /* ✦ v1B1: 동시 21이 2명 이상 = 기적 연쇄 — 적이 죽어도 완주한다 */
   if(S.pbCount>=2){
     S.stats.pbTimes++;
@@ -2272,7 +2303,7 @@ async function resolveTurn(){
         await wait(90); // 히트 스탑
       }
       else { SFX.hit(); figFx(id,"recv",350); log(`${nm}: ${act.txt} — ${d} 피해`); }
-      dmgEnemy(d);
+      if(id==="mage" && vsMultiActive()) vsMageAoe(d); else dmgEnemy(d);   /* ✦ VS1: 마법사 = 전장을 지운다 — 전 생존 적 동일 피해 · 처치 초과분 본체 이월 */
       if(DL) await dlProcs(id, act, a.cards);   /* ✦ v1F: 고유 개성/메아리 — 기적 수치와 분리된 별도 박자(procB 선례) */
       if(id==="mage" && act.k==="m" && has("m3")){ S.chainMagic += 10; flt(id,"연쇄 마력 +10","f-bless"); }
       if(id==="hero" && act.k==="m" && S.eHp<=0 && has("h3")){ S.faith+=2; S.stats.faithGained+=2; procB("h3","s",2,"🕯 신탁 +2",id); renderFaith(); }
@@ -2346,6 +2377,7 @@ async function resolveTurn(){
   }
 
   /* ---- 몬스터 행동 ---- */
+  if(!(await vsBossPhase())){   /* ✦ VS1: 종말 판정·그로기가 이번 본체 행동을 대체하면 기존 행동 생략 (CONTROL은 항상 false) */
   const it = S.enemy.intents[S.intentIdx];
   if(S.perfectGuard){
     /* ✦ v1D: 완벽 방어 순간극 — 적 돌진 → 방패벽 쾅 → 튕김 → 경직 */
@@ -2404,6 +2436,8 @@ async function resolveTurn(){
       log(`맹독 살포! ${sorted.map(i=>CLASSES[i].name).join(", ")} 중독`, "l-hit");
     }
   }
+  }   /* ✦ VS1: vsBossPhase 래핑 닫기 */
+  await vsAuxPhase();   /* ✦ VS1: 보조 표적 행동 — 수복/재앙 파편 (완벽 방어 시 전부 무효 + w2 반사) */
 
   if(S.eHp<=0){ await wait(400); await onVictory(); return; }   /* 반격 처치 */
 
@@ -3004,6 +3038,7 @@ function nextBattle(to){
   log(`— 승리의 은총 · 전원 +8 —`, "l-heal");
   S.enemy = enemyFor(S.battle);
   S.eHp = S.enemy.hp;
+  vsSetupBattle();   /* ✦ VS1: 3-3 도달 시 종말의 방벽 셋업 (모드 b/i 한정) */
   $("sMon").classList.remove("doomed");
   if(CH_TOAST[S.battle]) toast(CH_TOAST[S.battle], 2400);
   log(`— ${chLabel(S.battle)} · ${S.enemy.name} 출현 —`, "l-sys");
@@ -3109,16 +3144,201 @@ window.__H1 = { get RUN(){return RUN}, get S(){return S}, get DL(){return DL}, g
 window.runSpineJump = function(){ console.log("v1H1: window.H1 사용 — jump(c,b) setFaith(n) setLaws([...]) openAltar('free|paid|edit') setLawProgress('dl1',n) showResult(win)"); };
 
 /* ============ 부팅 ============ */
+/* ═══════════ ✦ VS1: Combat Choice Vertical Slice 01 ═══════════
+   기회비용 보스 "파멸을 세는 자" — 종말 4턴 카운트다운 + 방벽 300(본체 위 보호층, 주적=본체 항상)
+   · 공격 작전: 4턴 내 방벽 파괴 → 종말 취소 + 그로기(2턴 행동 불가·받는 피해 ×1.5) + 초과 본체 이월
+   · 방어 작전: 종말 턴 전사 21=완전 무효(모든 적, w2=무효 총합 50% 반사) / 17~20=전체 20 / 그 외=전체 40
+   · 보조 표적: 방벽의 촉수(방벽 +15/턴 수복) · 재앙의 촉수(파티 전체 3 — 분산 상처)
+   · 마법사: 전 생존 적 동일 피해 + 처치 초과분 본체 이월 (단일전은 용사 우위 자동 보존)
+   · 모드 c=CONTROL(이 모듈 완전 미작동=기준선) p=강화PBJ만 b=종말보스만 i=통합 · 승격 HOLD */
+const VS = { active:false, wall:0, wallMax:300, wallDissolved:false, doomActive:false, doom:4, groggy:0, aux:[], _bjTier:0 };
+const VSTM = { mode:"c", rerolls:0, rerollByCount:{}, faithAttack:0, vaultIn:[], vaultOut:[],
+  bj:{2:0,3:0,4:0}, bjDmg:{2:0,3:0,4:0}, wallDmg:0, overflow:0, alloc:{hero:0,war:0,mage:0,cleric:0},
+  auxKillTurns:[], wallBroken:false, wallBreakTurn:0, doomFired:false, perfectDefense:false,
+  imperfectDefense:false, killTurn:0, mageAoe:0, events:[] };
+function vsEvent(t){ VSTM.events.push(t); }
+function vsMultiActive(){ return VS.active && VS.aux.some(x=>x.hp>0); }
+function vsSetupBattle(){
+  VS.active=false; VS._bjTier=0; const old=$("vsBar"); if(old) old.style.display="none";
+  VSTM.mode = VSMODE;
+  if((VSMODE!=="b" && VSMODE!=="i") || S.battle!==8) return;
+  VS.active = true;
+  VS.wallMax = 300;
+  VS.wall = (VSDEV.w!=null ? Math.max(0, Math.min(300, VSDEV.w)) : 300);
+  VS.wallDissolved = false; VS.groggy = 0;
+  VS.doom = (VSDEV.k!=null ? VSDEV.k : 4);
+  VS.doomActive = VS.wall > 0;
+  VS.aux = [ {n:"방벽의 촉수", role:"repair", hp:48, max:48},
+             {n:"재앙의 촉수", role:"chip",   hp:48, max:48} ];
+  S.enemy = Object.assign({}, S.enemy, { name:"파멸을 세는 자", intents:[
+    {n:"어둠의 손톱", txt:"HP 가장 높은 아군에게 <b>14</b> 피해", hint:"방벽이 남으면 종말이 온다", type:"highest", dmg:14},
+    {n:"암흑 파동",   txt:"파티 전체 <b>6</b> 피해",              hint:"", type:"aoe", dmg:6},
+  ]});
+  let bar = $("vsBar");
+  if(!bar){
+    bar = document.createElement("div"); bar.id = "vsBar";
+    bar.style.cssText = "font-size:10.5px;font-weight:700;color:#ffd27a;text-align:center;padding:2px 4px;letter-spacing:.4px;line-height:1.5;";
+    $("nextIntent").after(bar);
+  }
+  bar.style.display = "block";
+  log("☠ 종말까지 "+VS.doom+"턴 — 방벽을 부수면 종말은 취소된다", "l-gold");
+  log("🛡 종말의 방벽 "+VS.wall+" — 초과 피해는 본체로 이어진다 · 촉수는 방벽을 수복하고 파티를 갉는다", "l-sys");
+  vsRenderBar();
+}
+function vsRenderBar(){
+  if(!VS.active) return;
+  const bar = $("vsBar"); if(!bar) return;
+  const doomTxt = VS.doomActive ? "☠ 종말까지 <b>"+VS.doom+"</b>턴"
+                : (VSTM.wallBroken ? "💥 종말 취소" : (VSTM.doomFired ? "☁ 종말의 힘 해소" : "☠ —"));
+  const auxTxt = VS.aux.map(x => x.hp>0 ? `🜏 ${x.n} ${x.hp}` : `<s style="opacity:.45">🜏 ${x.n}</s>`).join(" · ");
+  bar.innerHTML = `👑 주적 <b>본체</b> · ${doomTxt} · 🛡 방벽 <b>${VS.wall}</b>/${VS.wallMax}` + (VS.groggy>0 ? ` · 😵 그로기 ${VS.groggy}` : "") + `<br>${auxTxt}`;
+}
+function vsFlash(t, c){
+  const d = document.createElement("div"); d.textContent = t;
+  d.style.cssText = "position:absolute;left:50%;top:36%;transform:translate(-50%,-50%);font-size:56px;font-weight:900;z-index:95;pointer-events:none;text-shadow:0 2px 18px rgba(0,0,0,.85);transition:opacity .8s;color:"+(c||"#ffd27a");
+  $("app").appendChild(d);
+  setTimeout(()=>{ d.style.opacity="0"; }, 720);
+  setTimeout(()=>d.remove(), 1600);
+}
+function vsTurnStart(){
+  if(!VS.active) return;
+  VS._bjTier = 0;
+  if(VS.doomActive) vsFlash(VS.doom + "!".repeat(Math.max(2, 6-VS.doom)), VS.doom<=2 ? "#ff5f6e" : "#ffd27a");
+  vsRenderBar();
+}
+function vsWallBreak(){
+  VS.wall = 0;
+  if(VSTM.wallBroken) return;
+  VSTM.wallBroken = true; VSTM.wallBreakTurn = S.turn;
+  VS.doomActive = false; VS.groggy = 2;
+  vsFlash("와장창!!", "#ffe27a"); flash("gold"); SFX.miracle(); shake();
+  log("💥 종말의 방벽 붕괴!! 예정된 종말이 취소된다", "l-gold");
+  log("😵 파멸을 세는 자 — 그로기! 2턴 동안 행동 불가 · 받는 피해 ×1.5", "l-gold");
+  vsEvent(`T${S.turn} 방벽 붕괴 → 종말 취소 · 그로기 2턴`);
+  vsRenderBar();
+}
+function vsMageAoe(d){
+  VSTM.mageAoe++;
+  let carried = 0;
+  for(const ax of VS.aux){
+    if(ax.hp<=0) continue;
+    ax.hp -= d;
+    if(ax.hp<=0){
+      carried += -ax.hp; ax.hp = 0;
+      VSTM.auxKillTurns.push({n:ax.n, turn:S.turn, by:"mage"});
+      log(`💥 ${ax.n} 소멸! — 마법이 전장을 지운다`, "l-gold");
+      vsEvent(`T${S.turn} ${ax.n} 소멸(마법사 광역)`);
+    } else {
+      log(`${ax.n} 에게 ${d} 피해 (${ax.hp}/${ax.max})`, "l-hit");
+    }
+  }
+  if(carried>0) log(`⚡ 처치 초과 ${carried} — 본체로 이월`, "l-gold");
+  dmgEnemy(d + carried);
+  vsRenderBar();
+}
+async function vsBossPhase(){
+  if(!VS.active) return false;
+  if(VS.doomActive){
+    if(VS.doom<=1){ if(VS.wall>0){ await vsDoom(); return true; } VS.doomActive=false; }
+    else VS.doom--;
+  }
+  if(VS.groggy>0){
+    VS.groggy--;
+    log("😵 그로기 — 파멸을 세는 자가 행동하지 못한다! (받는 피해 ×1.5 · 남은 "+VS.groggy+"턴)", "l-gold");
+    vsRenderBar();
+    return true;
+  }
+  return false;
+}
+async function vsDoom(){
+  VS.doomActive = false; VSTM.doomFired = true;
+  const alive = aliveIds();
+  vsFlash("종 말", "#ff4757"); shake(); SFX.bigHit();
+  await wait(320);
+  if(S.perfectGuard){
+    flash("gold"); SFX.block(); guardWallFx(); enemyRecoilFx(true);
+    S.stats.saves++;
+    log("완벽 방어!! 종말이 무효화됐다 — 종말의 힘이 흩어진다", "l-gold");
+    VSTM.perfectDefense = true; vsEvent(`T${S.turn} 종말 완벽 방어`);
+    const negated = 40 * alive.length;
+    if(has("w2") && negated>0){
+      let refl = Math.ceil(negated/2);
+      if(S.pbMult>1){ const nr=Math.round(refl*S.pbMult); S.stats.pbDmg += nr-refl; refl=nr; flt("war","✦"+pbTag(),"f-pb"); }
+      S.stats.reflectTotal += refl;
+      await wait(240); SFX.hit(); dmgEnemy(refl);
+      log(`반격의 성좌! 종말을 되돌린다 — ${refl} 반사`, "l-gold");
+    }
+  } else if(!S.allies.war.dead && S.warTotal>=17 && S.warTotal<=20){
+    flash("red"); shake();
+    log("불완전 방어 — 전사가 종말의 절반을 받아냈다! (전체 20)", "l-hit");
+    VSTM.imperfectDefense = true; vsEvent(`T${S.turn} 종말 불완전 방어(전체 20)`);
+    for(const id of alive) dmgAlly(id, 20);
+  } else {
+    flash("red"); shake();
+    log("종말 직격!! (전체 40)", "l-hit");
+    vsEvent(`T${S.turn} 종말 직격(전체 40)`);
+    for(const id of alive) dmgAlly(id, 40);
+  }
+  VS.wall = 0; VS.wallDissolved = true;   /* 종말의 힘·방벽 해소 — 이후 전투 계속(§5) */
+  vsRenderBar();
+}
+async function vsAuxPhase(){
+  if(!VS.active || S.eHp<=0) return;
+  const alive = aliveIds(); if(!alive.length) return;
+  let negated = 0;
+  for(const ax of VS.aux){
+    if(ax.hp<=0) continue;
+    await wait(180);
+    if(ax.role==="repair"){
+      if(VS.doomActive && VS.wall>0 && VS.wall<VS.wallMax){
+        VS.wall = Math.min(VS.wallMax, VS.wall+15);
+        log(`${ax.n} — 방벽 수복 +15 (${VS.wall}/${VS.wallMax})`, "l-sys");
+      } else if(S.perfectGuard){
+        negated += 8; log(`${ax.n} 의 할퀴기 — 방패벽에 막혔다!`, "l-gold");
+      } else {
+        let tgt=null, b=1e9;
+        for(const id of alive){ if(S.allies[id].hp<b){ b=S.allies[id].hp; tgt=id; } }
+        if(S.taunt && !S.allies.war.dead) tgt="war";
+        SFX.hit(); dmgAlly(tgt, 8);
+        log(`${ax.n} 할퀴기 → ${CLASSES[tgt].name} 8 피해`, "l-hit");
+      }
+    } else {   /* chip: 재앙 파편 — 파티 전체 3 (분산 상처 → 성직자·전사 가치 관측) */
+      if(S.perfectGuard){
+        negated += 3*alive.length; log(`${ax.n} 의 재앙 파편 — 방패벽에 막혔다!`, "l-gold");
+      } else {
+        SFX.hit();
+        for(const id of alive) dmgAlly(id, 3);
+        log(`${ax.n} 재앙 파편 — 파티 전체 3`, "l-hit");
+      }
+    }
+  }
+  if(negated>0){
+    S.stats.saves++;
+    if(has("w2")){
+      let refl = Math.ceil(negated/2);
+      if(S.pbMult>1){ const nr=Math.round(refl*S.pbMult); S.stats.pbDmg += nr-refl; refl=nr; }
+      S.stats.reflectTotal += refl;
+      dmgEnemy(refl);
+      log(`반격의 성좌! (촉수의 몫) ${refl} 반사`, "l-gold");
+    }
+  }
+  vsRenderBar();
+}
+window.__VS = { get VS(){ return VS; }, get TM(){ return VSTM; }, get MODE(){ return VSMODE; }, hit:n=>dmgEnemy(n) };   /* R&D 관측·검사 전용 노출 */
+
 (function boot(){
-  const m = location.hash.match(/^#s(\d+)(?:i(\d))?(?:q([A-Za-z0-9_.]+?))?(?:f(\d+))?(?:d([ABC]{1,3}))?(?:x([tblw]))?(?:dev)?$/);   /* ✦ v1H1: i=전투 인덱스(0~8) q=법칙 목록 f=신앙 */
+  const m = location.hash.match(/^#s(\d+)(?:i(\d))?(?:q([A-Za-z0-9_.]+?))?(?:f(\d+))?(?:m([cpbi]))?(?:w(\d+))?(?:k(\d))?(?:d([ABC]{1,3}))?(?:x([tblw]))?(?:dev)?$/);   /* ✦ v1H1: i=전투 q=법칙 f=신앙 · ✦ VS1: m=연구모드 w/k=DEV 오버라이드 */
   let VIEW = "t";   /* ✦ v1G 라우팅: t=타이틀(기본) · b=전투 직행 · l=DEV LAB · ✦ v1G3 w=시작 법칙 선택 */
   if(m){
     SEED = +m[1];
     if(m[2]!==undefined) S.battle = Math.min(8, +m[2]);
     if(m[3]) bootLaws(m[3].split("."));
     if(m[4]!==undefined) S.faith = Math.max(0, +m[4]);
-    if(m[5]) bootLaws([...new Set(m[5])].map(x=>"L"+x));   /* 레거시 dABC = 칠성 시작 프리셋 */
-    if(m[6]) VIEW = m[6];
+    if(m[5]) VSMODE = m[5];                                    /* ✦ VS1: 연구 모드 */
+    if(m[6]!==undefined) VSDEV.w = +m[6];                      /* ✦ VS1: DEV 방벽 오버라이드 */
+    if(m[7]!==undefined) VSDEV.k = Math.max(1, +m[7]);         /* ✦ VS1: DEV 카운트 오버라이드 */
+    if(m[8]) bootLaws([...new Set(m[8])].map(x=>"L"+x));   /* 레거시 dABC = 칠성 시작 프리셋 */
+    if(m[9]) VIEW = m[9];
   }
   for(const k of Object.keys(ALTAR_AT)) if(+k < S.battle) RUN.doneAltars[k]=true;   /* ✦ v1H1: 부팅 위치 이전 제단은 소비된 것으로 */
   RUN.bIdx = S.battle;
@@ -3127,13 +3347,14 @@ window.runSpineJump = function(){ console.log("v1H1: window.H1 사용 — jump(c
   refillShoe();
   initAllies();
   S.enemy = enemyFor(S.battle); S.eHp = S.enemy.hp;
+  vsSetupBattle();   /* ✦ VS1: DEV 직행 부팅 경로에서도 종말의 방벽 셋업 */
   renderAll(); renderFaith(); renderVault();
   $("seedTag").textContent = `시드 ${SEED} · ${chLabel(S.battle)}부터 · 법칙 ${RUN.activeLaws.length}/4`;
   renderBlessChip();
   $("blessChip").addEventListener("click", showBlessList);
   document.querySelectorAll(".dbg").forEach(btn=>{
     btn.addEventListener("click", ()=>{
-      location.hash = "s"+btn.dataset.s+(btn.dataset.b!=="0" ? "i"+btn.dataset.b : "")+(btn.dataset.laws? "q"+btn.dataset.laws : "")+(btn.dataset.faith? "f"+btn.dataset.faith : "")+(btn.dataset.dl? "d"+btn.dataset.dl : "")+"xb";
+      location.hash = "s"+btn.dataset.s+(btn.dataset.b!=="0" ? "i"+btn.dataset.b : "")+(btn.dataset.laws? "q"+btn.dataset.laws : "")+(btn.dataset.faith? "f"+btn.dataset.faith : "")+(btn.dataset.mode? "m"+btn.dataset.mode : "")+(btn.dataset.wall? "w"+btn.dataset.wall : "")+(btn.dataset.doomk? "k"+btn.dataset.doomk : "")+(btn.dataset.dl? "d"+btn.dataset.dl : "")+"xb";
       location.reload();
     });
   });
