@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- v1H1VS1A1 · Multiply Reveal Mobile Overlay Ownership Fix 01 · 부모 v1H1VS1A(1086087f045b24512f2817ec247711ad)에서 분기 · 연출 랩 진입 시 레이어/입력 독점 핫픽스 · 게임 계산·연출·수치 무변경 · 공식 승격 HOLD · commit/push 0 -->
 <!-- v1H1VS1 · Combat Choice Vertical Slice 01 · 기회비용 보스(종말4턴+방벽300) × 다중 표적 × 강화 파티BJ(실험) · v1H1(0528301bf1e6017731c67d8ba32cabc6)에서 분기 · 모드 c=CONTROL(기준선) p/b/i · 공식 승격 HOLD · commit/push 0 -->
 <html lang="ko">
 <head>
@@ -536,6 +537,7 @@ body{
 #ciStats,#dlStats{font-size:9px;color:#8a82a8;max-width:340px;text-align:center;line-height:1.5;}
 /* ✦ v1G 플레이어 셸 */
 .hiddenOv{display:none !important;}
+body.reveal-lab-open{overflow:hidden !important;overscroll-behavior:none;}
 #labLink{margin-top:14px;border:1px solid var(--line);background:transparent;color:#5a5478;border-radius:8px;padding:4px 10px;font-size:9px;font-family:inherit;letter-spacing:1px;}
 #labCtl{display:flex;flex-direction:column;gap:8px;align-items:center;margin-bottom:8px;}
 #labCtl label{font-size:11px;color:var(--dim);display:flex;gap:6px;align-items:center;}
@@ -837,7 +839,7 @@ body{
         <button class="dbg" data-s="38" data-b="8" data-laws="h1.m3.LB.h3" data-faith="12" data-mode="i">INTEGRATED<br>전부 결합</button>
       </div>
       <div id="dbgRowLab" style="display:flex;gap:5px;justify-content:center;margin-top:2px;">
-        <button class="dbg" onclick="__LAB && __LAB.open()" style="background:#2a2140;color:#ffd27a;border-color:#5a4a80;">✦ 연출 랩<br>Multiply Reveal Lab</button>
+        <button class="dbg" id="labRevealBtn" onclick="__LAB && __LAB.open()" style="background:#2a2140;color:#ffd27a;border-color:#5a4a80;">✦ 연출 랩<br>Multiply Reveal Lab</button>
       </div>
       <div id="dbgTitle4">— v1F 신의 법칙 (실험 · 기본 off = v1D2 동일) —</div>
       <div id="dbgRow4">
@@ -3368,10 +3370,10 @@ const LAB = {
   NM:{hero:"\uC6A9\uC0AC",war:"\uC804\uC0AC",mage:"\uB9C8\uBC95\uC0AC",cleric:"\uC131\uC9C1\uC790"},
   open(){
     if(this.el) this.el.remove();
-    const ov=document.createElement("div"); ov.id="revealLab"; this.el=ov;
-    ov.style.cssText="position:fixed;inset:0;z-index:400;background:#0c0a14;color:#e8e0d0;display:flex;flex-direction:column;font-family:inherit;overflow:hidden;max-width:100vw;";
+    const ov=document.createElement("div"); ov.id="revealLab"; this.el=ov; ov.tabIndex=-1;
+    ov.style.cssText="position:fixed;inset:0;width:100vw;height:100dvh;max-width:none;z-index:10000;background:#0c0a14;color:#e8e0d0;display:flex;flex-direction:column;font-family:inherit;overflow:hidden;pointer-events:auto;outline:none;";
     ov.innerHTML=`
-      <div style="padding:8px 10px 5px;border-bottom:1px solid #2a2438;flex:0 0 auto;">
+      <div style="padding:calc(8px + env(safe-area-inset-top)) 10px 5px;border-bottom:1px solid #2a2438;flex:0 0 auto;">
         <div style="display:flex;justify-content:space-between;align-items:center;">
           <b style="font-size:12.5px;color:#ffd27a;">\u2726 \uC5F0\uCD9C \uB7A9 \u2014 \uACF1\uC148\uC774 \uBCF4\uC774\uB294\uAC00</b>
           <button id="labClose" style="font-size:11px;padding:3px 9px;background:#221c34;color:#bfa8ff;border:1px solid #4a3a70;border-radius:5px;">\uC804\uD22C\uB85C \u2715</button>
@@ -3391,15 +3393,39 @@ const LAB = {
         <button id="labNext" style="font-size:13px;padding:8px 11px;background:#1a1628;color:#cbb;border:1px solid #383050;border-radius:6px;">\u25B6</button>
         <button id="labDbgT" style="font-size:11px;padding:8px 9px;background:#141020;color:#6a5a80;border:1px solid #2a2438;border-radius:6px;">\u24D8</button>
       </div>`;
-    $("app").appendChild(ov);
+    /* 01A: 오버레이 소유권 획득 — 연출 랩만 화면·입력 독점 */
+    this.origin = /lab=reveal/.test(location.hash) ? "hash" : "dev";
+    const app=$("app");
+    this._restoreOv=[];
+    ["titleOv","lawOv","labOv","bookOv"].forEach(id=>{
+      const o=$(id);
+      if(o && !o.classList.contains("hiddenOv")){ o.classList.add("hiddenOv"); this._restoreOv.push(id); }
+    });
+    const labOv=$("labOv");
+    if(labOv){ labOv.setAttribute("aria-hidden","true"); labOv.inert=true; labOv.style.pointerEvents="none"; }
+    if(app){ app.inert=true; app.setAttribute("aria-hidden","true"); }
+    document.body.classList.add("reveal-lab-open");
+    document.body.appendChild(ov);
     ov.querySelector("#labClose").onclick=()=>this.close();
+    ov.querySelector("#labClose").textContent = this.origin==="dev" ? "DEV LAB\uC73C\uB85C \u2715" : "\uC5F0\uCD9C \uB7A9 \uB2EB\uAE30 \u2715";
     ov.querySelector("#labReplay").onclick=()=>this.play();
     ov.querySelector("#labPrev").onclick=()=>{ this.si=(this.si+REVEAL_DATA.situations.length-1)%REVEAL_DATA.situations.length; this.refresh(); };
     ov.querySelector("#labNext").onclick=()=>{ this.si=(this.si+1)%REVEAL_DATA.situations.length; this.refresh(); };
     ov.querySelector("#labDbgT").onclick=()=>{ this.showDbg=!this.showDbg; this.renderDbg(); };
     this.refresh();
+    if(ov.focus) ov.focus({preventScroll:true});
   },
-  close(){ this.gen++; if(this.el){ this.el.remove(); this.el=null; } if(/lab=reveal/.test(location.hash)) location.hash=""; },
+  close(){ this.gen++;
+    if(this.el){ this.el.remove(); this.el=null; }
+    document.body.classList.remove("reveal-lab-open");
+    const app=$("app"), labOv=$("labOv");
+    if(app){ app.inert=false; app.removeAttribute("aria-hidden"); }
+    if(labOv){ labOv.removeAttribute("aria-hidden"); labOv.inert=false; labOv.style.pointerEvents=""; }
+    (this._restoreOv||[]).forEach(id=>{ const o=$(id); if(o) o.classList.remove("hiddenOv"); });
+    this._restoreOv=[];
+    if(/lab=reveal/.test(location.hash)) location.hash="";
+    if(this.origin==="dev"){ const b=$("labRevealBtn"); if(b && b.focus) b.focus({preventScroll:true}); }
+  },
   chip(txt,on){ return `<span data-v="${txt}" style="font-size:10.5px;padding:3px 7px;border-radius:4px;cursor:pointer;border:1px solid #383050;${on?'background:#4a3a70;color:#fff;':'background:#1a1628;color:#9a8ab0;'}">${txt}</span>`; },
   refresh(){
     const S=REVEAL_DATA.situations;
