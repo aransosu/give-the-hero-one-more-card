@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v1H1VS1A1B · Parallel Myth Rhythm Lab 01 · 부모 In-Game Myth Reveal Slice 01(9302580d66378bbe0ae4d433781faa5b)에서 분기 · 정상 전투의 순차 리플레이 자동 호출을 기본 OFF로 격리(코드·원장 기반은 보존, Dev에서만 명시 호출) · Dev Lab에 병렬 리듬(PARALLEL RHYTHM) 관찰 모드 신설 — P1~P10 실측 원장을 읽어 행동 타임라인과 동시에 왼쪽 레일·중앙 결산 1회를 재생(계산 재실행 0·입력 차단 오버레이 0) · 계산·RNG·턴·수치 무변경 · 공식 승격 HOLD · commit/push 0 -->
+<!-- v1H1VS1A1B · In-Game Parallel Myth Rhythm Slice 01 (Checkpoint A) · 부모 Parallel Myth Rhythm Lab 01(b74bc5f22da72f6d8740e7968445cb2d)에서 분기 · 랩에서 FUN PASS 받은 병렬 리듬을 실제 Combat Choice 전투 한 판에 AUTO 연결 — resolveTurn 파티 루프가 도는 실시간에 각 영웅 impact와 동시에 왼쪽 레일 누적, 루프 종료 시 중앙 결산 정확히 1회 · 계산·RNG·턴·수치 무변경(레일은 실제 피해 d를 읽어 표시만) · PRLIVE.on OFF=부모 동일 경로 · 순차 리플레이(MREV)는 기본 OFF 격리 유지 · 전면 입력차단 오버레이·닫기버튼·추가 대기 0 · 공식 승격 HOLD · commit/push 0 -->
 <!-- v1H1VS1 · Combat Choice Vertical Slice 01 · 기회비용 보스(종말4턴+방벽300) × 다중 표적 × 강화 파티BJ(실험) · v1H1(0528301bf1e6017731c67d8ba32cabc6)에서 분기 · 모드 c=CONTROL(기준선) p/b/i · 공식 승격 HOLD · commit/push 0 -->
 <html lang="ko">
 <head>
@@ -781,6 +781,34 @@ body.reveal-lab-open{overflow:hidden !important;overscroll-behavior:none;}
 #prlStage.prlShake{animation:prlShake .3s ease;}
 @keyframes prlShake{0%,100%{transform:none;}25%{transform:translate(2px,-2px);}55%{transform:translate(-2px,2px);}}
 @media (max-width:400px){ .prlFinN{font-size:30px;} #prlFinale.prlDrama .prlFinN{font-size:36px;} }
+/* ═══ ✦ IGPRL01: 인게임 병렬 리듬 — 실전 전장 위 왼쪽 레일 + 중앙 결산 (입력 차단 0 · pointer-events:none) ═══ */
+#igRail{position:fixed;left:6px;top:calc(8px + env(safe-area-inset-top));width:44%;max-width:150px;z-index:8500;
+  display:flex;flex-direction:column;gap:3px;pointer-events:none;}
+.igLn{font-size:11.5px;line-height:1.34;color:#e8f4ef;opacity:0;transform:translateX(-8px);
+  transition:opacity .13s ease, transform .13s ease;overflow-wrap:anywhere;text-shadow:0 1px 3px rgba(0,0,0,.85);}
+.igLn.show{opacity:1;transform:none;}
+.igLn.igChip{font-size:10px;color:#bcd0c8;}
+.igLn.igPb{color:#ffb3d5;font-weight:800;}
+.igLn.igBig{font-size:11.5px;color:#9fe0ff;font-weight:800;}
+.igLn.igHit{font-size:13.5px;font-weight:800;color:#ffe9b0;}
+.igLn.igHeal{color:#a8ffca;font-weight:700;}
+.igLn.igGuard{color:#a8d8ff;font-weight:700;}
+.igLn.fade{opacity:0;transition:opacity 1s ease;}
+#igFin{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%) scale(.7);z-index:8600;text-align:center;
+  pointer-events:none;opacity:0;transition:opacity .2s ease, transform .2s ease;}
+#igFin.on{opacity:1;transform:translate(-50%,-50%) scale(1);}
+#igFin.fade{opacity:0;transition:opacity .85s ease;}
+.igFinH{font-size:12.5px;color:#ffd27a;letter-spacing:2px;font-weight:800;text-shadow:0 1px 4px rgba(0,0,0,.8);}
+.igFinN{font-size:32px;font-weight:900;color:#fff;text-shadow:0 0 16px rgba(255,200,100,.55),0 2px 6px rgba(0,0,0,.7);white-space:nowrap;}
+.igFinS{font-size:11px;color:#ffb3d5;font-weight:800;margin-top:1px;text-shadow:0 1px 3px rgba(0,0,0,.8);}
+#igFin.igDrama .igFinN{font-size:40px;text-shadow:0 0 26px rgba(255,180,80,.95),0 0 60px rgba(255,120,60,.5);animation:igKoong .5s ease;}
+#igFin.igDrama .igFinH{font-size:14.5px;}
+@keyframes igKoong{0%{transform:scale(1.55);}55%{transform:scale(.95);}100%{transform:scale(1);}}
+@media (max-width:400px){ .igFinN{font-size:28px;} #igFin.igDrama .igFinN{font-size:34px;} #igRail{max-width:44vw;} }
+/* IGPRL Dev 토글 (전투 화면 상단 소형) */
+#igToggle{position:fixed;right:6px;top:calc(6px + env(safe-area-inset-top));z-index:8700;
+  font-size:10px;padding:3px 7px;background:rgba(20,32,28,.82);color:#8ae0c8;border:1px solid #3a7060;border-radius:6px;}
+#igToggle.off{color:#8a8a8a;border-color:#555;}
 </style>
 </head>
 <body>
@@ -2259,6 +2287,7 @@ async function resolveTurn(){
   }
 
   MYTH.begin();   /* ✦ MYTH: 행동그룹 사전 스냅샷 (읽기 전용 · OFF면 무동작) */
+  PRLIVE.begin();   /* ✦ IGPRL01: 실시간 병렬 레일 개시 (on일 때만 · 계산 무접촉) */
   for(const id of ORDER){
     const a = S.allies[id];
     if(a.dead || !acts[id]) continue;
@@ -2387,6 +2416,7 @@ async function resolveTurn(){
       }
       else { SFX.hit(); figFx(id,"recv",350); log(`${nm}: ${act.txt} — ${d} 피해`); }
       if(id==="mage" && vsMultiActive()) vsMageAoe(d); else dmgEnemy(d);   /* ✦ VS1: 마법사 = 전장을 지운다 — 전 생존 적 동일 피해 · 처치 초과분 본체 이월 */
+      PRLIVE.impact(id, act, d);   /* ✦ IGPRL01: 실제 확정 피해 d를 그 자리에서 왼쪽 레일에 (계산 무접촉 · 표시만) */
       if(DL) await dlProcs(id, act, a.cards);   /* ✦ v1F: 고유 개성/메아리 — 기적 수치와 분리된 별도 박자(procB 선례) */
       if(id==="mage" && act.k==="m" && has("m3")){ S.chainMagic += 10; flt(id,"연쇄 마력 +10","f-bless"); }
       if(id==="hero" && act.k==="m" && S.eHp<=0 && has("h3")){ S.faith+=2; S.stats.faithGained+=2; procB("h3","s",2,"🕯 신탁 +2",id); renderFaith(); }
@@ -2457,11 +2487,13 @@ async function resolveTurn(){
           healedHp:_mHealed, overheal:ovSum, shieldGranted:(has("c1")?shSum:0), cleansed:_mCleansed });
       }
       if(DL) await dlProcs(id, act, a.cards);   /* ✦ v1F: 성직자 — 은총(A/C) · 성역 여운(B) */
+      PRLIVE.impactHeal(id, act, h, _mHealed, ovSum, shSum);   /* ✦ IGPRL01: 실제 회복·보호막을 레일에 (표시만) */
     }
   }
 
   await wait(480);
-  await MREV.playParty();   /* ✦ SLICE01: 파티 행동그룹 계산 완료 → 원장 조립 → 전장 위 신화 연출 (계산 종료 후 재생만 · off면 무동작) */
+  await MREV.playParty();   /* ✦ SLICE01: 순차 리플레이 — 기본 OFF 격리, Dev 명시 호출 시에만 (off면 무동작) */
+  await PRLIVE.finale();    /* ✦ IGPRL01: 모든 영웅 행동 종료 → 중앙 최종 결산 정확히 1회 (다음 턴 입력 안 막음) */
 
   if(S.eHp<=0){
     MYTH.finish();   /* ✦ 01A: 파티 행동으로 처치 — 이 시점 본체 HP가 최종 */
@@ -4302,6 +4334,118 @@ window.__PRL = PRL;
   new MutationObserver(()=>{ if(lab.classList.contains("hiddenOv")) PRL.stop(); })
     .observe(lab,{attributes:true,attributeFilter:["class"]});
   document.addEventListener("visibilitychange",()=>{ if(document.hidden) PRL.stop(); });
+})();
+/* ═══════════ ✦ IGPRL01: In-Game Parallel Myth Rhythm (PRLIVE) ═══════════
+   랩(PRL)의 병렬 문법을 실제 resolveTurn 파티 루프에 연결. 루프가 도는 실시간에 각 영웅 impact와
+   동시에 왼쪽 레일이 누적되고(Hook impact/impactHeal), 루프 종료 시 중앙 결산 1회(Hook finale).
+   AUTO 정책 = 기존 __MREV_SELECT 재사용(랩과 동일 결정론). 계산·RNG·턴·수치 무접촉 — 레일은 실제
+   확정 피해 d·회복 h를 "읽어" 표시만 한다. PRLIVE.on=false면 begin/impact/finale 전부 무동작 = 부모 동일 경로.
+   전면 입력차단 오버레이·닫기 버튼 없음(레일·결산 pointer-events:none). 결산 잔상은 다음 턴 입력을 막지 않는다. */
+const PRLIVE = {
+  on:true,                       /* Dev 토글 · 기본 ON, 즉시 OFF 가능 (§DEV) */
+  gen:0, rail:null, finEl:null, items:[], acc:{dmg:0,heal:0,shield:0}, fadeT:[], lastSel:null,
+  EMO:{hero:"\u2694",war:"\uD83D\uDEE1",mage:"\uD83D\uDD2E",cleric:"\u2728"},
+  NM:{hero:"\uC6A9\uC0AC",war:"\uC804\uC0AC",mage:"\uB9C8\uBC95\uC0AC",cleric:"\uC131\uC9C1\uC790"},
+  _ensure(){
+    if(!this.rail){ this.rail=document.createElement("div"); this.rail.id="igRail"; document.body.appendChild(this.rail); }
+    if(!this.finEl){ this.finEl=document.createElement("div"); this.finEl.id="igFin"; document.body.appendChild(this.finEl); }
+  },
+  _clearFade(){ for(const t of this.fadeT) clearTimeout(t); this.fadeT=[]; },
+  begin(){
+    if(!this.on) return;
+    this.gen++; this._clearFade(); this._ensure();
+    this.rail.innerHTML=""; this.finEl.className=""; this.finEl.innerHTML="";
+    this.items=[]; this.acc={dmg:0,heal:0,shield:0}; this.lastSel=null;
+    this._wallBefore = (typeof VS==="object"&&VS&&VS.active)?VS.wall:null;
+    this._doomBefore = !!(typeof VS==="object"&&VS&&VS.active&&VS.doomActive);
+  },
+  _push(txt,cls){ if(!this.on||!this.rail) return; const g=this.gen;
+    const d=document.createElement("div"); d.className="igLn "+cls; d.textContent=txt; this.rail.appendChild(d);
+    requestAnimationFrame(()=>{ if(g===this.gen) d.classList.add("show"); });
+    while(this.rail.children.length>13) this.rail.removeChild(this.rail.firstChild);
+  },
+  /* 공격 impact — 실제 피해 d를 그 자리에서 (RV/원장 재조립 없이 인자로 직접 수령) */
+  impact(id, act, d){
+    if(!this.on) return;
+    const pb = (act && act.k==="m" && S.pbCount>=2);
+    if(pb) this._push("\u2726\u2726 \uD569\uC77C \u00D7"+S.pbMult, "igChip igPb");
+    if(d>0){ this.acc.dmg += d; this._push((this.EMO[id]||"\u2022")+" "+(this.NM[id]||id)+"  "+d, "igHit"); }
+    /* 방벽/틈/이월은 이 시점 VS 상태 변화를 읽어 표시 (계산 무접촉) */
+    if(typeof VS==="object" && VS && VS.active){
+      if(this._wallBefore!=null && VS.wall<this._wallBefore){
+        const absorbed=this._wallBefore-VS.wall;
+        if(VS.wall<=0 && this._wallBefore>0) this._push("\uD83D\uDCA5 \uC640\uC7A5\uCC3D!! \uBC29\uBCBD \uBD95\uAD34", "igBig");
+        else this._push("\uD83D\uDEE1 \uBC29\uBCBD "+absorbed, "igChip");
+        this._wallBefore=VS.wall;
+      }
+      if(this._doomBefore && !VS.doomActive){ this._push("\u23F3 \uC885\uB9D0 \uCDE8\uC18C", "igBig"); this._doomBefore=false; }
+    }
+  },
+  impactHeal(id, act, h, healed, ov, sh){
+    if(!this.on) return;
+    if(act && act.k==="m" && S.pbCount>=2) this._push("\u2726\u2726 \uD569\uC77C \u00D7"+S.pbMult, "igChip igPb");
+    if(healed>0 || h>0){ this.acc.heal += (healed>0?healed:h); this._push("\u2728 "+(this.NM[id]||id)+"  +"+(healed>0?healed:h), "igHit igHeal"); }
+    if(sh>0){ this.acc.shield += sh; this._push("\uD83D\uDEE1 \uBCF4\uD638\uB9C9 +"+sh, "igChip"); }
+  },
+  /* 방어(전사) 훅 — dlProcs/방어 분기에서 부를 수 있게 공개 (완벽 방어·반사) */
+  impactGuard(kind, val){
+    if(!this.on) return;
+    if(kind==="prevent") this._push("\uD83D\uDEE1 \uC644\uBCBD \uBC29\uC5B4 \u00B7 \uBB34\uD6A8 "+val, "igHit igGuard");
+    else if(kind==="reduce") this._push("\uD83D\uDEE1 \uBC29\uC5B4 "+val, "igHit igGuard");
+    else if(kind==="reflect") this._push("\u2726 \uBC18\uC0AC "+val, "igChip");
+  },
+  /* AUTO 리듬 선택 — 실전 신호로 __MREV_SELECT 재사용 (없으면 인원수 폴백) */
+  _auto(){
+    const sig = {
+      partyBlackjackCount:S.pbCount||0, naturalBlackjackCount:0, triggeredLawCount:0,
+      magnitudeTier:(this.acc.dmg>=1000?4:this.acc.dmg>=100?3:this.acc.dmg>=10?2:1),
+      barrierBroken:(this._wallBefore===0), targetKilled:(S.eHp<=0),
+      battleEnded:(S.eHp<=0), bossKilled:(S.eHp<=0 && !!(VS&&VS.active))||null,
+      overkillAmount:null, doomCanceled:!this._doomBefore && !!(VS&&VS.active),
+      openingCreated:false, damagePrevented:0
+    };
+    let sel;
+    try { sel = window.__MREV_SELECT ? window.__MREV_SELECT(sig) : null; } catch(e){ sel=null; }
+    if(!sel){ const lv = S.pbCount>=4?3:S.pbCount>=3?2:S.pbCount>=2?1:0;
+      sel={ level:lv, rhythm: lv>=2?"rhythm":"fast", reasons:["fallback:pb"+(S.pbCount||0)] }; }
+    this.lastSel=sel; return sel;
+  },
+  finale(){
+    return new Promise(resolve=>{
+      if(!this.on){ resolve(); return; }
+      const g=this.gen; this._ensure();
+      const sel=this._auto();
+      const drama = sel.rhythm==="dramatic";
+      /* 대표 결산 1개 (§3) — 우선순위: 보스킬>처치>완벽방어>회복>방벽붕괴>피해 */
+      let h,n,sub=null;
+      const killedBoss=(S.eHp<=0 && !!(VS&&VS.active));
+      if(killedBoss){ h="\uBCF4\uC2A4 \uCC98\uCE58!"; n=this.acc.dmg; }
+      else if(S.eHp<=0){ h="\uC801 \uCC98\uCE58!"; n=this.acc.dmg; }
+      else if(this.acc.dmg===0 && this._doomBefore===false && (VS&&VS.active)){ h="\uC644\uBCBD \uBC29\uC5B4"; n="\uD53C\uD574 0"; }
+      else if(this.acc.dmg===0 && this.acc.heal>0){ h="\uC2E0\uC131 \uD68C\uBCF5"; n="+"+this.acc.heal; if(this.acc.shield>0) sub="\uBCF4\uD638\uB9C9 +"+this.acc.shield; }
+      else if(this._wallBefore===0){ h="\uBC29\uBCBD \uBD95\uAD34"; n=this.acc.dmg; sub="\uC885\uB9D0 \uCDE8\uC18C"; }
+      else { h="\uCD5C\uC885 \uD53C\uD574"; n=this.acc.dmg; }
+      this.finEl.innerHTML='<div class="igFinH">'+h+'</div><div class="igFinN">'+n+'</div>'+(sub?('<div class="igFinS">'+sub+'</div>'):"");
+      this.finEl.className="on"+(drama?" igDrama":"");
+      /* 결산 표시 시간 = 기존 wait(480) 안에서 흡수. 추가 대기 없음 — 곧바로 resolve. 잔상은 비동기 fade */
+      const linger = drama?900:520;
+      this.fadeT.push(setTimeout(()=>{ if(g===this.gen && this.finEl){ this.finEl.classList.add("fade");
+        for(const c of this.rail.children) c.classList.add("fade"); } }, linger));
+      resolve();   /* ✦ 다음 턴 입력을 잔상 제거까지 기다리지 않는다 (§3-4) */
+    });
+  },
+  teardown(){ this.gen++; this._clearFade();
+    if(this.rail){ this.rail.remove(); this.rail=null; }
+    if(this.finEl){ this.finEl.remove(); this.finEl=null; } }
+};
+window.__PRLIVE = PRLIVE;
+/* 전투 화면 Dev 토글 (AUTO ON / OFF) */
+(function(){
+  const btn=document.createElement("button"); btn.id="igToggle"; btn.textContent="\u26A1 \uBCD1\uB82C ON";
+  btn.addEventListener("click",()=>{ PRLIVE.on=!PRLIVE.on; btn.textContent=PRLIVE.on?"\u26A1 \uBCD1\uB82C ON":"\u26A1 \uBCD1\uB82C OFF";
+    btn.classList.toggle("off",!PRLIVE.on); if(!PRLIVE.on) PRLIVE.teardown(); });
+  document.body.appendChild(btn);
+  document.addEventListener("visibilitychange",()=>{ if(document.hidden) PRLIVE._clearFade(); });
 })();
 </script>
 </body>
