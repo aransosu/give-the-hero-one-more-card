@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v1H1VS1A1B · DEV→Reveal Transition Regression Fix 01B · 부모 v1H1VS1A1(67291526565ab0d8f5e0310202b7d4bc)에서 분기 · 연출 랩 버튼(class=dbg,data-s없음)이 boot 시드-리로드 핸들러를 발화해 타이틀로 튀던 회귀 수정 · 게임 계산·연출·수치·CSS 무변경 · 공식 승격 HOLD · commit/push 0 -->
+<!-- v1H1VS1A1B · In-Game Myth Reveal Slice 01 · 부모 Myth Formula Truth Fix 01A(fcc5b18be71ca587d06162552c4e7415)에서 분기 · 실제 전투 카드 확정 직후 MYTH_TRACE 원장을 전장 위 텍스트 연출로 자동 재생 (L0~L3 × FAST/RHYTHM/DRAMATIC 자동 선택 + 탭 스킵 + 세대 토큰 생명주기) · 계산·RNG·턴 순서·피해/회복 수치·파티BJ 배율·기존 연출값 무변경 (연출은 계산 완료 후 재생만) · MREV.mode=off 시 부모와 동일 경로 · 공식 승격 HOLD · commit/push 0 -->
 <!-- v1H1VS1 · Combat Choice Vertical Slice 01 · 기회비용 보스(종말4턴+방벽300) × 다중 표적 × 강화 파티BJ(실험) · v1H1(0528301bf1e6017731c67d8ba32cabc6)에서 분기 · 모드 c=CONTROL(기준선) p/b/i · 공식 승격 HOLD · commit/push 0 -->
 <html lang="ko">
 <head>
@@ -711,6 +711,40 @@ body.reveal-lab-open{overflow:hidden !important;overscroll-behavior:none;}
 .chron .cg{color:var(--gold,#f0c96a)}
 .rw.h1Off em{opacity:.95}
 .rw.h1Off.dim{opacity:.45}
+/* ═══ ✦ SLICE01: 인게임 신화 연출 오버레이 — 전장이 배경에 보이는 반투명 중앙 패널 (신규 아트·이미지·사운드 0, 텍스트+기존 톤만) ═══ */
+#mrvOv{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 50% 42%, rgba(8,6,16,.30) 0%, rgba(8,6,16,.62) 68%, rgba(8,6,16,.78) 100%);
+  padding:calc(10px + env(safe-area-inset-top)) 12px calc(10px + env(safe-area-inset-bottom));
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;cursor:pointer;}
+#mrvPanel{width:100%;max-width:340px;max-height:72dvh;overflow:hidden auto;pointer-events:none;
+  background:rgba(14,11,24,.86);border:1px solid #3a2f58;border-radius:12px;
+  box-shadow:0 0 34px rgba(0,0,0,.55), inset 0 0 22px rgba(80,50,140,.12);
+  padding:10px 13px 12px;}
+#mrvHead{font-size:10.5px;color:#8f84ab;letter-spacing:.4px;display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;}
+#mrvHead b{color:#ffd27a;font-weight:800;}
+#mrvLines{display:flex;flex-direction:column;gap:4px;min-height:40px;}
+.mrvLn{font-size:13px;line-height:1.45;color:#cfc6e2;opacity:0;transform:translateY(5px);transition:opacity .16s ease, transform .16s ease;overflow-wrap:anywhere;}
+.mrvLn.show{opacity:1;transform:none;}
+.mrvLn.hero{color:#ffe9b0;font-weight:700;}
+.mrvLn.bless{color:#b9a5ff;}
+.mrvLn.pb{color:#ffb3d5;font-weight:800;}
+.mrvLn.gap{color:#9fe0ff;}
+.mrvLn.dim{color:#8f86a6;}
+.mrvLn.pop{font-weight:900;color:#ffd27a;text-shadow:0 0 12px rgba(255,180,80,.45);}
+.mrvLn.final{margin-top:7px;font-size:24px;font-weight:900;color:#ffd27a;text-align:center;
+  text-shadow:0 0 16px rgba(255,190,90,.5);letter-spacing:.5px;white-space:nowrap;}
+#mrvOv.mrvL3 #mrvPanel{border-color:#7a5cc0;box-shadow:0 0 46px rgba(120,80,220,.35), inset 0 0 30px rgba(120,70,200,.16);}
+#mrvOv.mrvL3 .mrvLn.final{font-size:28px;}
+#mrvFoot{margin-top:8px;font-size:9.5px;color:#6f6590;text-align:center;letter-spacing:.5px;}
+#mrvOv.mrvDone #mrvFoot{color:#a99cd0;}
+@media (max-width:400px){ .mrvLn.final{font-size:22px;} #mrvOv.mrvL3 .mrvLn.final{font-size:25px;} }
+/* ✦ SLICE01: Dev 쇼케이스 패널 (DEV LAB 내부 주입) */
+#mrvDev{margin-top:10px;padding:9px;border:1px dashed #3a2f58;border-radius:9px;background:rgba(20,15,34,.5);}
+#mrvDev h3{font-size:11.5px;color:#ffd27a;margin:0 0 6px;}
+#mrvDev .mrvRow{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;}
+#mrvDev button{font-size:10px;padding:4px 7px;background:#221c34;color:#bfa8ff;border:1px solid #4a3a70;border-radius:5px;}
+#mrvDev button.on{background:#3a2c5c;color:#ffe9b0;border-color:#7a5cc0;}
+#mrvDev .mrvNote{font-size:9.5px;color:#8f84ab;line-height:1.5;}
 </style>
 </head>
 <body>
@@ -2158,6 +2192,7 @@ async function chainFinale(){
 
 async function resolveTurn(){
   S.busy=true; S.stats.turns++; S._turnDmg=0;
+  MREV.arm();   /* ✦ SLICE01: 인게임 신화 연출 캡처 무장 — mode=off면 완전 무동작 · 계산 무접촉 */
   S.chainLock=false; S._turnOvk=0; S._chainAfterDeath=false;   /* ✦ v1B1 턴 단위 리셋 */
   /* 예고 연계 판정 1: 17+ 도달이면 즉시 인정 (처치 기여는 아래 피해 처리에서) */
   if(S.linkedGive && S.linkedGive.nt>=17){ S.stats.vaultLinked++; nv1Proc(); S.linkedGive=null; }
@@ -2187,6 +2222,7 @@ async function resolveTurn(){
     await pbAnnounce(S.pbCount);
   }
 
+  MYTH.begin();   /* ✦ MYTH: 행동그룹 사전 스냅샷 (읽기 전용 · OFF면 무동작) */
   for(const id of ORDER){
     const a = S.allies[id];
     if(a.dead || !acts[id]) continue;
@@ -2266,6 +2302,7 @@ async function resolveTurn(){
 
     if(act.dmg){
       let d = act.dmg + lawFlat(id, act, a.cards, "dmg");   /* ✦ v1H1: nn2 짝수 +4 · dl1 개화 21+5 — L3 가산(배율 앞) */
+      RV.actor(id);   /* ✦ 01A: 이 공격의 주체 확정 (비-21 포함) — 읽기 전용, 계산 무변경 */
       /* ✦ v1D: 직업 액션 문법 — 카드 수 = 연격 수, 2장 21 = 슝~솨삭 (수치 무변경) */
       if(id==="hero"){
         const n = Math.min(4, Math.max(1, a.cards.length));
@@ -2331,6 +2368,7 @@ async function resolveTurn(){
         flt(id, j?"🎰 트리플 세븐 +21":"🍀 행운의 기적 +7", "f-bless");
         if(j){ flash("gold"); log("트리플 세븐!! 세 장의 7이 하나의 기적이 된다", "l-gold"); } updateCiStats();
       }
+      const _mHealPre = h;   /* ✦ MYTH: 파티 배율 전 회복 잠재량 (읽기 전용) */
       if(act.k==="m" && S.pbMult>1){ const nh=Math.round(h*S.pbMult); S.stats.pbSup += (nh-h)*aliveIds().length; h=nh; flt(id,"✦"+pbTag(),"f-pb"); }
       if(CI_MODE==="A"){   /* ✦ v1E-A: 성직자의 행운 — 회복 수치 증폭 (최후단) */
         const mlt = ciLuckyMult("cleric", h>0);
@@ -2348,11 +2386,11 @@ async function resolveTurn(){
       }
       else if(act.all){ SFX.heal(); healWave(false); for(const t of aliveIds()) glyphFx(t); log(`${nm}: ${act.txt} +${h}`, "l-heal"); }
       else { SFX.heal(); log(`${nm}: ${act.txt} +${h}`, "l-heal"); }
-      let ovSum=0, shSum=0;
+      let ovSum=0, shSum=0, _mHealed=0;
       const applyHeal = (t)=>{
         const o = healAlly(t, h, !act.all);
         if(o>0 && has("c1")){ const sh=Math.ceil(o/2); S.allies[t].shield += sh; shSum += sh; renderAlly(t); }
-        ovSum += o;
+        ovSum += o; _mHealed += (h - o);   /* ✦ MYTH: 실제 HP 회복 누적 (h - 초과회복) */
       };
       if(act.all){ for(const t of aliveIds()) applyHeal(t); }
       else {
@@ -2369,19 +2407,28 @@ async function resolveTurn(){
       }
       if(act.k==="m" && has("c3")){ S.faith+=2; S.stats.faithGained+=2; procB("c3","s",2,"🕯 메아리 +2",id); renderFaith(); }
       if(id==="cleric" && S.vaultGivenTo.includes("cleric") && bestTotal(a.cards)>=17) S.stats.vaultHealStrong++;
+      let _mCleansed=0;
       if(act.cleanse){
         let left = act.cleanse;
         for(const t of aliveIds()){
-          if(left>0 && S.allies[t].poison>0){ S.allies[t].poison=0; left--; cleanseFx(t); log(`${CLASSES[t].name} 의 독이 정화됐다`, "l-heal"); renderAlly(t); }
+          if(left>0 && S.allies[t].poison>0){ S.allies[t].poison=0; left--; _mCleansed++; cleanseFx(t); log(`${CLASSES[t].name} 의 독이 정화됐다`, "l-heal"); renderAlly(t); }
         }
+      }
+      if(MYTH.on && id==="cleric"){   /* ✦ 01A: 회복 캡처 — 기본회복/파티배율/보호막/정화를 변환에서 층별 분리 */
+        MYTH.heal({ actorId:"cleric", targetId: act.all?"party":"lowest", is21:(act.k==="m"),
+          label: act.k==="m"?"성역":(act.txt||"치유"),
+          basePotency:_mHealPre, pbMult:(act.k==="m" && S.pbMult>1)?S.pbMult:null, potencyAfter:h,
+          healedHp:_mHealed, overheal:ovSum, shieldGranted:(has("c1")?shSum:0), cleansed:_mCleansed });
       }
       if(DL) await dlProcs(id, act, a.cards);   /* ✦ v1F: 성직자 — 은총(A/C) · 성역 여운(B) */
     }
   }
 
   await wait(480);
+  await MREV.playParty();   /* ✦ SLICE01: 파티 행동그룹 계산 완료 → 원장 조립 → 전장 위 신화 연출 (계산 종료 후 재생만 · off면 무동작) */
 
   if(S.eHp<=0){
+    MYTH.finish();   /* ✦ 01A: 파티 행동으로 처치 — 이 시점 본체 HP가 최종 */
     if(S.chainLock) await chainFinale();   /* ✦ v1B1: 죽음보다 피날레가 먼저 */
     await onVictory(); return;
   }
@@ -2409,6 +2456,7 @@ async function resolveTurn(){
       S.stats.reflectTotal += refl;
       procB("w2","d",refl,"반격 "+refl+"!","war");
       await wait(260); SFX.hit();
+      RV.actor("war");   /* ✦ 01A: 반사 피해 전달 주체 = 전사(w2) — 읽기 전용 */
       dmgEnemy(refl);
       log(`반격의 성좌! ${refl} 피해 반사`, "l-gold");
     }
@@ -2448,6 +2496,8 @@ async function resolveTurn(){
   }
   }   /* ✦ VS1: vsBossPhase 래핑 닫기 */
   await vsAuxPhase();   /* ✦ VS1: 보조 표적 행동 — 수복/재앙 파편 (완벽 방어 시 전부 무효 + w2 반사) */
+  MYTH.finish();   /* ✦ 01A: 보스 행동·반사까지 끝난 뒤 본체 HP 확정 (생존 경로) */
+  await MREV.playDefense();   /* ✦ SLICE01: 종말 방어·반사 사건이 있으면 방어 신화 연출 → 캡처 해제 (off면 무동작) */
 
   if(S.eHp<=0){ await wait(400); await onVictory(); return; }   /* 반격 처치 */
 
@@ -3273,17 +3323,24 @@ async function vsDoom(){
     log("완벽 방어!! 종말이 무효화됐다 — 종말의 힘이 흩어진다", "l-gold");
     VSTM.perfectDefense = true; vsEvent(`T${S.turn} 종말 완벽 방어`);
     const negated = 40 * alive.length;
+    MYTH.defense({ actorId:"war", targetId:"party", operation:"prevent", sourceId:"perfectGuard", sourceLabel:"완벽 방어 — 종말 무효",
+      before:negated, factor:null, delta:negated, after:0, tags:["defense.perfect","enemy.doomNegated"] });   /* ✦ MYTH: 피해 배율 아님 — 무효화된 예정 피해 */
     if(has("w2") && negated>0){
       let refl = Math.ceil(negated/2);
+      const _mReflBase = refl, _mReflPb = (S.pbMult>1);
       if(S.pbMult>1){ const nr=Math.round(refl*S.pbMult); S.stats.pbDmg += nr-refl; refl=nr; flt("war","✦"+pbTag(),"f-pb"); }
       S.stats.reflectTotal += refl;
-      await wait(240); SFX.hit(); dmgEnemy(refl);
+      MYTH.defense({ actorId:"war", targetId:"enemy", operation:"reflect", sourceId:"w2", sourceLabel:"반격의 성좌 — 종말 반사",
+        before:_mReflBase, factor:_mReflPb?S.pbMult:null, delta:refl, after:refl, tags:["defense.reflect"] });   /* ✦ MYTH: 반사 피해는 RV 명중으로도 별도 관측됨 */
+      await wait(240); SFX.hit(); RV.actor("war"); dmgEnemy(refl);   /* ✦ 01A: 반사 피해 전달 주체 = 전사(w2) */
       log(`반격의 성좌! 종말을 되돌린다 — ${refl} 반사`, "l-gold");
     }
   } else if(!S.allies.war.dead && S.warTotal>=17 && S.warTotal<=20){
     flash("red"); shake();
     log("불완전 방어 — 전사가 종말의 절반을 받아냈다! (전체 20)", "l-hit");
     VSTM.imperfectDefense = true; vsEvent(`T${S.turn} 종말 불완전 방어(전체 20)`);
+    MYTH.defense({ actorId:"war", targetId:"party", operation:"reduce", sourceId:"partialGuard", sourceLabel:"불완전 방어 — 종말 절반 감쇄",
+      before:40, factor:null, delta:-20, after:20, tags:["defense.partial"] });
     for(const id of alive) dmgAlly(id, 20);
   } else {
     flash("red"); shake();
@@ -3347,6 +3404,7 @@ const RV = {
   KIND: { h1:"add", w3:"mul", h2:"mul", m1:"mul", m3:"add" },
   reset(){ this.steps=[]; this.cur=null; },
   heroStart(id, base){ if(!this.on) return; this.cur=id; this.steps.push({t:"hero", id, base}); },
+  actor(id){ if(!this.on) return; this.cur=id; },   /* ✦ 01A: 비-21 일반 행동도 주체 기록 (push 없음 — 계산·단계 구조 무변경) */
   at(bid, after){ if(!this.on) return; this.steps.push({t:"law", id:this.cur, bid, kind:this.KIND[bid]||"add", label:this.LABEL[bid]||bid, after}); },
   pb(mult, after){ if(!this.on || !(mult>1)) return; this.steps.push({t:"pb", id:this.cur, mult, after}); },
   hit(raw){ if(!this.on) return; this.steps.push({t:"hit", id:this.cur, raw}); },
@@ -3359,15 +3417,209 @@ const RV = {
 };
 window.__RV = RV;
 
+/* ═══════════ ✦ v1H1VS1A1B: Myth Formula Ledger (MYTH_TRACE) ═══════════
+   읽기 전용 전투 사건 원장 — 기존 계산의 거울. MYTH.on=true(Dev/R&D)에서만 캡처.
+   OFF일 때 기존 경로·결과 완전 동일 · 게임 상태/RNG 무접촉 · 시계/난수/스토리지 API 무사용.
+   같은 시드·같은 입력 → 바이트급 동일 원장. "우리의 족보는 전투 상황이다." */
+const MYTH = {
+  on:false, ctx:null, heals:[], defenses:[],
+  reset(){ this.ctx=null; this.heals=[]; this.defenses=[]; },
+  begin(){
+    if(!this.on) return;
+    this.heals=[]; this.defenses=[];
+    this.ctx = {
+      battle:S.battle, turn:S.turn, enemy:S.enemy?S.enemy.name:null, eHpBefore:S.eHp,
+      pbCount:S.pbCount, pbMult:S.pbMult, activeLaws:(RUN.activeLaws||[]).slice(),
+      allies: UI_ORDER.map(id=>{ const a=S.allies[id]; const c=(a.cards||[]).slice(); const t=bestTotal(c);
+        return { id, dead:!!a.dead, cards:c, total:t, is21:t===21, naturalBJ:(t===21 && c.length===2) }; }),
+      vs: VS.active ? { wall:VS.wall, wallMax:VS.wallMax, groggy:VS.groggy, doomActive:VS.doomActive, doom:VS.doom } : null
+    };
+  },
+  heal(o){ if(this.on) this.heals.push(o); },
+  defense(o){ if(this.on) this.defenses.push(o); },
+  finish(){ if(!this.on || !this.ctx) return; if(this.ctx.eHpAfter===undefined){ this.ctx.eHpAfter=S.eHp; this.ctx.enemyDead=(S.eHp<=0); this.ctx.targetIsBoss=!!VS.active; } }   /* ✦ 01A: 행동 종료 시 실제 본체 HP (방벽 제외 처치 판정용) */
+};
+window.__MYTH = MYTH;
+const MYTH_NM = { hero:"\uC6A9\uC0AC", war:"\uC804\uC0AC", mage:"\uB9C8\uBC95\uC0AC", cleric:"\uC131\uC9C1\uC790" };
+const MYTH_EMO = { hero:"\u2694", war:"\uD83D\uDEE1", mage:"\uD83D\uDD2E", cleric:"\u2728" };
+function mythTriggered(events){ const isLaw=id=>typeof id==="string"&&(/^[hwmc][1-3]$/.test(id)||/^L/.test(id)); const ids=[]; for(const e of events){ if(isLaw(e.sourceId) && !ids.includes(e.sourceId)) ids.push(e.sourceId); } return ids; }
+function mythMagTier(n){ n=Math.abs(Math.round(n||0)); return n>=1000?4:n>=100?3:n>=10?2:1; }
+/* summary — 실제 결과별로 분리 (회복≠보호막≠무효≠반사, 본체≠방벽) */
+function mythSummary(events, ctx){
+  let bodyDamage=0, barrierDamage=0, healTotal=0, shieldGranted=0, damagePrevented=0, reflectedDamage=0, cleanseCount=0;
+  let seg=null; const flush=()=>{ if(seg && !seg.hadWall) bodyDamage += seg.delivered; seg=null; };
+  for(const e of events){
+    if(e.operation==="deliver"){ flush(); seg={delivered:e.after, hadWall:false}; }
+    else if(e.operation==="applyOpening"){ if(seg) seg.delivered=e.after; }
+    else if(e.operation==="absorb"){ barrierDamage += e.delta||0; if(seg) seg.hadWall=true; }
+    else if(e.operation==="overflow"){ bodyDamage += e.delta||0; if(seg) seg.hadWall=true; }
+    else if(e.operation==="heal"){ healTotal += e.delta||0; }
+    else if(e.operation==="shield"){ shieldGranted += e.delta||0; }
+    else if(e.operation==="prevent"){ damagePrevented += e.delta||0; }
+    else if(e.operation==="reflect"){ reflectedDamage += e.delta||0; }
+    else if(e.operation==="cleanse"){ cleanseCount += e.delta||0; }
+  }
+  flush();
+  const damageTotal = bodyDamage + barrierDamage;   /* 적에게 전달된 총 피해 (본체+방벽) */
+  const supportTotal = healTotal + shieldGranted;    /* 표시용 파생값 — 원본 합계를 대체하지 않음 */
+  return { damageTotal, bodyDamage, barrierDamage, healTotal, shieldGranted, damagePrevented, reflectedDamage, cleanseCount, supportTotal,
+    layers:[...new Set(events.map(e=>e.layer))] };
+}
+/* presentationSignals — 처치·자릿수 신호를 사실로만 (방벽 피해 제외, 문맥 없으면 발명 금지) */
+function mythSignals(events, ctx, summary){
+  const triggered=mythTriggered(events);
+  const heroActions=events.filter(e=>e.layer==="heroMiracle" && (e.kind==="base"||e.operation==="prevent"||e.operation==="reduce"||e.operation==="heal")).length;
+  const targets=new Set(events.filter(e=>e.targetId && e.targetId!=="barrier" && e.targetId!=="party" && e.targetId!=="lowest").map(e=>e.targetId));
+  const openingCreated=events.some(e=>e.operation==="createOpening");
+  const openingApplied=events.some(e=>e.operation==="applyOpening");
+  const barrierBroken=events.some(e=>(e.tags||[]).includes("enemy.barrierBreak"));
+  /* 처치: 방벽 피해 제외, 실제 본체 HP 변화로만 판정 */
+  const hb=ctx&&ctx.eHpBefore!=null?ctx.eHpBefore:null, ha=ctx&&ctx.eHpAfter!=null?ctx.eHpAfter:null;
+  const hasKillContext = (hb!=null && ha!=null);
+  const targetKilled = hasKillContext ? (hb>0 && ha<=0) : null;
+  const targetIsBoss = ctx&&ctx.targetIsBoss!=null?!!ctx.targetIsBoss:null;
+  const bossKilled = hasKillContext ? (!!targetIsBoss && targetKilled) : null;
+  const overkillAmount = (hasKillContext && targetKilled) ? Math.max(0, summary.bodyDamage - hb) : (hasKillContext?0:null);
+  const battleEnded = hasKillContext ? (ha<=0) : null;
+  /* 자릿수: 이번 크기 vs 이전 기록 돌파 분리 */
+  const finalMagnitude = summary.damageTotal || summary.healTotal || 0;
+  const magnitudeTier = mythMagTier(finalMagnitude);
+  const hasPriorMagnitudeContext = ctx && ctx.previousMaxMagnitude!=null;
+  const previousMaxMagnitude = hasPriorMagnitudeContext ? ctx.previousMaxMagnitude : null;
+  const previousMagnitudeTier = hasPriorMagnitudeContext ? mythMagTier(ctx.previousMaxMagnitude) : null;
+  const newDigitTierReached = hasPriorMagnitudeContext ? (magnitudeTier > previousMagnitudeTier) : null;
+  const rare=[]; if(barrierBroken) rare.push("barrierBreak"); if(ctx&&ctx.pbCount>=4) rare.push("fullParty");
+  if(magnitudeTier>=4) rare.push("magnitude1000"); if(bossKilled) rare.push("bossKilled");
+  return { partyBlackjackCount:ctx?ctx.pbCount||0:0, triggeredLawCount:triggered.length,
+    layerCount:summary.layers.length, targetCount:targets.size,
+    barrierBroken, openingCreated, openingApplied,
+    targetKilled, bossKilled, overkillAmount, battleEnded,
+    finalMagnitude, magnitudeTier, hasPriorMagnitudeContext, previousMaxMagnitude, previousMagnitudeTier, newDigitTierReached,
+    damagePrevented:summary.damagePrevented, shieldGranted:summary.shieldGranted, reflectedDamage:summary.reflectedDamage,
+    heroActionCount:heroActions, rareEventTags:rare };
+}
+function buildMythLedger(cap){
+  const ctx=cap.ctx||{}; const steps=cap.steps||[];
+  const gid="battle-"+(ctx.battle!=null?ctx.battle:0)+"-turn-"+(ctx.turn!=null?ctx.turn:0)+"-party";
+  let seq=0; const events=[];
+  const push=(e)=>{ e.seq=seq; e.id=gid+"#"+String(seq).padStart(3,"0"); e.turn=ctx.turn!=null?ctx.turn:0; e.actionGroupId=gid; if(e.openingId===undefined) e.openingId=null; seq++; events.push(e); return e.id; };
+  let heroRun=0, lastChainId=null, curActor=null, pipeRun=0, lastDeliverId=null, lastAbsorbId=null;
+  let openingSeq=0, curOpeningId=null, curOpeningCreateId=null, appliedCount=0;
+  for(const st of steps){
+    if(st.t==="hero"){ curActor=st.id; heroRun=st.base;
+      lastChainId=push({actorId:st.id,actorJob:st.id,targetId:"enemy",layer:"heroMiracle",kind:"base",operation:"base",sourceId:st.id,sourceLabel:MYTH_NM[st.id]||st.id,before:0,base:st.base,delta:st.base,factor:null,after:st.base,causeIds:[],tags:["hero.prepare"]}); }
+    else if(st.t==="law"){ const op=st.kind==="mul"?"multiply":"add"; const before=heroRun, after=st.after;
+      lastChainId=push({actorId:curActor,actorJob:curActor,targetId:"enemy",layer:"divineBlessing",kind:st.kind,operation:op,sourceId:st.bid,sourceLabel:st.label,before,delta:after-before,factor:op==="multiply"&&before?+(after/before).toFixed(4):null,after,causeIds:lastChainId?[lastChainId]:[],tags:["blessing.trigger"]}); heroRun=after; }
+    else if(st.t==="pb"){ const before=heroRun, after=st.after;
+      lastChainId=push({actorId:curActor,actorJob:curActor,targetId:"enemy",layer:"partyBlackjack",kind:"mul",operation:"multiply",sourceId:"partyBlackjack",sourceLabel:"\uD30C\uD2F0\uC758 \uD569\uC77C",before,factor:st.mult,delta:after-before,after,causeIds:lastChainId?[lastChainId]:[],tags:["party.unite"]}); heroRun=after; }
+    else if(st.t==="hit"){ if(st.id){ curActor=st.id; } pipeRun=st.raw;
+      lastDeliverId=push({actorId:curActor,actorJob:curActor,targetId:"enemy",layer:"encounterRouting",kind:"delivered",operation:"deliver",sourceId:curActor||"party",sourceLabel:(MYTH_NM[curActor]||curActor||"\uD30C\uD2F0")+" \uC804\uB2EC",before:st.raw,delta:st.raw,factor:null,after:st.raw,causeIds:lastChainId?[lastChainId]:[],tags:["damage.deliver"]}); }
+    else if(st.t==="groggy"){ const before=pipeRun, after=st.after; appliedCount++;
+      /* 틈 이용: 후속 피해(deliver) + 생성 사건(createOpening/openingId)을 함께 참조 */
+      const causes=[]; if(lastDeliverId) causes.push(lastDeliverId); if(curOpeningCreateId) causes.push(curOpeningCreateId);
+      lastDeliverId=push({actorId:curActor,actorJob:curActor,targetId:"enemy",layer:"enemyOpening",kind:"opening",operation:"applyOpening",openingId:curOpeningId,sourceId:"groggy",sourceLabel:"\uADF8\uB85C\uAE30 \uD2C8 \uC774\uC6A9",before,factor:1.5,delta:after-before,after,causeIds:causes,tags:["enemy.groggyHit"]}); pipeRun=after; }
+    else if(st.t==="wall"){ lastAbsorbId=push({actorId:curActor,actorJob:curActor,targetId:"barrier",layer:"encounterRouting",kind:"barrier",operation:"absorb",sourceId:"barrier",sourceLabel:"\uC885\uB9D0\uC758 \uBC29\uBCBD",before:null,delta:st.absorbed,factor:null,after:st.remain,causeIds:lastDeliverId?[lastDeliverId]:[],tags:["enemy.barrierAbsorb"]}); }
+    else if(st.t==="break"){ openingSeq++; curOpeningId=gid+"-opening-"+openingSeq;
+      /* 방벽 붕괴 = 틈 생성. 원인 = 방벽 흡수/HP 변화 사건 */
+      curOpeningCreateId=push({actorId:curActor,actorJob:curActor,targetId:"barrier",layer:"enemyOpening",kind:"opening",operation:"createOpening",openingId:curOpeningId,sourceId:"barrierBreak",sourceLabel:"\uBC29\uBCBD \uBD95\uAD34 \u2192 \uC885\uB9D0 \uCDE8\uC18C \u00B7 \uADF8\uB85C\uAE30 2\uD134",before:null,delta:null,factor:null,after:null,createdTurn:(ctx.turn!=null?ctx.turn:0),remainingTurns:2,appliedCount:0,causeIds:lastAbsorbId?[lastAbsorbId]:[],tags:["enemy.barrierBreak","enemy.openingCreated"]}); }
+    else if(st.t==="overflow"){ push({actorId:curActor,actorJob:curActor,targetId:"enemy",layer:"encounterRouting",kind:"overflow",operation:"overflow",sourceId:"barrierOverflow",sourceLabel:"\uCD08\uACFC \uC774\uC6D4",before:null,delta:st.amt,factor:null,after:null,causeIds:lastAbsorbId?[lastAbsorbId]:[],tags:["enemy.overflow"]}); }
+    else if(st.t==="aoe"){ push({actorId:curActor,actorJob:curActor,targetId:st.name,layer:"encounterRouting",kind:"multiTarget",operation:"multiTarget",sourceId:"mageAoe",sourceLabel:"\uC804\uC7A5 \uC18C\uAC70",before:null,delta:st.dmg,factor:null,after:st.remain,causeIds:lastChainId?[lastChainId]:[],tags:st.killed?["enemy.auxKilled"]:["enemy.auxHit"]}); }
+    else if(st.t==="carry"){ push({actorId:curActor,actorJob:curActor,targetId:"enemy",layer:"encounterRouting",kind:"redirect",operation:"redirect",sourceId:"killCarry",sourceLabel:"\uCC98\uCE58 \uCD08\uACFC \uC774\uC6D4",before:null,delta:st.amt,factor:null,after:null,causeIds:lastChainId?[lastChainId]:[],tags:["enemy.killCarry"]}); }
+  }
+  /* createOpening 사건에 실제 적용 횟수 기록 */
+  if(curOpeningCreateId){ const ce=events.find(e=>e.id===curOpeningCreateId); if(ce) ce.appliedCount=appliedCount; }
+  /* ── 회복: 기본회복(heroMiracle) → 파티배율(partyBlackjack) → 초과회복 보호막(divineBlessing) → 정화 ── */
+  for(const h of (cap.heals||[])){
+    const baseId=push({actorId:"cleric",actorJob:"cleric",targetId:h.targetId||"party",layer:"heroMiracle",kind:"heal",operation:"heal",
+      sourceId: h.is21?"sanctuary":"heal", sourceLabel:h.label||"\uC131\uC5ED",
+      before:null, base:h.basePotency!=null?h.basePotency:null, delta:h.healedHp!=null?h.healedHp:null, factor:null, after:h.potencyAfter!=null?h.potencyAfter:null,
+      causeIds:[], tags:["heal.final"]});
+    if(h.pbMult){ push({actorId:"cleric",actorJob:"cleric",targetId:h.targetId||"party",layer:"partyBlackjack",kind:"mul",operation:"multiply",
+      sourceId:"partyBlackjack",sourceLabel:"\uD30C\uD2F0\uC758 \uD569\uC77C (\uD68C\uBCF5 \uC99D\uD3ED)",before:h.basePotency,factor:h.pbMult,delta:(h.potencyAfter!=null&&h.basePotency!=null)?(h.potencyAfter-h.basePotency):null,after:h.potencyAfter,causeIds:[baseId],tags:["party.unite"]}); }
+    if(h.shieldGranted>0){ push({actorId:"cleric",actorJob:"cleric",targetId:h.targetId||"party",layer:"divineBlessing",kind:"shield",operation:"shield",
+      sourceId:"c1",sourceLabel:"\uC790\uBE44\uC758 \uCD95\uBCF5 \u2014 \uCD08\uACFC\uD68C\uBCF5\u2192\uBCF4\uD638\uB9C9",before:h.overheal!=null?h.overheal:null,factor:null,delta:h.shieldGranted,after:h.shieldGranted,causeIds:[baseId],tags:["shield.grant","blessing.trigger"]}); }
+    if(h.cleansed>0){ push({actorId:"cleric",actorJob:"cleric",targetId:h.targetId||"party",layer:"heroMiracle",kind:"cleanse",operation:"cleanse",
+      sourceId:"cleanse",sourceLabel:"\uC815\uD654",before:null,factor:null,delta:h.cleansed,after:null,causeIds:[baseId],tags:["cleanse"]}); }
+  }
+  /* ── 방어: 완벽방어 무효(heroMiracle/prevent) → w2 반사(divineBlessing/reflect, 무효를 원인으로) ── */
+  let lastPreventId=null;
+  for(const d of (cap.defenses||[])){
+    if(d.operation==="prevent"){ lastPreventId=push({actorId:"war",actorJob:"war",targetId:d.targetId||"party",layer:"heroMiracle",kind:"defense",operation:"prevent",
+      sourceId:d.sourceId||"perfectGuard",sourceLabel:d.sourceLabel||"\uC644\uBCBD \uBC29\uC5B4",before:d.before!=null?d.before:null,factor:null,delta:d.delta!=null?d.delta:null,after:d.after!=null?d.after:null,cards:d.cards||null,total:d.total!=null?d.total:null,is21:d.is21!=null?d.is21:null,causeIds:[],tags:["defense.perfect","enemy.doomNegated"]}); }
+    else if(d.operation==="reflect"){ push({actorId:"war",actorJob:"war",targetId:"enemy",layer:"divineBlessing",kind:"reflect",operation:"reflect",
+      sourceId:"w2",sourceLabel:d.sourceLabel||"\uBC18\uACA9\uC758 \uC131\uC88C",before:d.before!=null?d.before:null,factor:d.factor!=null?d.factor:null,delta:d.delta!=null?d.delta:null,after:d.after!=null?d.after:null,causeIds:lastPreventId?[lastPreventId]:[],tags:["defense.reflect"]}); }
+    else if(d.operation==="reduce"){ push({actorId:"war",actorJob:"war",targetId:d.targetId||"party",layer:"heroMiracle",kind:"defense",operation:"reduce",
+      sourceId:"partialGuard",sourceLabel:d.sourceLabel||"\uBD88\uC644\uC804 \uBC29\uC5B4",before:d.before!=null?d.before:null,factor:null,delta:d.delta!=null?d.delta:null,after:d.after!=null?d.after:null,causeIds:[],tags:["defense.partial"]}); }
+  }
+  const summary=mythSummary(events, ctx), presentationSignals=mythSignals(events,ctx,summary);
+  return { schemaVersion:1, battleId:"battle-"+(ctx.battle!=null?ctx.battle:0), turn:ctx.turn!=null?ctx.turn:0, actionGroupId:gid,
+    preActionSnapshot:{ enemy:ctx.enemy!=null?ctx.enemy:null, eHpBefore:ctx.eHpBefore!=null?ctx.eHpBefore:null, eHpAfter:ctx.eHpAfter!=null?ctx.eHpAfter:null,
+      pbCount:ctx.pbCount||0, pbMult:ctx.pbMult||1,
+      activeLaws:(ctx.activeLaws||[]).slice(), triggeredLaws:mythTriggered(events), allies:(ctx.allies||[]).map(a=>({...a,cards:(a.cards||[]).slice()})), vs:ctx.vs!=null?ctx.vs:null },
+    events, summary, presentationSignals };
+}
+window.__MYTH_BUILD = buildMythLedger;
+/* 원장 → Multiply Reveal 라인 (LEGACY 재현 어댑터: 최종 숫자·핵심 순서 동일 · 회복/보호막 분리 표시) */
+function ledgerToRevealLines(ledger, level){
+  const T=ledger.summary.damageTotal||ledger.summary.healTotal||0;
+  if(level===0) return [{txt:"\uCD1D "+T+" \uD53C\uD574!",cls:"final",value:T,final:true}];
+  const ev=ledger.events;
+  if(level===1){ const per={},order=[]; for(const e of ev){ if(e.operation==="deliver"){ const id=e.actorId||"?"; if(!(id in per)){per[id]=0;order.push(id);} per[id]+=e.after; } }
+    const L=order.map(id=>({txt:(MYTH_EMO[id]||"\u2022")+" "+(MYTH_NM[id]||id)+"\uC758 \uAE30\uC801  "+per[id],cls:"hero"})); L.push({txt:"\uCD1D "+T+" \uD53C\uD574!",cls:"final",value:T,final:true}); return L; }
+  const L=[];
+  for(const e of ev){
+    if(e.layer==="heroMiracle"&&e.kind==="base") L.push({txt:(MYTH_EMO[e.actorId]||"\u2022")+" "+(MYTH_NM[e.actorId]||e.actorId)+"  \u00B7  \uAE30\uC801 "+e.base,cls:"hero"});
+    else if(e.operation==="heal") L.push({txt:(MYTH_EMO.cleric)+" "+(e.sourceLabel||"\uC131\uC5ED")+" "+(e.delta!=null?e.delta:e.after)+" \uD68C\uBCF5",cls:"hero"});
+    else if(e.operation==="shield") L.push({txt:"\u3000\uD83D\uDEE1 \uBCF4\uD638\uB9C9 +"+e.delta,cls:"bless"});
+    else if(e.operation==="cleanse") L.push({txt:"\u3000\u2727 \uC815\uD654 "+e.delta,cls:"bless"});
+    else if(e.operation==="prevent") L.push({txt:(MYTH_EMO.war)+" \uC644\uBCBD \uBC29\uC5B4 \u2014 \uBB34\uD6A8 "+e.delta,cls:"hero"});
+    else if(e.operation==="reduce") L.push({txt:(MYTH_EMO.war)+" \uBD88\uC644\uC804 \uBC29\uC5B4 \u2014 "+e.before+"\u2192"+e.after,cls:"hero"});
+    else if(e.operation==="reflect") L.push({txt:"\u3000\u2726 \uBC18\uACA9\uC758 \uC131\uC88C \uBC18\uC0AC "+e.delta,cls:"bless"});
+    else if(e.layer==="divineBlessing"){ const seg=e.operation==="multiply"?("\u00D7"+Math.max(2,Math.round(e.factor))):("+"+e.delta); L.push({txt:"\u3000\u2726 "+e.sourceLabel+" "+seg+"  \u27F6 "+e.after,cls:"bless"}); }
+    else if(e.layer==="partyBlackjack"&&e.kind==="mul") L.push({txt:"\u3000\u2726\u2726 \uD30C\uD2F0\uC758 \uD569\uC77C \u00D7"+e.factor+"  \u27F6 "+e.after,cls:"pb"});
+    else if(e.operation==="deliver") L.push({txt:"\u3000\u2694 \uBA85\uC911 "+e.after,cls:"dim"});
+    else if(e.operation==="applyOpening") L.push({txt:"\u3000\uD83D\uDE35 \uADF8\uB85C\uAE30 \u00D71.5  \u27F6 "+e.after,cls:"gap"});
+    else if(e.operation==="absorb") L.push({txt:"\u3000\uD83D\uDEE1 \uBC29\uBCBD \uD761\uC218 "+e.delta+"  (\uC794\uC5EC "+e.after+")",cls:"gap"});
+    else if(e.operation==="createOpening") L.push({txt:"\u3000\uD83D\uDCA5 \uC640\uC7A5\uCC3D!!  \uBC29\uBCBD \uBD95\uAD34 \u00B7 \uC885\uB9D0 \uCDE8\uC18C",cls:"gap",pop:true});
+    else if(e.operation==="overflow") L.push({txt:"\u3000\u26A1 \uCD08\uACFC "+e.delta+" \uBCF8\uCCB4\uB85C!",cls:"gap"});
+    else if(e.operation==="multiTarget") L.push({txt:"\u3000\uD83D\uDD2E "+e.targetId+"  "+e.delta+((e.tags||[]).includes("enemy.auxKilled")?" \uC18C\uBA78":(" (\uC794\uC5EC "+e.after+")")),cls:"dim"});
+    else if(e.operation==="redirect") L.push({txt:"\u3000\u26A1 \uCC98\uCE58 \uCD08\uACFC "+e.delta+" \uC774\uC6D4",cls:"gap"});
+  }
+  L.push({txt:"\uCD1D "+T+" \uD53C\uD574!",cls:"final",value:T,final:true}); return L;
+}
+window.__MYTH_REVEAL = ledgerToRevealLines;
+/* Dev 참고용 연출 레벨 추천 — 이유 동반. 실제 전투 자동 적용 금지(§12). 잘못된 bossKilled·digitTier 신호 미사용. */
+function mythRecoLevel(sig){
+  const r=[]; let lvl=1;
+  if((sig.partyBlackjackCount||0)>=2){ lvl=2; r.push("파티 블랙잭 "+sig.partyBlackjackCount+"인"); }
+  if((sig.triggeredLawCount||0)>=2){ lvl=Math.max(lvl,2); r.push("법칙 "+sig.triggeredLawCount+"종 발동"); }
+  if(sig.barrierBroken){ lvl=3; r.push("방벽 파괴"); }
+  if(sig.openingCreated){ lvl=Math.max(lvl,3); r.push("적의 틈 생성"); }
+  if((sig.magnitudeTier||0)>=4){ lvl=3; r.push("이번 피해 1000+"); }
+  if((sig.partyBlackjackCount||0)>=4){ lvl=3; r.push("전원 합일"); }
+  if(sig.bossKilled===true){ lvl=3; r.push("보스 처치"); }
+  if(!r.length) r.push("단일 평범 행동");
+  const rhythm = lvl>=3?"DRAMATIC":lvl===2?"RHYTHM":"FAST";
+  return { level:lvl, rhythm, reason:r.join(" + ") };
+}
+window.__MYTH_RECO = mythRecoLevel;
+
 /* ═══════════ ✦ VS1a: Multiply Reveal Lab — 텍스트 연출 비교 ═══════════
    실제 캡처 이벤트(REVEAL_DATA)를 L0~L3 × 리듬으로 재생. 게임 계산 무접촉(읽기 전용 데이터).
    타이머는 gen 세대 토큰으로 무효화 → 다시보기 연타·상황 전환·닫기 시 중첩 0. */
 const REVEAL_DATA = {"situations":[{"id":"S1","name":"평범한 단일 행동","desc":"작은 10단위 피해 · 배율 없음 — 긴 연출이 방해되는 기준","laws":[],"cards":{"hero":"3 8 (11)","war":"A Q (21)","mage":"4 A (15)","cleric":"9 10 (19)"},"pbCount":1,"wallBefore":0,"wallAfter":0,"wallBroken":false,"bodyDmg":14,"wallDmg":0,"finalTotal":14,"steps":[{"t":"hit","id":null,"raw":10},{"t":"hit","id":null,"raw":4}]},{"id":"S2","name":"2인 파티 블랙잭","desc":"50~100대 · 짧은 증폭 리듬","laws":["h1"],"cards":{"hero":"3 8 (11)","war":"A Q (21)","mage":"4 A (15)","cleric":"9 10 (19)"},"pbCount":2,"wallBefore":0,"wallAfter":0,"wallBroken":false,"bodyDmg":111,"wallDmg":0,"finalTotal":111,"steps":[{"t":"hero","id":"hero","base":30},{"t":"law","id":"hero","bid":"h1","kind":"add","label":"성검의 축복","after":50},{"t":"pb","id":"hero","mult":1.5,"after":75},{"t":"hit","id":"hero","raw":75},{"t":"hero","id":"mage","base":24},{"t":"pb","id":"mage","mult":1.5,"after":36},{"t":"hit","id":"mage","raw":36}]},{"id":"S3","name":"3인 파티 블랙잭","desc":"방벽에 의미 있는 피해 · 여기서 만족? 4인을 더 노릴까?","laws":["h1"],"cards":{"hero":"3 8 (11)","war":"A Q (21)","mage":"4 A (15)","cleric":"9 10 (19)"},"pbCount":3,"wallBefore":300,"wallAfter":30,"wallBroken":false,"bodyDmg":0,"wallDmg":270,"finalTotal":270,"steps":[{"t":"hero","id":"hero","base":30},{"t":"law","id":"hero","bid":"h1","kind":"add","label":"성검의 축복","after":50},{"t":"pb","id":"hero","mult":3,"after":150},{"t":"hit","id":"hero","raw":150},{"t":"wall","absorbed":150,"remain":150},{"t":"hero","id":"mage","base":24},{"t":"pb","id":"mage","mult":3,"after":72},{"t":"aoe","name":"방벽의 촉수","dmg":72,"remain":0,"killed":true},{"t":"aoe","name":"재앙의 촉수","dmg":72,"remain":0,"killed":true},{"t":"carry","amt":48},{"t":"hit","id":"mage","raw":120},{"t":"wall","absorbed":120,"remain":30}]},{"id":"S4","name":"4인 파티 블랙잭","desc":"영웅 행동·법칙·파티 배율이 모두 드러나는 강한 피해(본체 직격)","laws":["h1"],"cards":{"hero":"3 8 (11)","war":"A Q (21)","mage":"4 A (15)","cleric":"9 10 (19)"},"pbCount":4,"wallBefore":0,"wallAfter":0,"wallBroken":false,"bodyDmg":444,"wallDmg":0,"finalTotal":444,"steps":[{"t":"hero","id":"hero","base":30},{"t":"law","id":"hero","bid":"h1","kind":"add","label":"성검의 축복","after":50},{"t":"pb","id":"hero","mult":6,"after":300},{"t":"hit","id":"hero","raw":300},{"t":"hero","id":"mage","base":24},{"t":"pb","id":"mage","mult":6,"after":144},{"t":"hit","id":"mage","raw":144}]},{"id":"S5","name":"방벽 파괴 + 초과 이월 + 그로기","desc":"와장창!! · 초과 본체 이월 · 종말 취소 · 적의 틈","laws":["h1"],"cards":{"hero":"3 8 (11)","war":"A Q (21)","mage":"4 A (15)","cleric":"9 10 (19)"},"pbCount":4,"wallBefore":300,"wallAfter":0,"wallBroken":true,"bodyDmg":504,"wallDmg":300,"finalTotal":804,"steps":[{"t":"hero","id":"hero","base":30},{"t":"law","id":"hero","bid":"h1","kind":"add","label":"성검의 축복","after":50},{"t":"pb","id":"hero","mult":6,"after":300},{"t":"hit","id":"hero","raw":300},{"t":"wall","absorbed":300,"remain":0},{"t":"break"},{"t":"hero","id":"mage","base":24},{"t":"pb","id":"mage","mult":6,"after":144},{"t":"aoe","name":"방벽의 촉수","dmg":144,"remain":0,"killed":true},{"t":"aoe","name":"재앙의 촉수","dmg":144,"remain":0,"killed":true},{"t":"carry","amt":192},{"t":"hit","id":"mage","raw":336},{"t":"groggy","after":504}]},{"id":"S6","name":"신의 공식 피날레 (법칙 연계)","desc":"법칙 연계 4인 · 700~1000 · 자릿수가 바뀌는 감정","laws":["h1","h2","m3"],"cards":{"hero":"A 10 (21)","war":"A 10 (21)","mage":"A 10 (21)","cleric":"A 10 (21)"},"pbCount":4,"wallBefore":300,"wallAfter":0,"wallBroken":true,"bodyDmg":1044,"wallDmg":300,"finalTotal":1344,"steps":[{"t":"hero","id":"hero","base":30},{"t":"law","id":"hero","bid":"h1","kind":"add","label":"성검의 축복","after":50},{"t":"pb","id":"hero","mult":6,"after":300},{"t":"hit","id":"hero","raw":300},{"t":"wall","absorbed":300,"remain":0},{"t":"break"},{"t":"hero","id":"mage","base":24},{"t":"law","id":"mage","bid":"m3","kind":"add","label":"연쇄 마력","after":44},{"t":"pb","id":"mage","mult":6,"after":264},{"t":"aoe","name":"방벽의 촉수","dmg":264,"remain":0,"killed":true},{"t":"aoe","name":"재앙의 촉수","dmg":264,"remain":0,"killed":true},{"t":"carry","amt":432},{"t":"hit","id":"mage","raw":696},{"t":"groggy","after":1044}]}]};
 const LAB = {
-  gen:0, si:0, level:2, rhythm:"RHYTHM", showDbg:false, el:null,
+  gen:0, si:0, level:2, rhythm:"RHYTHM", showDbg:false, source:"LEGACY", el:null,
   RH:{ FAST:{step:160,long:200,final:340}, RHYTHM:{step:270,long:330,final:620}, DRAMATIC:{step:430,long:500,final:1150} },
   EMO:{hero:"\u2694",war:"\uD83D\uDEE1",mage:"\uD83D\uDD2E",cleric:"\u2728"},
   NM:{hero:"\uC6A9\uC0AC",war:"\uC804\uC0AC",mage:"\uB9C8\uBC95\uC0AC",cleric:"\uC131\uC9C1\uC790"},
+  /* 정적 상황 → 원장 캡처 (Dev LEDGER 비교용). activeLaws는 실제 발동 법칙에서 도출 —
+     정적 REVEAL_DATA의 laws 메타(S6 h2 유령 포함)를 계승하지 않음(§13). 완전한 활성목록은 라이브 캡처 도구가 담당. */
+  capOf(s){ const pb=(s.steps.find(x=>x.t==="pb")||{}).mult||1;
+    const fired=[...new Set(s.steps.filter(x=>x.t==="law").map(x=>x.bid))];
+    return { ctx:{ battle:8, turn:3, enemy:"\uB9C8\uC655\uC758 \uADF8\uB9BC\uC790", eHpBefore:900, pbCount:s.pbCount, pbMult:pb,
+      activeLaws:fired, allies:[], vs:{ wall:s.wallBefore, wallMax:300, groggy:0, doomActive:true, doom:1 } }, steps:s.steps, heals:[], defenses:[] }; },
+  ledgerOf(s){ return window.__MYTH_BUILD(this.capOf(s)); },
   open(){
     if(this.el) this.el.remove();
     const ov=document.createElement("div"); ov.id="revealLab"; this.el=ov; ov.tabIndex=-1;
@@ -3439,8 +3691,32 @@ const LAB = {
   },
   renderDbg(){
     const s=REVEAL_DATA.situations[this.si], d=this.el.querySelector("#labDbg");
-    if(!this.showDbg){ d.textContent="\u24D8 \uAC1C\uBC1C\uC790 \uC815\uBCF4 \uC228\uAE40 (\u24D8 \uB85C \uD45C\uC2DC) \u2014 \uC5F0\uCD9C \uAC10\uC815 \uBC29\uD574 \uBC29\uC9C0"; return; }
-    d.innerHTML=`<b>${s.id}</b> ${s.desc} \u00B7 \uBC95\uCE59 ${s.laws.join(",")||"\uC5C6\uC74C"} \u00B7 \uD30C\uD2F0 ${s.pbCount}\uC778 \u00B7 \uBC29\uBCBD ${s.wallBefore}\u2192${s.wallAfter} \u00B7 \uC2E4\uC81C \uCD1D ${s.finalTotal} (\uBC29\uBCBD ${s.wallDmg}+\uBCF8\uCCB4 ${s.bodyDmg})`;
+    if(!this.showDbg){ d.textContent="\u24D8 \uAC1C\uBC1C\uC790 \uC0AC\uAC74 \uC6D0\uC7A5 \uC228\uAE40 (\u24D8 \uB85C \uD45C\uC2DC) \u2014 \uC5F0\uCD9C \uAC10\uC815 \uBC29\uD574 \uBC29\uC9C0"; d.style.maxHeight=""; d.style.overflowY=""; return; }
+    const led=this.ledgerOf(s), sig=led.presentationSignals, sm=led.summary, reco=window.__MYTH_RECO(sig);
+    const snap=led.preActionSnapshot;
+    const cues=[...new Set(led.events.flatMap(e=>e.tags||[]))];
+    const evRows=led.events.map(e=>{
+      const num = e.factor!=null ? ("\u00D7"+e.factor) : (e.delta!=null ? ((e.delta>=0?"+":"")+e.delta) : "");
+      return `<div style="white-space:nowrap;">${String(e.seq).padStart(2,"0")} \u00B7 <span style="color:#9a8ab0;">${e.layer}</span>/<b style="color:#bfa8ff;">${e.operation}</b> ${e.sourceLabel||""} ${num}${e.after!=null?(" \u27F6 "+e.after):""}</div>`;
+    }).join("");
+    d.style.maxHeight="34vh"; d.style.overflowY="auto";
+    d.innerHTML=`
+      <div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-bottom:3px;">
+        <b style="color:#ffd27a;">${s.id}</b>
+        <span style="color:#8a7fa0;">SOURCE</span>
+        <span data-src="LEGACY" style="cursor:pointer;padding:1px 6px;border-radius:4px;border:1px solid #383050;${this.source==="LEGACY"?"background:#4a3a70;color:#fff;":"color:#9a8ab0;"}">LEGACY</span>
+        <span data-src="LEDGER" style="cursor:pointer;padding:1px 6px;border-radius:4px;border:1px solid #383050;${this.source==="LEDGER"?"background:#4a3a70;color:#fff;":"color:#9a8ab0;"}">LEDGER</span>
+        <span id="labCopy" style="cursor:pointer;margin-left:auto;padding:1px 6px;border-radius:4px;border:1px solid #2a4a3a;color:#8ac0a0;">\u29C9 \uC6D0\uC7A5 \uBCF5\uC0AC</span>
+      </div>
+      <div style="color:#c8bfd8;">\uD589\uB3D9\uC804 \uC2A4\uB0C5 \u00B7 \uD30C\uD2F0 ${snap.pbCount}\uC778 \u00D7${snap.pbMult} \u00B7 \uD65C\uC131\uBC95\uCE59 [${snap.activeLaws.join(",")||"\uC5C6\uC74C"}] \u00B7 \uBC1C\uB3D9 [${snap.triggeredLaws.join(",")||"\uC5C6\uC74C"}]</div>
+      <div style="color:#ffe27a;">summary \u00B7 \uD53C\uD574 ${sm.damageTotal} (\uBCF8\uCCB4 ${sm.bodyDamage}+\uBC29\uBCBD ${sm.barrierDamage})${sm.healTotal?(" \u00B7 \uD68C\uBCF5 "+sm.healTotal):""}${sm.shieldGranted?(" \u00B7 \uBCF4\uD638\uB9C9 "+sm.shieldGranted):""}${sm.reflectedDamage?(" \u00B7 \uBC18\uC0AC "+sm.reflectedDamage):""}${sm.damagePrevented?(" \u00B7 \uBB34\uD6A8 "+sm.damagePrevented):""}${sm.cleanseCount?(" \u00B7 \uC815\uD654 "+sm.cleanseCount):""} \u00B7 \uCE35 ${sm.layers.length}</div>
+      <div style="color:#8ac0d8;">signals \u00B7 \uD2C0${sig.openingCreated?"\u2713":"\u2717"} \uC774\uC6A9${sig.openingApplied?"\u2713":"\u2717"} \uBC29\uBCBD\uD30C\uAD34${sig.barrierBroken?"\u2713":"\u2717"} \uCC98\uCE58${sig.bossKilled===true?"\u2713":sig.bossKilled===false?"\u2717":"?"} \u00B7 \uC790\uB9BF ${sig.magnitudeTier}${sig.hasPriorMagnitudeContext?(sig.newDigitTierReached?"\u2605\ub3cc\ud30c":""):"(\ubb38\ub9e5\uc5c6\uc74c)"} \u00B7 \uB808\uC5B4 [${sig.rareEventTags.join(",")||"-"}]</div>
+      <div style="color:#a0d0a0;">\uCD94\uCC9C \uC5F0\uCD9C L${reco.level} + ${reco.rhythm} \u2014 ${reco.reason} <span style="color:#6a5a80;">(\uCC38\uACE0\uC6A9 \u00B7 \uC790\uB3D9\uC801\uC6A9 \uC544\uB2D8)</span></div>
+      <div style="color:#7a9a8a;">\uBBF8\uB2C8\uD53C\uADDC \uD050(${cues.length}): ${cues.join(" \u00B7 ")}</div>
+      <div style="margin-top:3px;border-top:1px solid #201b30;padding-top:3px;font-family:monospace;font-size:8.5px;color:#a89ab8;">${evRows}</div>`;
+    d.querySelectorAll("[data-src]").forEach(e=>e.onclick=()=>{ this.source=e.dataset.src; this.refresh(); });
+    const cp=d.querySelector("#labCopy");
+    if(cp) cp.onclick=()=>{ try{ const t=JSON.stringify(led,null,1); if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t); cp.textContent="\u2713 \uBCF5\uC0AC\uB428"; setTimeout(()=>{if(cp)cp.textContent="\u29C9 \uC6D0\uC7A5 \uBCF5\uC0AC";},1200); }catch(_){}} ;
   },
   perHero(steps){
     const map={}, order=[];
@@ -3485,7 +3761,7 @@ const LAB = {
     this.gen++; const g=this.gen;
     const stage=this.el.querySelector("#labStage"); stage.innerHTML="";
     const s=REVEAL_DATA.situations[this.si];
-    const lines=this.buildLines(s, this.level);
+    const lines = this.source==="LEDGER" ? window.__MYTH_REVEAL(this.ledgerOf(s), this.level) : this.buildLines(s, this.level);
     const R=this.RH[this.rhythm];
     const rep=this.el.querySelector("#labReplay"); rep.disabled=true; rep.style.opacity=".55";
     let t=0;
@@ -3616,6 +3892,264 @@ if(/lab=reveal/.test(location.hash)) setTimeout(()=>{ if($("app")) LAB.open(); }
   else if(VIEW==="l"){ show("labOv"); }
   else if(VIEW==="w"){ show("lawOv"); }   /* ✦ v1G3: 시작 법칙 선택 직행 — 새 여정·재도전의 착지점 */
   else { show("titleOv"); }
+})();
+
+/* ═══════════ ✦ SLICE01: In-Game Myth Reveal (MREV) ═══════════
+   실제 전투 카드 확정 → 기존 엔진 계산 완료 → RV/MYTH 캡처를 원장으로 조립(buildMythLedger)
+   → selectMythPresentation(순수)으로 레벨·리듬 자동 선택 → 전장 위 텍스트 연출 재생.
+   보호선: 계산·RNG·턴 순서 무접촉(연출은 재생만) · MREV.mode="off"면 arm/play 전부 무동작 =
+   부모와 동일 경로 · 연출 텍스트 값은 어떤 게임 상태에도 재적용되지 않음 · 신규 아트/사운드 0.
+   타이머는 gen 세대 토큰으로 무효화 · 백그라운드 전환 시 즉시 최종 완성 · 정책 수치는 R&D 후보. */
+
+/* ── 순수 정책: 증강 신호 → {level, rhythm, reasons} (결정론 · DOM 0 · 상태수정 0 · 없는 신호 추측 0) ── */
+function selectMythPresentation(sig){
+  sig=sig||{}; const reasons=[];
+  const N=v=>(typeof v==="number"&&isFinite(v))?v:0;
+  const pb=N(sig.partyBlackjackCount), natBj=N(sig.naturalBlackjackCount), laws=N(sig.triggeredLawCount), magTier=N(sig.magnitudeTier);
+  const barrier=sig.barrierBroken===true, opening=sig.openingCreated===true, killed=sig.targetKilled===true;
+  const bossKill=sig.bossKilled===true, battleEnd=sig.battleEnded===true, overkill=N(sig.overkillAmount);
+  const doomNeg=sig.doomCanceled===true, perfect=N(sig.damagePrevented)>0&&doomNeg, revived=sig.partyRevivedFromNearWipe===true;
+  const newDigit=sig.hasPriorMagnitudeContext===true&&sig.newDigitTierReached===true, first1000=newDigit&&magTier>=4;
+  let level;
+  if(pb>=4){ level=3; reasons.push("partyBlackjack:"+pb); }
+  else if(pb===3){ level=2; reasons.push("partyBlackjack:3"); }
+  else if(pb===2){ level=1; reasons.push("partyBlackjack:2"); }
+  else { level = natBj>=1?1:(magTier>=2?1:0); reasons.push(natBj>=1?"naturalBlackjack:"+natBj:"single"); }
+  if(laws>=2){ level=Math.max(level,2); reasons.push("triggeredLaws:"+laws); }
+  if(magTier>=4){ level=Math.max(level,3); reasons.push("magnitudeTier:"+magTier); }
+  else if(magTier===3){ level=Math.max(level,2); }
+  let rhythm = level>=2?"rhythm":"fast";
+  if(pb>=2) rhythm="rhythm";
+  if(natBj>=1&&magTier>=2) rhythm="rhythm";
+  let promote=false; const bump=(c,t)=>{ if(c){ promote=true; reasons.push(t); } };
+  bump(killed,"targetKilled"); bump(battleEnd,"battleEnded"); bump(barrier,"barrierBroken");
+  bump(doomNeg,"doomCanceled"); bump(opening,"openingCreated");
+  bump(sig.openingApplied===true&&magTier>=3,"openingBigDamage");
+  bump(overkill>=100,"bigOverkill:"+overkill); bump(first1000,"newDigitTier:"+magTier);
+  bump(perfect,"perfectGuardNegate"); bump(revived,"partyRevived");
+  if(promote) rhythm="dramatic";
+  let topTier=false; const top=(c,t)=>{ if(c){ topTier=true; if(reasons.indexOf(t)<0) reasons.push(t); } };
+  top(barrier&&doomNeg,"barrierBreak+doomCancel"); top(opening,"openingCreated"); top(bossKill,"bossKilled");
+  top(battleEnd&&overkill>0,"finishingOverkill"); top(first1000,"first1000WithContext");
+  top(perfect,"perfectGuardDoom"); top(revived,"clericRevive");
+  if(topTier){ level=3; rhythm="dramatic"; }
+  const seen=new Set(), dedup=[]; for(const r of reasons){ if(!seen.has(r)){ seen.add(r); dedup.push(r); } }
+  return { level, rhythm, reasons:dedup };
+}
+window.__MREV_SELECT = selectMythPresentation;
+
+const MREV = {
+  VERSION:"slice01",
+  mode:"auto",                    /* "auto" | "off" — off면 부모와 동일 경로 (모든 진입점 무동작) */
+  force:{ level:null, rhythm:null }, /* Dev 전용 강제 — 게임 정본 정책 아님 */
+  gen:0, armed:false, _prevRV:false, _prevMY:false, _resolve:null, _timers:[], _state:"idle",
+  _hpBefore:null, _doomBefore:false, _groggySeen:0,
+  prevMax:{ battle:null, val:null },   /* 전투별 이전 최대 크기 — newDigitTier 문맥 (읽기 전용 추적) */
+  openReg:null, openLog:[],            /* ✦ §12 교차 턴 적의 틈 — 읽기 전용 관측 원장 */
+  tele:[],                             /* ✦ §14 텔레메트리 — 메모리 한정, 저장/영구 메타 0 */
+  RH:{ fast:{step:160,long:200,final:340}, rhythm:{step:270,long:330,final:620}, dramatic:{step:430,long:500,final:1150} },
+
+  /* ── 캡처 무장: resolveTurn 시작 (계산 전 · 읽기 전용 스냅샷만) ── */
+  arm(){
+    if(this.mode==="off"){ this.armed=false; return; }
+    if(this.prevMax.battle!==S.battle){ this.prevMax={battle:S.battle,val:null}; this.openReg=null; this.openLog=[]; this._groggySeen=0; }
+    /* 교차 턴 관측: 이전 턴 생성된 틈이 이번 턴 시작 시점에도 남아있는가 */
+    if(this.openReg && typeof VS==="object" && VS){
+      if(VS.groggy>0 && VS.groggy<this._groggySeen){
+        this.openReg.remainingTurns=VS.groggy;
+        this.openLog.push({operation:"tickOpening",openingId:this.openReg.openingId,turn:S.turn,remainingTurns:VS.groggy});
+      } else if(VS.groggy<=0 && this._groggySeen>0){
+        this.openLog.push({operation:"expireOpening",openingId:this.openReg.openingId,turn:S.turn,remainingTurns:0});
+        this.openReg=null;
+      }
+      this._groggySeen = VS.groggy||0;
+    }
+    this._prevRV=RV.on; this._prevMY=MYTH.on;
+    RV.reset(); RV.on=true; MYTH.on=true;
+    this._hpBefore = {}; for(const id of UI_ORDER){ const a=S.allies[id]; this._hpBefore[id]={hp:a.hp,mx:a.max,dead:!!a.dead}; }
+    this._doomBefore = !!(VS && VS.active && VS.doomActive);
+    this.armed=true;
+  },
+  _disarm(){ if(!this.armed) return; RV.on=this._prevRV; MYTH.on=this._prevMY; this.armed=false; },
+
+  /* ── 원장 조립 (부모 buildMythLedger 그대로 · ctx는 내 읽기 전용 사본) ── */
+  _assemble(kind){
+    const ctx = Object.assign({}, MYTH.ctx||{}, {
+      eHpAfter:S.eHp, enemyDead:(S.eHp<=0), targetIsBoss:!!(VS&&VS.active),
+      previousMaxMagnitude:(this.prevMax.battle===S.battle?this.prevMax.val:null)
+    });
+    const cap = kind==="defense"
+      ? { ctx, steps:RV.steps.slice(), heals:[], defenses:(MYTH.defenses||[]).slice() }
+      : { ctx, steps:RV.steps.slice(), heals:(MYTH.heals||[]).slice(), defenses:[] };
+    const ledger = buildMythLedger(cap);
+    /* 교차 턴 applyOpening 주석: 같은 그룹에 break가 없고 이전 턴 틈이 살아있으면 그 openingId를 참조 (읽기 전용 주석) */
+    if(this.openReg){ for(const e of ledger.events){ if(e.operation==="applyOpening" && !e.openingId) e.openingId=this.openReg.openingId; } }
+    return ledger;
+  },
+  /* ── 신호 증강: 원장 사실에서만 파생 (발명 금지) ── */
+  _augment(ledger){
+    const sig = Object.assign({}, ledger.presentationSignals);
+    const snap = ledger.preActionSnapshot||{};
+    sig.naturalBlackjackCount = (snap.allies||[]).filter(a=>a.naturalBJ&&!a.dead).length;
+    const negated = ledger.events.some(e=>(e.tags||[]).includes("enemy.doomNegated"));
+    sig.doomCanceled = negated || (sig.barrierBroken===true && this._doomBefore===true);
+    sig.healTotal = ledger.summary.healTotal;
+    let nearWipe=false;
+    if(this._hpBefore){ const living=UI_ORDER.filter(id=>this._hpBefore[id]&&!this._hpBefore[id].dead);
+      nearWipe = living.length>0 && living.every(id=>{ const h=this._hpBefore[id]; return h.mx>0 && (h.hp/h.mx)<=0.35; }); }
+    const sanct = ledger.events.some(e=>e.operation==="heal"&&e.is21===true||e.sourceId==="sanctuary");
+    sig.partyRevivedFromNearWipe = nearWipe && ledger.summary.healTotal>0 && sanct;   /* 임계 0.35 = R&D 후보 수치 */
+    return sig;
+  },
+  _preset(sig){
+    const auto = selectMythPresentation(sig);
+    const level = (this.force.level!=null)?this.force.level:auto.level;
+    const rhythm = (this.force.rhythm!=null)?this.force.rhythm:auto.rhythm;
+    return { level, rhythm, reasons:auto.reasons, forced:(this.force.level!=null||this.force.rhythm!=null) };
+  },
+
+  /* ── 진입점 1: 파티 행동그룹 연출 (Hook B) ── */
+  async playParty(){
+    if(!this.armed) return;
+    const ledger=this._assemble("party"), sig=this._augment(ledger), pres=this._preset(sig);
+    /* 이번 그룹의 틈 생성 → 교차 턴 레지스터 (읽기 전용) */
+    const co=ledger.events.find(e=>e.operation==="createOpening");
+    if(co){ this.openReg={openingId:co.openingId,createdTurn:S.turn,remainingTurns:2}; this._groggySeen=2;
+      this.openLog.push({operation:"createOpening",openingId:co.openingId,turn:S.turn,remainingTurns:2}); }
+    for(const e of ledger.events){ if(e.operation==="applyOpening")
+      this.openLog.push({operation:"applyOpening",openingId:e.openingId,turn:S.turn,delta:e.delta}); }
+    const mag=ledger.summary.damageTotal||ledger.summary.healTotal||0;
+    if(this.prevMax.battle===S.battle) this.prevMax.val=Math.max(this.prevMax.val||0,mag);
+    const hasContent = ledger.events.length>0;
+    if(hasContent) await this._render(ledger,sig,pres,"party");
+    RV.reset();                    /* 보스 페이즈 반사 캡처를 위해 스텝만 비움 (계산 무접촉) */
+    if(S.eHp<=0) this._disarm();   /* 처치 경로 — 보스 페이즈 없음 */
+  },
+  /* ── 진입점 2: 방어·반사 연출 (Hook C) → 캡처 해제 ── */
+  async playDefense(){
+    if(!this.armed) return;
+    const hasDef=(MYTH.defenses&&MYTH.defenses.length)||RV.steps.length;
+    if(hasDef){
+      const ledger=this._assemble("defense"), sig=this._augment(ledger), pres=this._preset(sig);
+      if(ledger.events.length) await this._render(ledger,sig,pres,"defense");
+    }
+    this._disarm();
+  },
+
+  /* ── 렌더러: 전장 위 반투명 패널 · 배경 전투 유지 · 첫 탭=전체 완성 · 추가 탭=닫기 ── */
+  _delay(ms,gen){ return new Promise(res=>{ const t=setTimeout(()=>{ if(gen===this.gen) res(); },ms); this._timers.push(t); }); },
+  _clearTimers(){ for(const t of this._timers) clearTimeout(t); this._timers=[]; },
+  _render(ledger,sig,pres,kind){
+    return new Promise(resolve=>{
+      const gen=++this.gen; this._clearTimers();
+      const old=document.getElementById("mrvOv"); if(old) old.remove();
+      const lines=ledgerToRevealLines(ledger,pres.level);
+      const rh=this.RH[pres.rhythm]||this.RH.rhythm;
+      const t0=Date.now(); let taps=0, skipped=false, skipAt=null, bg=false, done=false, closed=false;
+      const fullMs=lines.reduce((a,l)=>a+((l.pop?rh.long:l.final?rh.final:rh.step)),0);
+      const ov=document.createElement("div"); ov.id="mrvOv"; if(pres.level>=3) ov.classList.add("mrvL3");
+      const snap=ledger.preActionSnapshot;
+      ov.innerHTML=`<div id="mrvPanel">
+        <div id="mrvHead"><b>✦ ${kind==="defense"?"수호의 신화":"이번 턴의 신화"}</b><span>${snap.enemy||""} · T${ledger.turn}${pres.forced?" · DEV강제":""}</span></div>
+        <div id="mrvLines"></div>
+        <div id="mrvFoot">탭 — 즉시 완성</div></div>`;
+      document.body.appendChild(ov);
+      const box=ov.querySelector("#mrvLines");
+      const els=lines.map(l=>{ const d=document.createElement("div");
+        d.className="mrvLn "+(l.cls||"")+(l.pop?" pop":""); d.textContent=l.txt; box.appendChild(d); return d; });
+      let idx=0;
+      const showNext=async()=>{ while(idx<els.length){ if(gen!==this.gen) return;
+          els[idx].classList.add("show"); const l=lines[idx]; idx++;
+          if(idx<els.length) await this._delay(l.pop?rh.long:rh.step,gen); }
+        if(gen!==this.gen) return; markDone(false); };
+      const markDone=(bySkip)=>{ if(done) return; done=true; ov.classList.add("mrvDone");
+        ov.querySelector("#mrvFoot").textContent="✓ 탭 — 계속";
+        this._delay(bySkip?900:rh.final,gen).then(()=>{ if(gen===this.gen) close(); }); };
+      const finishInstant=()=>{ if(done) return; skipped=true; skipAt=idx;
+        this._clearTimers(); for(const el of els) el.classList.add("show"); idx=els.length; markDone(true); };
+      const close=()=>{ if(closed||gen!==this.gen) return; closed=true; this._state="idle";
+        this._clearTimers(); ov.remove(); document.removeEventListener("visibilitychange",onVis);
+        this.tele.push({ battleId:ledger.battleId, turn:ledger.turn, actionGroupId:ledger.actionGroupId, kind,
+          selectedLevel:pres.level, selectedRhythm:pres.rhythm, selectionReasons:pres.reasons, forced:pres.forced,
+          partyBlackjackCount:sig.partyBlackjackCount, barrierBroken:sig.barrierBroken, openingCreated:sig.openingCreated,
+          targetKilled:sig.targetKilled, bossKilled:sig.bossKilled, overkillAmount:sig.overkillAmount, magnitudeTier:sig.magnitudeTier,
+          fullDurationMs:fullMs, watchedDurationMs:Date.now()-t0, skipped, skipAtStep:skipAt,
+          completedNaturally:!skipped&&!bg, backgroundFinalized:bg, inputDuringRevealCount:taps });
+        resolve(); };
+      const onTap=ev=>{ ev.preventDefault(); taps++;
+        if(!done) finishInstant(); else close(); };
+      const onVis=()=>{ if(document.hidden && !closed){ bg=true; finishInstant(); close(); } };
+      ov.addEventListener("pointerdown",onTap);
+      document.addEventListener("visibilitychange",onVis);
+      this._state="playing";
+      showNext();
+    });
+  },
+  /* ── 생명주기: DEV/랩 진입·모드 전환 시 강제 정리 (재시작·타이틀은 location.reload로 자동 정리) ── */
+  teardown(){ this.gen++; this._clearTimers(); const ov=document.getElementById("mrvOv"); if(ov) ov.remove();
+    this._state="idle"; if(this._resolve){ this._resolve(); this._resolve=null; } this._disarm(); },
+  teleJson(){ return JSON.stringify({version:this.VERSION,entries:this.tele,openLog:this.openLog},null,2); }
+};
+window.__MREV = MREV;
+
+/* ── 생명주기 배선: DEV LAB / 연출 랩 진입 시 잔여 연출 정리 ── */
+(function(){
+  const ll=document.getElementById("labLink"); if(ll) ll.addEventListener("click",()=>MREV.teardown());
+  const ol=document.getElementById("opLab"); if(ol) ol.addEventListener("click",()=>MREV.teardown());
+  if(typeof LAB==="object" && LAB && typeof LAB.open==="function"){
+    const _open=LAB.open.bind(LAB); LAB.open=function(){ MREV.teardown(); return _open(); };
+  }
+})();
+
+/* ═══ ✦ SLICE01 Dev Showcase — "⚔ 인게임 신화 연출" (DEV LAB 내부 주입) ═══
+   각 프리셋 = 결정론 부팅 해시(부모 문법) + 카드/상태 셋업 → 실제 confirmBtn.click() 경로.
+   연출 함수 직접 호출로 가짜 성공을 만들지 않는다. 강제 L/리듬은 Dev 전용 — 게임 정본 정책 아님. */
+(function(){
+  const P=[
+    {n:"1 일반+FAST",        boot:"s7i8mp",           set:S2=>{S2.allies.hero.cards=["10","3"];S2.allies.mage.cards=["2","3"];S2.allies.war.cards=["5","5"];S2.allies.cleric.cards=["5","5"];}},
+    {n:"2 자연 블랙잭",       boot:"s7i8mp",           set:S2=>{S2.allies.hero.cards=["A","K"];S2.allies.mage.cards=["2","3"];S2.allies.war.cards=["5","5"];S2.allies.cleric.cards=["5","5"];}},
+    {n:"3 2인 파티BJ",        boot:"s7i8qh1mp",        set:S2=>{S2.allies.hero.cards=["A","10"];S2.allies.mage.cards=["A","10"];S2.allies.war.cards=["5","5"];S2.allies.cleric.cards=["5","5"];}},
+    {n:"4 3인 · 적 생존",     boot:"s7i8qh1mp",        set:(S2,V)=>{for(const id of["hero","mage","war"])S2.allies[id].cards=["A","10"];S2.allies.cleric.cards=["5","5"];if(V){V.wall=Math.max(V.wall,300);}}},
+    {n:"5 3인 · 처치+오버킬", boot:"s7i8qh1mp",        set:(S2,V)=>{for(const id of["hero","mage","war"])S2.allies[id].cards=["A","10"];S2.allies.cleric.cards=["5","5"];if(V){V.wall=0;}S2.eHp=Math.min(S2.eHp,120);}},
+    {n:"6 4인 · 적 생존",     boot:"s7i8qh1mi",        set:(S2,V)=>{for(const id of UI_ORDER)S2.allies[id].cards=["A","10"];if(V){V.wall=0;}}},
+    {n:"7 4인+방벽파괴+틈",   boot:"s7i8qh1mi",        set:(S2,V)=>{for(const id of UI_ORDER)S2.allies[id].cards=["A","10"];if(V){V.wall=200;V.wallMax=300;V.doomActive=true;V.doom=2;}}},
+    {n:"8 4인+보스킬+1000",   boot:"s7i8qh1.h2.m3mi",  set:(S2,V)=>{for(const id of UI_ORDER)S2.allies[id].cards=["A","10"];S2.chainMagic=20;if(V){V.wall=0;}S2.eHp=Math.min(S2.eHp,900);}},
+    {n:"9 전사21 종말무효",   boot:"s7i8qw2mi",        set:(S2,V)=>{S2.allies.war.cards=["A","10"];for(const id of["hero","mage","cleric"]){S2.allies[id].dead=true;S2.allies[id].hp=0;}if(V){V.wall=300;V.wallMax=300;V.doomActive=true;V.doom=1;V.aux=[];}}},
+    {n:"10 성직자21 복구",    boot:"s7i8qc1mi",        set:(S2,V)=>{S2.allies.cleric.cards=["A","10"];S2.allies.war.cards=["5","5"];for(const id of["hero","mage"]){S2.allies[id].dead=true;S2.allies[id].hp=0;}S2.allies.war.hp=Math.min(S2.allies.war.hp,10);S2.allies.cleric.hp=Math.min(S2.allies.cleric.hp,12);if(V){V.aux=[];}}},
+  ];
+  window.__MREV_PRESETS=P;
+  const lab=document.getElementById("labOv"); if(!lab) return;
+  const host=lab.querySelector(".labIn")||lab.firstElementChild||lab;
+  const dv=document.createElement("div"); dv.id="mrvDev";
+  dv.innerHTML=`<h3>⚔ 인게임 신화 연출 (SLICE01)</h3>
+    <div class="mrvRow" id="mrvMode"></div>
+    <div class="mrvRow" id="mrvForceL"></div>
+    <div class="mrvRow" id="mrvForceR"></div>
+    <div class="mrvRow" id="mrvPre"></div>
+    <div class="mrvRow"><button id="mrvTele">텔레메트리 JSON</button><button id="mrvTeleDl">⬇ 다운로드</button></div>
+    <div class="mrvNote">프리셋: [부팅]으로 해당 보스전에 진입한 뒤 [▶]가 카드 셋업 + <b>실제 운명 확정 클릭</b>을 실행한다. 강제 모드는 Dev 전용이며 게임 정본 정책이 아니다. Reveal OFF는 부모와 동일 경로.</div>
+    <pre id="mrvOut" style="font-size:9px;color:#8ac0d8;max-height:120px;overflow:auto;white-space:pre-wrap;"></pre>`;
+  host.appendChild(dv);
+  const re=()=>{ 
+    dv.querySelector("#mrvMode").innerHTML=["off","auto"].map(m=>`<button data-m="${m}" class="${MREV.mode===m?"on":""}">Reveal ${m.toUpperCase()}</button>`).join("");
+    dv.querySelector("#mrvForceL").innerHTML=[null,0,1,2,3].map(l=>`<button data-l="${l}" class="${MREV.force.level===l?"on":""}">${l===null?"L:AUTO":"L"+l}</button>`).join("");
+    dv.querySelector("#mrvForceR").innerHTML=[null,"fast","rhythm","dramatic"].map(r=>`<button data-r="${r}" class="${MREV.force.rhythm===r?"on":""}">${r===null?"R:AUTO":r.toUpperCase()}</button>`).join("");
+    dv.querySelector("#mrvPre").innerHTML=P.map((p,i)=>`<span style="display:inline-flex;gap:2px;"><button data-b="${i}">${p.n} 부팅</button><button data-x="${i}">▶</button></span>`).join("");
+    dv.querySelector("#mrvMode").querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{ MREV.teardown(); MREV.mode=b.dataset.m; re(); });
+    dv.querySelector("#mrvForceL").querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>{ MREV.force.level=b.dataset.l==="null"?null:+b.dataset.l; re(); });
+    dv.querySelector("#mrvForceR").querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{ MREV.force.rhythm=b.dataset.r==="null"?null:b.dataset.r; re(); });
+    dv.querySelector("#mrvPre").querySelectorAll("[data-b]").forEach(b=>b.onclick=()=>{ location.hash=P[+b.dataset.b].boot; location.reload(); });
+    dv.querySelector("#mrvPre").querySelectorAll("[data-x]").forEach(b=>b.onclick=()=>{
+      const p=P[+b.dataset.x];
+      if(S.over||S.busy){ dv.querySelector("#mrvOut").textContent="전투 대기 상태에서만 실행 가능 (busy/over)"; return; }
+      p.set(S, (typeof VS==="object"&&VS&&VS.active)?VS:null); renderAll();
+      MREV.teardown(); document.getElementById("labOv").classList.add("hiddenOv");
+      document.getElementById("confirmBtn").click(); });
+    dv.querySelector("#mrvTele").onclick=()=>{ dv.querySelector("#mrvOut").textContent=MREV.teleJson(); };
+    dv.querySelector("#mrvTeleDl").onclick=()=>{ const b=new Blob([MREV.teleJson()],{type:"application/json"});
+      const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="mrev_telemetry.json"; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); };
+  };
+  re();
 })();
 </script>
 </body>
