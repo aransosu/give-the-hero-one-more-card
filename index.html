@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v1H1VS1A1B · Myth Rhythm Orchestration 01 · 부모 In-Game Parallel Myth Rhythm Slice 01(2f2f03d424a5e66f42abc69e8ada8073)에서 분기 · 병렬 리듬을 다섯 박자(DOWNBEAT 턴주제 1회/BEAT 영웅기여/CRESCENDO 피해누적/COUNTERPOINT 지원화음 분리/CADENCE 중앙결산 1회)로 편곡 · 모든 표시를 #stage 내부 좌표계에 수납(enemyZone 침범 0·전장 밖 유출 0·기존 로그와 이중표시 방지 위해 연주 중 #log 감쇄) · 계산·RNG·턴·수치 무변경(원장·실제 d를 읽어 표시만) · PRLIVE.on OFF=부모 동일 경로 · 공식 승격 HOLD · commit/push 0 -->
+<!-- v1H1VS1A1B · Myth Damage Rhythm Close 01 (R&D 마감 슬라이스) · 부모 Myth Rhythm Orchestration 01(148e5714f0c5e49a69398930a62874d6)에서 분기 · 피해 선율 단일화: 전투 영역 왼쪽 중앙 고정 앵커(top:50%+translateY)로 영웅별 실제 피해가 행동 박자에 쌓이고 묶음이 위아래로 확장, 누적은 묶음 안 한 줄, 중앙 총 피해 1회로 종지 · 지원(방어·회복·정화)·우측 독립 누적은 제품 표시 격리(원장·데이터 보존, DEV/fragment에만) · AUTO는 피해 사건만으로 편곡 · 계산·RNG·턴·수치 무변경(상태 차분 관측·표시만) · PRLIVE.on OFF=부모 동일 경로 · 공식 승격 HOLD · commit/push 0 -->
 <!-- v1H1VS1 · Combat Choice Vertical Slice 01 · 기회비용 보스(종말4턴+방벽300) × 다중 표적 × 강화 파티BJ(실험) · v1H1(0528301bf1e6017731c67d8ba32cabc6)에서 분기 · 모드 c=CONTROL(기준선) p/b/i · 공식 승격 HOLD · commit/push 0 -->
 <html lang="ko">
 <head>
@@ -781,27 +781,27 @@ body.reveal-lab-open{overflow:hidden !important;overscroll-behavior:none;}
 #prlStage.prlShake{animation:prlShake .3s ease;}
 @keyframes prlShake{0%,100%{transform:none;}25%{transform:translate(2px,-2px);}55%{transform:translate(-2px,2px);}}
 @media (max-width:400px){ .prlFinN{font-size:30px;} #prlFinale.prlDrama .prlFinN{font-size:36px;} }
-/* ═══ ✦ ORCH01: 신화 리듬 오케스트레이션 — 전부 #stage 내부 좌표계 · 입력 차단 0 ═══ */
-#orWrap{position:absolute;left:6px;top:38px;bottom:8px;width:47%;max-width:158px;z-index:5;
-  display:flex;flex-direction:column;justify-content:flex-end;gap:2px;pointer-events:none;overflow:hidden;}
+/* ═══ ✦ CLOSE01: 피해 선율 단일화 — 전투 영역 왼쪽 중앙 고정 앵커 · 위아래 대칭 확장 ═══ */
+#orWrap{position:absolute;left:8px;top:50%;transform:translateY(-50%);width:47%;max-width:160px;z-index:5;
+  display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:2px;
+  pointer-events:none;max-height:82%;overflow:hidden;}
+#orWrap.recede{opacity:.28;transform:translateY(-50%) scale(.92);transition:opacity .3s ease, transform .3s ease;}
 .orLn{opacity:0;transform:translateX(-7px);transition:opacity .13s ease,transform .13s ease;
   overflow-wrap:anywhere;text-shadow:0 1px 3px rgba(0,0,0,.9);pointer-events:none;}
 .orLn.show{opacity:1;transform:none;}
 .orLn.fade{opacity:0 !important;transition:opacity 1s ease;}
 .orTheme{font-size:11px;font-weight:900;color:#ffb3d5;letter-spacing:.5px;
   border-bottom:1px solid rgba(255,179,213,.35);padding-bottom:2px;margin-bottom:2px;}
-.orBeat{font-size:12.5px;font-weight:800;color:#ffe9b0;}
+.orBeat{font-size:13px;font-weight:800;color:#ffe9b0;}
 .orBig{font-size:11.5px;font-weight:900;color:#9fe0ff;}
 .orSup{font-size:10.5px;font-weight:700;color:#a8ffca;padding-left:6px;border-left:2px solid rgba(140,230,180,.45);}
 .orSup.guard{color:#a8d8ff;border-left-color:rgba(150,200,255,.45);}
-#orCum{position:absolute;right:8px;bottom:10px;z-index:5;pointer-events:none;text-align:right;
-  opacity:0;transition:opacity .15s ease;}
-#orCum.show{opacity:1;}
-#orCum .cl{font-size:9px;color:#8f86a6;letter-spacing:1.5px;}
-#orCum .cv{font-size:19px;font-weight:900;color:#ffd27a;white-space:nowrap;
-  text-shadow:0 0 10px rgba(255,190,90,.4),0 1px 3px rgba(0,0,0,.8);transition:transform .12s ease;display:inline-block;}
-#orCum.bump .cv{transform:scale(1.22);}
-#orFin{position:absolute;left:50%;top:56%;transform:translate(-50%,-50%) scale(.72);z-index:6;text-align:center;
+/* 누적 줄 — 묶음 안, 개별 피해보다 작게(주인공 아님). 오른쪽 독립 UI 아님 */
+.orCumIn{font-size:11px;font-weight:800;color:#ffd27a;margin-top:2px;padding-top:2px;
+  border-top:1px solid rgba(255,210,120,.3);white-space:nowrap;transition:transform .12s ease;display:inline-block;}
+.orCumIn.bump{transform:scale(1.16);}
+#orCum{display:none !important;}   /* CLOSE01: 오른쪽 독립 누적 UI 제품 표시 제거 (DEV 비교에만 잔존) */
+#orFin{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%) scale(.72);z-index:6;text-align:center;
   pointer-events:none;opacity:0;transition:opacity .2s ease,transform .2s ease;max-width:92%;}
 #orFin.on{opacity:1;transform:translate(-50%,-50%) scale(1);}
 #orFin.fade{opacity:0;transition:opacity .9s ease;}
@@ -815,7 +815,7 @@ body.reveal-lab-open{overflow:hidden !important;overscroll-behavior:none;}
 #stage.orShake{animation:orShakeK .3s ease;}
 @keyframes orShakeK{0%,100%{transform:none;}25%{transform:translate(2px,-2px);}55%{transform:translate(-2px,2px);}}
 #log.orchQuiet{opacity:.10;transition:opacity .25s ease;}
-@media (max-width:400px){ .orFinN{font-size:29px;} #orFin.orDrama .orFinN{font-size:35px;} #orWrap{max-width:45vw;} }
+@media (max-width:400px){ .orFinN{font-size:29px;} #orFin.orDrama .orFinN{font-size:35px;} #orWrap{max-width:46vw;} }
 /* 단편형(Dev 비교 전용) — 구 IGPRL 최소 보존 */
 #igRail{position:fixed;left:6px;top:calc(8px + env(safe-area-inset-top));width:44%;max-width:150px;z-index:8500;
   display:flex;flex-direction:column;gap:3px;pointer-events:none;}
@@ -4408,7 +4408,6 @@ const PRLIVE = {
     if(this.style==="orchestra"){
       if(!this._ensure()) return;
       document.getElementById("orWrap").innerHTML="";
-      const cum=document.getElementById("orCum"); cum.classList.remove("show"); cum.querySelector(".cv").textContent="0";
       const fin=document.getElementById("orFin"); fin.className=""; fin.innerHTML="";
       const lg=this._log(); if(lg) lg.classList.add("orchQuiet");
     } else { /* fragment 비교용 */
@@ -4423,9 +4422,13 @@ const PRLIVE = {
       requestAnimationFrame(()=>{ if(g===this.gen) d.classList.add("show"); });
       while(this.railF.children.length>13) this.railF.removeChild(this.railF.firstChild); return d; }
     const w=document.getElementById("orWrap"); if(!w) return null;
-    const d=document.createElement("div"); d.className="orLn "+cls; d.textContent=txt; w.appendChild(d);
+    const d=document.createElement("div"); d.className="orLn "+cls; d.textContent=txt;
+    /* CLOSE01: 누적 줄(.orCumIn)이 있으면 그 앞에 삽입 — 누적은 항상 묶음 최하단 */
+    const cumLine=w.querySelector(".orCumIn");
+    if(cumLine) w.insertBefore(d,cumLine); else w.appendChild(d);
     requestAnimationFrame(()=>{ if(g===this.gen) d.classList.add("show"); });
-    while(w.children.length>11) w.removeChild(w.firstChild);
+    /* cap: 누적 줄은 보호하고 가장 오래된 피해 줄부터 제거 */
+    while(w.querySelectorAll(".orLn:not(.orCumIn)").length>10){ const first=w.querySelector(".orLn:not(.orCumIn)"); if(first) w.removeChild(first); else break; }
     return d;
   },
   _downbeatOnce(){
@@ -4435,9 +4438,14 @@ const PRLIVE = {
   },
   _bumpCum(){
     if(this.style!=="orchestra") return;
-    const c=document.getElementById("orCum"); if(!c) return;
-    c.classList.add("show"); c.querySelector(".cv").textContent=String(this.cum);
-    c.classList.remove("bump"); void c.offsetWidth; c.classList.add("bump");
+    const w=document.getElementById("orWrap"); if(!w) return;
+    /* CLOSE01: 누적 = 묶음 안 한 줄 갱신 (오른쪽 독립 UI 아님). 개별 피해보다 작게 = 주인공 아님 */
+    let el=w.querySelector(".orCumIn");
+    if(!el){ el=document.createElement("div"); el.className="orLn orCumIn show"; w.appendChild(el); }
+    el.textContent="\uB204\uC801 \uD53C\uD574 "+this.cum;
+    el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump");
+    /* 누적 줄은 항상 묶음 최하단 유지 */
+    w.appendChild(el);
   },
   /* ── BEAT: 공격 impact — 실제 확정 피해 d (dmgEnemy 직후 · 표시만) ── */
   impact(id, act, d){
@@ -4454,11 +4462,10 @@ const PRLIVE = {
       const name=(act&&act.txt)?act.txt:(this.NM[id]||id);
       this.beats.push({id,name,d:delivered,cum:this.cum});
       this._line((this.EMO[id]||"\u2022")+" "+name+" +"+delivered, this.style==="fragment"?"igHit":"orBeat");
-      if(this.cumStyle==="A") this._line("\uB204\uC801 "+this.cum, this.style==="fragment"?"igChip":"orSup");
-      else this._bumpCum();
+      this._bumpCum();   /* CLOSE01: 누적은 항상 묶음 안 한 줄 */
     } else this.omitted.push({ev:"impact:"+id, reason:"\uBCF8\uCCB4 \uAE30\uC5EC 0 \u2014 \uBB34\uC758\uBBF8 \uC0DD\uB7B5"});
     if(auxHit>0 && vs && vs.aux && vs.aux.every(x=>x.hp<=0) && this._obs.aux===0 && !this._auxGone){
-      this._auxGone=true; this._line("\uD83D\uDD2E \uCD09\uC218 \uC18C\uBA78", this.style==="fragment"?"igChip":"orSup");
+      this._auxGone=true; this._line("\uD83D\uDD2E \uCD09\uC218 \uC18C\uBA78", this.style==="fragment"?"igChip":"orBig");
     } else if(auxHit>0) this.omitted.push({ev:"aux:"+auxHit, reason:"\uCD09\uC218 \uD53C\uD574 \u2014 \uBCF8\uCCB4 \uB204\uC801\uACFC \uBD84\uB9AC(\uC6D0\uC7A5 \uAE30\uC900), \uAC1C\uBCC4 \uC904 \uC0DD\uB7B5"});
     /* 결과 사건 — 방벽/종말은 VS 상태 차분 관측 (계산 무접촉) */
     if(vs && this._wallBefore!=null && vs.wall<this._wallBefore){
@@ -4469,76 +4476,73 @@ const PRLIVE = {
     }
     if(vs && this._doomBefore && !vs.doomActive){ this._line("\u23F3 \uC885\uB9D0 \uCDE8\uC18C", this.style==="fragment"?"igBig":"orBig"); this._doomBefore=false; }
   },
-  /* ── COUNTERPOINT: 지원 화음 — 피해 누적과 분리 ── */
+  /* ── 지원(방어/회복/정화): CLOSE01에서 데이터·원장은 보존하되 제품(orchestra) 표시는 억제 (피해 선율 단일화) ── */
   impactGuard(kind){
     if(!this.on) return;
-    this._downbeatOnce();
     if(kind==="perfect"){ this._prevented=true; this.support.push({t:"\uC644\uBCBD \uBC29\uC5B4"});
-      this._line("\uD83D\uDEE1 \uC644\uBCBD \uBC29\uC5B4", this.style==="fragment"?"igGuard":"orSup guard"); }
+      if(this.style==="fragment") this._line("\uD83D\uDEE1 \uC644\uBCBD \uBC29\uC5B4", "igGuard");
+      else this.omitted.push({ev:"guard:perfect", reason:"\uC9C0\uC6D0 \uC120\uC728 \u2014 CLOSE01 \uC81C\uD488 \uD45C\uC2DC \uBCF4\uB958(\uC6D0\uC7A5 \uBCF4\uC874)"}); }
   },
   impactHeal(id, act, h, healed, ov, sh, cl){
     if(!this.on) return;
-    this._downbeatOnce();
     const real=(healed>0?healed:0);
     if(real>0||sh>0||cl>0){
-      let t="\u2728 "+((act&&act.k==="m")?"\uC131\uC5ED":"\uD68C\uBCF5")+(real>0?" +"+real:"");
-      if(cl>0) t+=" \u00B7 \uB3C5 \uC815\uD654";
       this._healSum+=real; this._cleanseSum+=(cl||0);
-      this.support.push({t,heal:real,cleanse:cl||0});
-      this._line(t, this.style==="fragment"?"igHeal":"orSup");
-      if(sh>0){ this.support.push({t:"\uBCF4\uD638\uB9C9 +"+sh}); this._line("\uD83D\uDEE1 \uBCF4\uD638\uB9C9 +"+sh, this.style==="fragment"?"igChip":"orSup"); }
-    } else this.omitted.push({ev:"heal:"+id, reason:"\uC2E4\uC81C \uD68C\uBCF5 0 \u00B7 \uBCF4\uC870 \uC131\uACFC \uC5C6\uC74C \u2014 \uC0DD\uB7B5"});
+      this.support.push({t:"\u2728 "+((act&&act.k==="m")?"\uC131\uC5ED":"\uD68C\uBCF5")+(real>0?" +"+real:"")+(cl>0?" \u00B7 \uB3C5 \uC815\uD654":""),heal:real,cleanse:cl||0});
+      if(sh>0) this.support.push({t:"\uBCF4\uD638\uB9C9 +"+sh});
+      if(this.style==="fragment"){ this._line("\u2728 "+((act&&act.k==="m")?"\uC131\uC5ED":"\uD68C\uBCF5")+(real>0?" +"+real:"")+(cl>0?" \u00B7 \uB3C5 \uC815\uD654":""),"igHeal");
+        if(sh>0) this._line("\uD83D\uDEE1 \uBCF4\uD638\uB9C9 +"+sh,"igChip"); }
+      else this.omitted.push({ev:"heal:"+id, reason:"\uC9C0\uC6D0 \uC120\uC728 \u2014 CLOSE01 \uC81C\uD488 \uD45C\uC2DC \uBCF4\uB958(\uC6D0\uC7A5 \uBCF4\uC874)"});
+    } else this.omitted.push({ev:"heal:"+id, reason:"\uC2E4\uC81C \uD68C\uBCF5 0 \u2014 \uC0DD\uB7B5"});
   },
   /* ── CADENCE: 중앙 최종 결산 — 턴당 정확히 1회 · 단위 명시 ── */
   finale(){
     return new Promise(resolve=>{
       if(!this.on){ resolve(); return; }
       const g=this.gen;
-      /* AUTO 편곡 — 사건 중요도 + 행동 수 (기존 정책 재사용) */
-      const acted=this.beats.length+this.support.length;
+      /* AUTO 편곡 — CLOSE01: 피해 사건만 기준 (방어·회복으로 DRAMATIC 승격 금지 §7) */
+      const acted=this.beats.length;
       const killed=S.eHp<=0, vs=(typeof VS==="object"&&VS&&VS.active)?VS:null;
       const sig={ partyBlackjackCount:S.pbCount||0, naturalBlackjackCount:(this.theme==="\uC790\uC5F0 \uBE14\uB799\uC7AD")?1:0,
         triggeredLawCount:0, magnitudeTier:(this.cum>=1000?4:this.cum>=100?3:this.cum>=10?2:1),
         barrierBroken:(this._wallBefore===0&&this._wallAbsorbed>0), targetKilled:killed, battleEnded:killed,
         bossKilled:(killed&&!!vs)||null, overkillAmount:null,
-        doomCanceled:(!this._doomBefore&&!!vs&&this._prevented)||undefined,
-        openingCreated:false, damagePrevented:this._prevented?1:0, partyRevivedFromNearWipe:false };
+        doomCanceled:undefined, openingCreated:false, damagePrevented:0, partyRevivedFromNearWipe:false };
       /* 최종 총합 재확정 — impact 훅 이후 법칙 여파(dlProcs 등)까지 차분으로 흡수 */
       const vsF=(typeof VS==="object"&&VS&&VS.active)?VS:null;
       const cumFinal=Math.max(0,this._eHpBefore-S.eHp)+Math.max(0,(this._wallBefore!=null?this._wallBefore:0)-(vsF?vsF.wall:0));
       if(cumFinal>this.cum){ const echo=cumFinal-this.cum; this.cum=cumFinal;
-        this._line("\u2726 \uBA54\uC544\uB9AC +"+echo, this.style==="fragment"?"igChip":"orSup"); this._bumpCum(); }
+        this._line("\u2726 \uBA54\uC544\uB9AC +"+echo, this.style==="fragment"?"igChip":"orBig"); this._bumpCum(); }
       sig.magnitudeTier=(this.cum>=1000?4:this.cum>=100?3:this.cum>=10?2:1);
       let sel; try{ sel=window.__MREV_SELECT?window.__MREV_SELECT(sig):null; }catch(e){ sel=null; }
       if(!sel){ const lv=S.pbCount>=4?3:S.pbCount>=3?2:S.pbCount>=2?1:0; sel={level:lv,rhythm:lv>=2?"rhythm":"fast",reasons:["fallback"]}; }
       if(acted<=1 && !killed && sel.rhythm==="rhythm") sel={...sel, rhythm:"fast", reasons:[...sel.reasons,"fewActions"]};
       this.lastSel=sel;
       const drama=sel.rhythm==="dramatic";
-      /* 대표 결산 — 주인공 1 + 보조. 단위 명시 (총 피해/총 회복/피해 0) */
+      /* CLOSE01 대표 결산 — 피해 선율만. 총 피해가 유일 주인공. 피해 0 턴은 결산 생략(침묵) */
       let pre=null,h,n,sub=null;
       const ovk = killed ? Math.max(0, this.cum - this._wallAbsorbed - this._eHpBefore) : 0;
       if(this.cum>0){
         h="\uCD1D \uD53C\uD574"; n=String(this.cum);
         if(killed){ sub="\uC801 \uCC98\uCE58"+(ovk>0?" \u00B7 OVERKILL +"+ovk:""); }
-        else if(this._wallBefore===0&&this._wallAbsorbed>0){ sub="\uBC29\uBCBD \uBD95\uAD34 \u00B7 \uC885\uB9D0 \uCDE8\uC18C"; }
+        else if(this._wallBefore===0&&this._wallAbsorbed>0){ sub="\uBC29\uBCBD \uBD95\uAD34"; }
         if(drama && S.chainLock && killed) pre="\u2726 \uAE30\uC801 \uC5F0\uC1C4 \uC644\uC8FC \u2726";
       }
-      else if(this._prevented){ h="\uC644\uBCBD \uBC29\uC5B4"; n="\uD53C\uD574 0"; }
-      else if(this._healSum>0){ h="\uCD1D \uD68C\uBCF5"; n="+"+this._healSum; if(this._cleanseSum>0) sub="\uB3C5 \uC815\uD654"; }
-      else { this.omitted.push({ev:"cadence",reason:"\uD53C\uD574\u00B7\uBC29\uC5B4\u00B7\uD68C\uBCF5 \uC804\uBB34 0 \u2014 \uACB0\uC0B0 \uC0DD\uB7B5(\uCE68\uBB35)"}); resolve(); return; }
+      else { /* 피해 0 — 지원 전용 턴: 피해 선율 R&D 범위 밖, 결산 침묵 (지원 선율은 후속 과제) */
+        this.omitted.push({ev:"cadence",reason:"\uD53C\uD574 0 \u2014 CLOSE01\uC740 \uD53C\uD574 \uC120\uC728\uB9CC \u00B7 \uC9C0\uC6D0 \uACB0\uC0B0\uC740 \uD6C4\uC18D \uACFC\uC81C"}); resolve(); return; }
       const fin=(this.style==="orchestra")?document.getElementById("orFin"):null;
       if(fin){
         fin.innerHTML=(pre?('<div class="orFinPre">'+pre+'</div>'):"")
           +'<div class="orFinH">'+h+'</div><div class="orFinN">'+n+'</div>'+(sub?('<div class="orFinS">'+sub+'</div>'):"");
         fin.className="on"+(drama?" orDrama":"");
+        const w0=document.getElementById("orWrap"); if(w0) w0.classList.add("recede");   /* §5·§6: 중앙 등장 → 왼쪽 즉시 물러남 */
         if(drama){ const st=this._stage(); if(st){ st.classList.remove("orShake"); void st.offsetWidth; st.classList.add("orShake"); } }
       } else if(this.railF){ this._line("\u2605 "+h+" "+n+(sub?(" \u00B7 "+sub):""), "igHit"); }
       this.cadenceCount++;
       const linger=drama?950:540;
       this.fadeT.push(setTimeout(()=>{ if(g!==this.gen) return;
         if(fin) fin.classList.add("fade");
-        const w=document.getElementById("orWrap"); if(w) for(const c of w.children) c.classList.add("fade"),c.style.opacity=0;
-        const cum=document.getElementById("orCum"); if(cum) cum.classList.remove("show");
+        const w=document.getElementById("orWrap"); if(w){ for(const c of w.children){ c.classList.add("fade"); c.style.opacity=0; } w.classList.remove("recede"); }
         const lg=this._log(); if(lg) lg.classList.remove("orchQuiet");   /* 로그 복원 */
       }, linger));
       resolve();   /* ✦ 즉시 resolve — 다음 턴이 잔상 종료를 기다리지 않는다 */
