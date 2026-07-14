@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v1H1VS1A1B · Myth Damage Ceiling Lab 01A · 부모 Myth Damage Rhythm Close 01(b9ab58a525afaa5209cdc7dc3409566a)에서 분기 · 공격형 신화 공식의 9999 도달 가능성 감사(R&D 전용·수치 확정 아님) · Dev 전용 레버(전투 체급=공격 고점 가설·축복A/B·틈 ×2)를 실제 파이프라인 기초/축복 단계에 원장 이벤트와 함께 주입, CEIL.on 기본 false=CURRENT 무영향·부모 동일 경로 · 최종 피해 직접 입력 금지(네 층 공식 결과만) · 9999 캡 없음·다섯 자리 쉼표 표시 · 계산 무변경 원칙 유지 · 공식 v1D2 무접촉·승격 HOLD · commit/push 0 -->
+<!-- v1H1VS1A1B · Myth Damage Ceiling Lab 01A · 부모 Myth Damage Rhythm Close 01(b9ab58a525afaa5209cdc7dc3409566a)에서 분기 · 공격형 신화 공식의 9999 도달 가능성 감사(R&D 전용·수치 확정 아님) · Dev 전용 레버(전투 체급=공격 고점 가설·축복A/B·틈 ×2)를 실제 파이프라인 기초/축복 단계에 원장 이벤트와 함께 주입, CEIL.on 기본 false=CURRENT 무영향·부모 동일 경로 · 최종 피해 직접 입력 금지(네 층 공식 결과만) · 9999 캡 없음·다섯 자리 쉼표 표시 · 계산 무변경 원칙 유지 · 공식 v1D2 무접촉·승격 HOLD · [핫픽스 01A-h1: Dev 랩 [▶] 실전 연주 시 labOv 오버레이를 먼저 닫아 랩 페이지 잔류 해결 · sessionStorage 접근 try/catch 방어] · commit/push 0 -->
 <!-- v1H1VS1 · Combat Choice Vertical Slice 01 · 기회비용 보스(종말4턴+방벽300) × 다중 표적 × 강화 파티BJ(실험) · v1H1(0528301bf1e6017731c67d8ba32cabc6)에서 분기 · 모드 c=CONTROL(기준선) p/b/i · 공식 승격 HOLD · commit/push 0 -->
 <html lang="ko">
 <head>
@@ -4727,7 +4727,11 @@ window.__CEIL_P = CEIL_P;
     for(const id in cards) S.allies[id].cards=cards[id];
     if(p.cm) S.chainMagic=p.cm;
     if(p.bloom && typeof RUN==="object" && RUN.lawRT && RUN.lawRT.dl1) RUN.lawRT.dl1.bloom=true;
-    document.getElementById("confirmBtn").click();
+    /* ✦ 핫픽스: [▶]는 실전 전투를 돌린다 → DEV LAB 오버레이를 먼저 닫아야 연출이 화면에 보이고
+       랩 페이지가 남지 않는다. (닫지 않으면 전투는 뒤에서 진행되나 오버레이가 계속 덮여 있음) */
+    const _lab=document.getElementById("labOv"); if(_lab) _lab.classList.add("hiddenOv");
+    document.getElementById("optMenu") && document.getElementById("optMenu").classList.add("hiddenOv");
+    requestAnimationFrame(()=>{ document.getElementById("confirmBtn").click(); });
     setTimeout(()=>{ const PL=window.__PRLIVE;
       CEIL.lastRun={preset:p.id,badge:p.badge,levers:{zone:CEIL.zone,bA:CEIL.bA,bB:CEIL.bB,gap:CEIL.gap,pb:S.pbMult,cm:p.cm||0},
         beats:PL.beats.map(b=>({name:b.name,d:b.d})),cum:PL.cum,eHpAfter:S.eHp,ceilLedger:CEIL.ledger.slice()};
@@ -4741,7 +4745,7 @@ window.__CEIL_P = CEIL_P;
     dv.querySelector("#ceilPre").innerHTML=CEIL_P.map((p,i)=>
       '<span style="display:inline-flex;gap:2px;margin:1px;"><button data-b="'+i+'" title="'+p.note+'">'+p.id+' '+p.n+' [\uBD80\uD305]</button><button data-r="'+i+'">\u25B6</button></span>').join("");
     dv.querySelector("#ceilPre").querySelectorAll("[data-b]").forEach(b=>b.onclick=()=>{ const p=CEIL_P[+b.dataset.b];
-      sessionStorage.setItem("ceilPending",b.dataset.b); location.hash=p.h; location.reload(); });
+      try{ sessionStorage.setItem("ceilPending",b.dataset.b); }catch(e){} location.hash=p.h; location.reload(); });
     dv.querySelector("#ceilPre").querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>apply(CEIL_P[+b.dataset.r]));
   }
   re();
@@ -4762,8 +4766,8 @@ window.__CEIL_P = CEIL_P;
     m.innerHTML='<div style="font-size:9px;color:#b08aa8;margin:4px 0;">\uC608\uCE21=\uC2E4\uCE21 \uD30C\uC774\uD504\uB77C\uC778 \uC21C\uC11C\u00B7\uBC18\uC62C\uB9BC \uBCF5\uC81C(ceilSim) \u00B7 \uAC80\uC0AC #19\uC5D0\uC11C \uC2E4\uCE21\uACFC \uB300\uC870 \u00B7 cm=\uC5F0\uC1C4(encounter-limited \uC790\uC6D0, \uB808\uBC84 \uC544\uB2D8)</div>'
       +'<table style="font-size:9.5px;border-collapse:collapse;" border=1 cellpadding=3><tr><th>\uBAA9\uD45C</th><th>\uB3C4\uB2EC</th><th>\uCCB4\uAE09</th><th>A</th><th>B</th><th>\uD569\uC77C</th><th>\uD2C8</th><th>cm</th><th>\uCD5C\uC885(\uC608\uCE21)</th><th>\uB808\uBC84\uC218</th></tr>'+rows+'</table>';
     m.style.display="block"; };
-  const pend=sessionStorage.getItem("ceilPending");
-  if(pend!==null){ sessionStorage.removeItem("ceilPending");
+  let pend=null; try{ pend=sessionStorage.getItem("ceilPending"); }catch(e){}
+  if(pend!==null){ try{ sessionStorage.removeItem("ceilPending"); }catch(e){}
     dv.querySelector("#ceilInfo").insertAdjacentHTML("afterbegin",'<b style="color:#ffd27a;">'+CEIL_P[+pend].id+' \uBD80\uD305\uB428 \u2014 [\u25B6] \uB204\uB974\uBA74 \uCE21\uC815\uCCB4\uC5D0 \uC5F0\uC8FC</b><br>'); }
 })();
 
