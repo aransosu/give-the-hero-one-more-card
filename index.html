@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<!-- v1H1VS1A1B · Myth Damage Ceiling Lab 01A · 부모 Myth Damage Rhythm Close 01(b9ab58a525afaa5209cdc7dc3409566a)에서 분기 · 공격형 신화 공식의 9999 도달 가능성 감사(R&D 전용·수치 확정 아님) · Dev 전용 레버(전투 체급=공격 고점 가설·축복A/B·틈 ×2)를 실제 파이프라인 기초/축복 단계에 원장 이벤트와 함께 주입, CEIL.on 기본 false=CURRENT 무영향·부모 동일 경로 · 최종 피해 직접 입력 금지(네 층 공식 결과만) · 9999 캡 없음·다섯 자리 쉼표 표시 · 계산 무변경 원칙 유지 · 공식 v1D2 무접촉·승격 HOLD · [핫픽스 01A-h1: Dev 랩 [▶] 실전 연주 시 labOv 오버레이를 먼저 닫아 랩 페이지 잔류 해결 · sessionStorage 접근 try/catch 방어] · commit/push 0 -->
+<!-- v1H1VS1A1B · Myth Damage Ceiling Lab 01B — Chapter 3 Legendary Candidate Slice · Checkpoint A (전설 후보 보스 직행) · 부모 Myth Damage Ceiling Lab 01A 핫픽스본(1322b0852513e8ae83e616269325c12d)에서 분기 · "앞선 공격 빌드가 완성됐다고 가정하고, 보스의 틈과 4인 합일을 실제 플레이로 조립할 수 있는가" · 전설 후보 시작 상태=결정론(g1 부트) · 축복 A=축적형(신앙 보존 조건·×2)/B=결단형(틈 안 봉헌·×1.5·전투당 1회) — 전부 R&D 가칭·수치 확정 아님 · 적의 틈 ×1.5(제품 후보)·×2 미구현 · 파티 블랙잭 4인 ×4 고정(mb)·×6 제품 경로 0 · 9999 비보장(잘 플레이하면 접근 가능한 상태) · 최종 피해 직접 입력 0(네 층 공식 결과만) · LGD 미부트 시 부모 동일 경로 · 공식 v1D2 무접촉·승격 HOLD · commit/push/deploy 0 -->
+<!-- (부모 01A 배너 보존) v1H1VS1A1B · Myth Damage Ceiling Lab 01A · 부모 Myth Damage Rhythm Close 01(b9ab58a525afaa5209cdc7dc3409566a)에서 분기 · 공격형 신화 공식의 9999 도달 가능성 감사(R&D 전용·수치 확정 아님) · Dev 전용 레버(전투 체급=공격 고점 가설·축복A/B·틈 ×2)를 실제 파이프라인 기초/축복 단계에 원장 이벤트와 함께 주입, CEIL.on 기본 false=CURRENT 무영향·부모 동일 경로 · 최종 피해 직접 입력 금지(네 층 공식 결과만) · 9999 캡 없음·다섯 자리 쉼표 표시 · 계산 무변경 원칙 유지 · 공식 v1D2 무접촉·승격 HOLD · [핫픽스 01A-h1: Dev 랩 [▶] 실전 연주 시 labOv 오버레이를 먼저 닫아 랩 페이지 잔류 해결 · sessionStorage 접근 try/catch 방어] · commit/push 0 -->
 <!-- v1H1VS1 · Combat Choice Vertical Slice 01 · 기회비용 보스(종말4턴+방벽300) × 다중 표적 × 강화 파티BJ(실험) · v1H1(0528301bf1e6017731c67d8ba32cabc6)에서 분기 · 모드 c=CONTROL(기준선) p/b/i · 공식 승격 HOLD · commit/push 0 -->
 <html lang="ko">
 <head>
@@ -3908,7 +3909,7 @@ window.addEventListener("hashchange", ()=>{ if(/lab=reveal/.test(location.hash) 
 if(/lab=reveal/.test(location.hash)) setTimeout(()=>{ if($("app")) LAB.open(); }, 70);
 
 (function boot(){
-  const m = location.hash.match(/^#s(\d+)(?:i(\d))?(?:q([A-Za-z0-9_.]+?))?(?:f(\d+))?(?:m([cpbi]))?(?:w(\d+))?(?:k(\d))?(?:d([ABC]{1,3}))?(?:x([tblw]))?(?:dev)?$/);   /* ✦ v1H1: i=전투 q=법칙 f=신앙 · ✦ VS1: m=연구모드 w/k=DEV 오버라이드 */
+  const m = location.hash.match(/^#s(\d+)(?:i(\d))?(?:q([A-Za-z0-9_.]+?))?(?:f(\d+))?(?:m([cpbi]))?(?:w(\d+))?(?:k(\d))?(?:d([ABC]{1,3}))?(?:g(\d))?(?:x([tblw]))?(?:dev)?$/);   /* ✦ v1H1: i=전투 q=법칙 f=신앙 · ✦ VS1: m=연구모드 w/k=DEV 오버라이드 · ✦ LGD01B: g=전설 후보 부트(선택 그룹 — 기존 해시 전부 동일 파싱) */
   let VIEW = "t";   /* ✦ v1G 라우팅: t=타이틀(기본) · b=전투 직행 · l=DEV LAB · ✦ v1G3 w=시작 법칙 선택 */
   if(m){
     SEED = +m[1];
@@ -3919,7 +3920,8 @@ if(/lab=reveal/.test(location.hash)) setTimeout(()=>{ if($("app")) LAB.open(); }
     if(m[6]!==undefined) VSDEV.w = +m[6];                      /* ✦ VS1: DEV 방벽 오버라이드 */
     if(m[7]!==undefined) VSDEV.k = Math.max(1, +m[7]);         /* ✦ VS1: DEV 카운트 오버라이드 */
     if(m[8]) bootLaws([...new Set(m[8])].map(x=>"L"+x));   /* 레거시 dABC = 칠성 시작 프리셋 */
-    if(m[9]) VIEW = m[9];
+    if(m[9]!==undefined) window.__LGD_PENDING = +m[9];   /* ✦ LGD01B: 전설 후보 부트 플래그 — 셋업은 스크립트 말미 LGD 모듈에서 (RNG 무소비) */
+    if(m[10]) VIEW = m[10];
   }
   for(const k of Object.keys(ALTAR_AT)) if(+k < S.battle) RUN.doneAltars[k]=true;   /* ✦ v1H1: 부팅 위치 이전 제단은 소비된 것으로 */
   RUN.bIdx = S.battle;
@@ -4770,6 +4772,239 @@ window.__CEIL_P = CEIL_P;
   if(pend!==null){ try{ sessionStorage.removeItem("ceilPending"); }catch(e){}
     dv.querySelector("#ceilInfo").insertAdjacentHTML("afterbegin",'<b style="color:#ffd27a;">'+CEIL_P[+pend].id+' \uBD80\uD305\uB428 \u2014 [\u25B6] \uB204\uB974\uBA74 \uCE21\uC815\uCCB4\uC5D0 \uC5F0\uC8FC</b><br>'); }
 })();
+/* ═══════════ ✦ LGD01B: Legendary Candidate Boss Slice — Checkpoint A (Dev 전용) ═══════════
+   유키 카드 §0: "플레이어가 실제 보스 전투 안에서 — 고점 가능성 인지 → 신앙·성물함 준비 → 틈 개방 →
+   제한된 창구 안 전원 21 → 합일 ×4로 9999 전후 — 를 스스로 조립할 수 있는가".
+   9999는 보장되지 않는다: 시작 상태는 "잘 플레이하면 접근 가능한 상태"다.
+   설계 원칙: LGD 미부트(g1 없음) = 아래 래퍼 전부 통과 경로 → 부모 01A와 동일 동작.
+   레버는 01A와 동일하게 파이프라인의 정의된 단계(기초=zone·축복층=A/B·틈=그로기)에만 곱하고 원장을 남긴다.
+   축복 A/B는 상시 배율이 아니라 조건부 플레이 문법: A=보존(신앙≥6이면 ×2), B=결단(틈 안 봉헌 🕯2 · ×1.5 · 전투당 1회).
+   전부 R&D 가칭 · 수치 확정 아님 · 공식 v1D2 무접촉 · PB 4인 ×4 고정(mb) · ×6 제품 경로 0. */
+const LGDC = { seed:57, faith0:12, cm0:20, zone:8, bossHp:9500, wall:2600, doom:5,
+               aTh:6, aMul:2, bCost:2, bMul:1.5, gapTurns:3, gapMul:1.5 };   /* 전부 R&D 후보 수치 — 공식 잠금 아님 */
+const LGD = {
+  on:false, seed:null,
+  A:{ok:false},                     /* 축적형 — 확정 시점 신앙 ≥ aTh */
+  B:{state:"ready", armedTurn:0},   /* ready → armed(봉헌·이번 턴) → used · 전투당 1회 */
+  gapOpens:0, turnLog:[], ledgerAll:[],
+  best:{cum:0, pb:0, turn:0, A:false, B:false, gap:false, full:false},
+  fullDone:false, resultShown:false,
+};
+window.__LGD = LGD; window.__LGDC = LGDC;
+function lgdHash(seed){ return "s"+seed+"i8qh1.m3.dl1f"+LGDC.faith0+"mbg1xb"; }
+function lgdGo(h){ location.hash=h; location.reload(); }
+function lgd21Count(){ return UI_ORDER.filter(id=>{const a=S.allies[id];return !a.dead&&a.cards.length&&bestTotal(a.cards)===21;}).length; }
+function lgdCond(){ /* 고점 조건 4칸: 체급 · A · B · 틈 */
+  return { zone:true, A:S.faith>=LGDC.aTh, B:(LGD.B.state!=="none"), gap:VS.groggy>0,
+           n: 1 + (S.faith>=LGDC.aTh?1:0) + 1 + (VS.groggy>0?1:0) };
+}
+/* ── 상태 칩 + 상세 + 봉헌 버튼 (표시 전용 · 계산 무접촉) ── */
+function lgdUi(){
+  if(!LGD.on) return;
+  const chip=$("lgdChip"); if(!chip) return;
+  const c=lgdCond(), b21=lgd21Count();
+  const bTxt=LGD.B.state==="used"?"사용됨":LGD.B.state==="armed"?"봉헌·이번 턴":"준비됨";
+  chip.innerHTML = "⚜ <b>전설 후보</b> · 고점 조건 <b>"+c.n+"/4</b> · 전원 21: <b>"+b21+"/4</b>"
+    + (VS.groggy>0?" · 😵 틈 <b>"+VS.groggy+"턴</b>":" · 틈 닫힘") + " <span style='color:#8f86a6'>(탭=상세)</span>";
+  const dt=$("lgdDetail");
+  if(dt && !dt.classList.contains("hiddenOv")) lgdDetailRender();
+  const vow=$("lgdVow");
+  if(vow){
+    const can = VS.groggy>0 && LGD.B.state==="ready" && !S.busy && !S.over;
+    vow.style.display = can ? "block" : "none";
+    vow.classList.toggle("lack", S.faith<LGDC.bCost);
+  }
+}
+function lgdDetailRender(){
+  const dt=$("lgdDetail"); if(!dt) return;
+  const c=lgdCond(), b21=lgd21Count(), tk=(v)=>v?"✓":"□";
+  const bTxt=LGD.B.state==="used"?"사용됨":LGD.B.state==="armed"?"봉헌됨 · 이번 턴":"준비됨";
+  dt.querySelector(".lgdDIn").innerHTML =
+    '<h3 style="margin:0 0 6px;color:#ffd27a;">⚜ 전설 후보 <span class="lgdBadge">R&D 가칭</span><span class="lgdBadge">전설 후보 세이브포인트</span></h3>'
+    +'<div class="lgdRow">'+tk(true)+' <b>공격 고점 체급</b> — 전투 체급 ×'+LGDC.zone+' <span class="lgdDim">(공격 고점 가설 · 기초 단계)</span></div>'
+    +'<div class="lgdRow">'+tk(c.A)+' <b>축복 A — 고요한 축적</b> <span class="lgdBadge">R&D 가칭</span><br><span class="lgdDim">조건: 확정 시점 신앙 '+LGDC.aTh+' 이상 보존 → 이번 턴 공격 기적 ×'+LGDC.aMul+' · 현재 신앙 '+S.faith+' → <b>'+(c.A?"충족":"미충족")+'</b> · 예상 역할: 기초 기적 증폭</span></div>'
+    +'<div class="lgdRow">'+(LGD.B.state!=="ready"||true?tk(true):"□")+' <b>축복 B — 결단의 봉헌</b> <span class="lgdBadge">R&D 가칭</span><br><span class="lgdDim">조건: 적의 틈 동안 [결단의 봉헌 🕯'+LGDC.bCost+'] → 이번 턴 공격 기적 ×'+LGDC.bMul+' 추가 · 전투당 1회 · 상태: <b>'+bTxt+'</b> · 예상 역할: 결단 턴 추가 증폭</span></div>'
+    +'<div class="lgdRow">'+tk(c.gap)+' <b>적의 틈</b> — '+(VS.groggy>0?("열림 · 남은 <b>"+VS.groggy+"턴</b> · 받는 피해 ×"+LGDC.gapMul):"닫힘 — 방벽("+VS.wall+"/"+VS.wallMax+")을 부수면 열린다")+'</div>'
+    +'<div class="lgdRow" style="border-top:1px solid #3a3352;padding-top:5px;">전원 21 (실시간): <b>'+b21+'/4</b> · 파티 블랙잭 4인 = ×4 · 성물함: '+(S.vault?("["+S.vault+"] 봉인 중"):"비어 있음(준비 가능)")+' · 신앙 '+S.faith+' · 연쇄 마력 '+S.chainMagic+'</div>'
+    +'<div class="lgdRow lgdDim">이번 도전 기록 — 최고 총 피해 <b>'+Number(LGD.best.cum).toLocaleString("en-US")+'</b> · 최고 합일 '+LGD.best.pb+'인 · 틈 개방 '+LGD.gapOpens+'회'+(LGD.fullDone?" · <b style='color:#ffd27a'>전설 공식 완성</b>":"")+'</div>'
+    +'<div class="mrvRow" style="margin-top:8px;">'
+      +'<button id="lgdDVow">✨ 결단의 봉헌 [🕯'+LGDC.bCost+']</button>'
+      +'<button id="lgdDRetry">⟲ 같은 상태·같은 시드 재도전</button>'
+      +'<button id="lgdDSeed">🎲 새 시드</button>'
+      +'<button id="lgdDLab">DEV LAB</button>'
+      +'<button id="lgdDTitle">타이틀</button>'
+      +'<button id="lgdDClose">닫기</button>'
+    +'</div>'
+    +'<div class="lgdDim" style="margin-top:4px;">재도전은 시작 신앙·성물함·축복·체급·보스 HP·방벽을 전부 최초 상태로 복원한다 (같은 시드 · 턴1).</div>';
+  dt.querySelector("#lgdDVow").onclick=lgdVow;
+  dt.querySelector("#lgdDRetry").onclick=()=>lgdGo(lgdHash(LGD.seed));
+  dt.querySelector("#lgdDSeed").onclick=()=>lgdGo(lgdHash(LGD.seed+1));
+  dt.querySelector("#lgdDLab").onclick=()=>lgdGo("s"+LGD.seed+"xl");
+  dt.querySelector("#lgdDTitle").onclick=()=>lgdGo("s"+LGD.seed+"xt");
+  dt.querySelector("#lgdDClose").onclick=()=>dt.classList.add("hiddenOv");
+}
+function lgdVow(){   /* 축복 B 봉헌 — 틈 안 · 신앙 2 소비 · 전투당 1회 · 이번 턴 한정 */
+  if(!LGD.on || S.busy || S.over) return;
+  if(LGD.B.state!=="ready"){ $("guide").textContent="결단의 봉헌은 전투당 1회 — 이미 "+(LGD.B.state==="armed"?"이번 턴에 봉헌했다":"사용했다"); return; }
+  if(VS.groggy<=0){ $("guide").textContent="봉헌은 적의 틈이 열린 동안만 가능하다"; return; }
+  if(S.faith<LGDC.bCost){ $("guide").textContent="신앙이 부족합니다 — 봉헌에는 🕯"+LGDC.bCost+" 이 필요하다"; return; }
+  S.faith -= LGDC.bCost;
+  LGD.B.state="armed"; LGD.B.armedTurn=S.turn;
+  SFX.miracle(); flash("gold");
+  log("✨ 결단의 봉헌 — 신앙 "+LGDC.bCost+" 을 바쳤다. 이번 턴 공격 기적 ×"+LGDC.bMul+" (전투당 1회)", "l-gold");
+  renderFaith(); lgdUi();
+}
+/* ── 래퍼들 — LGD.on=false면 전부 순수 통과 (부모 동일 경로) ── */
+const _lgd_resolveTurn = resolveTurn;
+resolveTurn = async function(){
+  if(!LGD.on) return _lgd_resolveTurn();
+  /* 조건부 축복 게이팅 — 확정(소각 포함) 직후 · 파티 연주 시작 전 스냅샷 */
+  CEIL.reset();
+  LGD.A.ok = (S.faith>=LGDC.aTh);
+  CEIL.bA = LGD.A.ok ? LGDC.aMul : 1;
+  const bOn = (LGD.B.state==="armed" && LGD.B.armedTurn===S.turn && VS.groggy>0);
+  CEIL.bB = bOn ? LGDC.bMul : 1;
+  if(LGD.A.ok) log("✧ 고요한 축적 — 신앙 "+S.faith+" 보존, 축복 A ×"+LGDC.aMul+" (R&D 가칭)", "l-gold");
+  else log("✧ 축복 A 미충족 — 신앙 "+S.faith+" (<"+LGDC.aTh+")", "l-sys");
+  const t=S.turn, gapAt=VS.groggy>0;
+  await _lgd_resolveTurn();
+  /* 턴 결산 수확 (읽기 전용) */
+  const PL=window.__PRLIVE, cum=(PL&&PL.cum)||0, pb=S.pbCount||0;
+  const bFired = bOn && CEIL.ledger.some(e=>e.sourceId==="blessB");
+  if(bOn) LGD.B.state="used";
+  const full = (pb>=4 && LGD.A.ok && bFired && gapAt);
+  LGD.turnLog.push({t, cum, pb, A:LGD.A.ok, B:bFired, gap:gapAt, full, ceil:CEIL.ledger.slice()});
+  LGD.ledgerAll.push(...CEIL.ledger);
+  if(cum>LGD.best.cum) LGD.best={cum, pb, turn:t, A:LGD.A.ok, B:bFired, gap:gapAt, full};
+  if(pb>LGD.best.pb) LGD.best.pb=pb;
+  if(full) LGD.fullDone=true;
+  lgdUi();
+};
+const _lgd_wallBreak = vsWallBreak;
+vsWallBreak = function(){
+  const was = VSTM.wallBroken;
+  _lgd_wallBreak();
+  if(LGD.on && !was && VSTM.wallBroken){
+    VS.groggy = LGDC.gapTurns; LGD.gapOpens++;
+    log("⏳ 전설 후보 보정 — 적의 틈 "+LGDC.gapTurns+"턴 (R&D 후보) · 지금이 전원 21을 노릴 창구다", "l-gold");
+    vsRenderBar(); lgdUi();
+  }
+};
+const _lgd_startTurn = startTurn;
+startTurn = function(){ _lgd_startTurn(); if(LGD.on) lgdUi(); };
+const _lgd_renderHand = renderHand;
+renderHand = function(){ _lgd_renderHand(); if(LGD.on) lgdUi(); };
+const _lgd_renderFaith = renderFaith;
+renderFaith = function(){ _lgd_renderFaith(); if(LGD.on) lgdUi(); };
+function lgdResultHtml(kind){
+  const b=LGD.best, fmt=n=>Number(n).toLocaleString("en-US");
+  let miss=[];
+  if(!b.A) miss.push("축복 A 미충족(신앙 보존)");
+  if(!b.B) miss.push(LGD.B.state==="used"?"축복 B 봉헌 턴 불발":"축복 B 미사용(봉헌 안 함)");
+  if(!b.gap) miss.push("적의 틈 밖에서 최고 피해");
+  if(b.pb<4) miss.push("전원 21 미완("+b.pb+"인)");
+  const fullLine = LGD.fullDone
+    ? '<div style="color:#ffd27a;font-weight:900;">전설 공식 완성 — 축복 A · 축복 B · 전원 21 · 합일 ×4 · 적의 틈 ×'+LGDC.gapMul+'</div>'
+    : '<div>전설 공식 미완 — 놓친 조건: '+(miss.length?miss.join(" · "):"—")+'</div>';
+  return '<div class="lgdRes"><div style="color:#e0a45f;font-weight:900;letter-spacing:1px;">⚜ 전설 후보 기록 <span class="lgdBadge">R&D · 제품 확정 아님</span></div>'
+    +'<div>이번 도전 최고 총 피해 <b style="font-size:16px;">'+fmt(b.cum)+'</b> (턴 '+b.turn+')</div>'
+    +'<div>최고 파티 블랙잭 <b>'+b.pb+'인</b> · 적의 틈 개방 <b>'+LGD.gapOpens+'회</b> · 축복 A '+(b.A?"성공":"미충족")+' · 축복 B '+(b.B?"성공":(LGD.B.state==="used"?"불발":"미사용"))+'</div>'
+    +fullLine
+    +'<div class="lgdDim">시드 '+LGD.seed+' · 시작 상태: 신앙 '+LGDC.faith0+' · 연쇄 '+LGDC.cm0+' · 체급 ×'+LGDC.zone+' · 방벽 '+LGDC.wall+' · 보스 HP '+fmt(LGDC.bossHp)+'</div>'
+    +'<div class="mrvRow" style="margin-top:6px;">'
+      +'<button id="lgdRRetry">⟲ 같은 상태로 보스 재도전</button>'
+      +'<button id="lgdRSeed1">⟲ 같은 시드 · 턴1부터</button>'
+      +'<button id="lgdRLab">DEV LAB으로</button>'
+      +'<button id="lgdRTitle">타이틀로</button>'
+    +'</div>'
+    +'<div class="lgdDim">두 재도전 버튼은 모두 최초 시작 상태(같은 시드 · 턴1)로 완전 복원한다 — 중간 저장은 존재하지 않는다(결정론 보존).</div></div>';
+}
+function lgdAttachResult(){
+  if(!LGD.on || LGD.resultShown) return;
+  const ovs=[...document.querySelectorAll(".overlay")].filter(o=>!o.classList.contains("hiddenOv")&&o.id!=="lgdDetail"&&o.id!=="lgdJourney");
+  const host=ovs.length?ovs[ovs.length-1]:null; if(!host) return;
+  LGD.resultShown=true;
+  const box=document.createElement("div"); box.innerHTML=lgdResultHtml();
+  (host.firstElementChild||host).appendChild(box);
+  box.querySelector("#lgdRRetry").onclick=()=>lgdGo(lgdHash(LGD.seed));
+  box.querySelector("#lgdRSeed1").onclick=()=>lgdGo(lgdHash(LGD.seed));
+  box.querySelector("#lgdRLab").onclick=()=>lgdGo("s"+LGD.seed+"xl");
+  box.querySelector("#lgdRTitle").onclick=()=>lgdGo("s"+LGD.seed+"xt");
+}
+const _lgd_onVictory = onVictory;
+onVictory = async function(){ await _lgd_onVictory(); if(LGD.on) setTimeout(lgdAttachResult, 60); };
+const _lgd_onDefeat = onDefeat;
+onDefeat = async function(){ await _lgd_onDefeat(); if(LGD.on) setTimeout(lgdAttachResult, 60); };
+/* ── 셋업 (g1 부트에서만 · RNG 무소비 — 카드 딜링은 부모 boot와 완전 동일) ── */
+function lgdSetup(){
+  LGD.on=true; LGD.seed=SEED;
+  /* 레버 — 01A와 동일한 정의된 단계에만 곱함 · 틈은 기본 1.5 유지(×2 미구현) */
+  CEIL.reset(); CEIL.on=true; CEIL.badge="LGD01B";
+  CEIL.zone=LGDC.zone; CEIL.bA=1; CEIL.bB=1; CEIL.gap=1.5;
+  /* 전설 후보 보스 — 기존 방벽·종말·촉수 구조 재사용(A안 방벽 파괴형) · 시작=틈 닫힘 */
+  VS.wallMax=LGDC.wall; VS.wall=LGDC.wall; VS.doom=LGDC.doom; VS.doomActive=true; VS.groggy=0;
+  S.enemy = Object.assign({}, S.enemy, { name:"재앙을 봉인한 자 — 전설 후보", hp:LGDC.bossHp });
+  S.eHp = LGDC.bossHp;   /* 시작 상태 픽스처 — 최종 피해 직접 입력 아님 */
+  S.chainMagic = LGDC.cm0;   /* 2구역에서 보존해 온 연쇄 마력 (encounter-limited 자원 — 레버 아님) */
+  if(typeof RUN==="object" && RUN.lawRT && RUN.lawRT.dl1) RUN.lawRT.dl1.bloom=true;   /* 1구역 성장 — 느린 기적 개화 */
+  renderEnemy(); vsRenderBar(); renderFaith();
+  log("⚜ 전설 후보 세이브포인트 (R&D 가칭) — 1·2구역을 잘 완주했다고 가정한 3-3 직행", "l-gold");
+  log("체급 ×"+LGDC.zone+" · 축복 A/B 보유 · 신앙 "+S.faith+" · 연쇄 "+S.chainMagic+" · 방벽 "+VS.wall+" · 종말까지 "+VS.doom+"턴", "l-sys");
+  /* 상태 칩 */
+  const chip=document.createElement("div"); chip.id="lgdChip";
+  chip.style.cssText="font-size:10px;font-weight:700;color:#cdb7ff;text-align:center;padding:2px 4px;letter-spacing:.3px;cursor:pointer;";
+  const bar=$("vsBar"); (bar||$("nextIntent")).after(chip);
+  chip.addEventListener("click", ()=>{ const dt=$("lgdDetail"); dt.classList.remove("hiddenOv"); lgdDetailRender(); });
+  /* 봉헌 버튼 (틈 동안만 표시) */
+  const vow=document.createElement("button"); vow.id="lgdVow";
+  vow.textContent="✨ 결단의 봉헌 🕯"+LGDC.bCost;
+  vow.style.cssText="display:none;position:absolute;right:8px;bottom:96px;z-index:44;border:1px solid #7a5a20;background:#221c10;color:#ffd27a;border-radius:9px;padding:7px 10px;font-size:11px;font-weight:800;font-family:inherit;box-shadow:0 3px 14px rgba(0,0,0,.55);";
+  $("app").appendChild(vow);
+  vow.addEventListener("click", lgdVow);
+  /* 상세 오버레이 */
+  const dt=document.createElement("div"); dt.id="lgdDetail"; dt.className="overlay hiddenOv";
+  dt.innerHTML='<div class="lgdDIn" style="max-width:360px;margin:8vh auto 0;background:#1b1530;border:1px solid #4a3a70;border-radius:14px;padding:12px;font-size:11px;line-height:1.55;color:#cfc8e6;max-height:80vh;overflow:auto;"></div>';
+  document.body.appendChild(dt);
+  /* 시작 화면 — 앞선 여정의 기록 */
+  const jn=document.createElement("div"); jn.id="lgdJourney"; jn.className="overlay";
+  jn.innerHTML='<div style="max-width:370px;margin:5vh auto 0;background:#161226;border:1px solid #4a3a70;border-radius:16px;padding:14px;font-size:11.5px;line-height:1.6;color:#cfc8e6;max-height:88vh;overflow:auto;">'
+    +'<h2 style="margin:0 0 4px;color:#ffd27a;font-size:15px;">📜 앞선 여정의 기록</h2>'
+    +'<div><span class="lgdBadge">R&D 가칭</span><span class="lgdBadge">전설 후보 세이브포인트</span><span class="lgdBadge">제품 확정 아님</span></div>'
+    +'<div class="lgdRow"><b>1구역</b> — 공격 기적의 기반을 성장시켰다(느린 기적 개화) · 피해 고점형 <b>축복 A</b>를 획득했다</div>'
+    +'<div class="lgdRow"><b>2구역</b> — <b>축복 B</b>를 획득했다 · 제3구역에서 전설 피해에 접근할 <b>체급</b>을 완성했다(전투 체급 ×'+LGDC.zone+') · <b>신앙 '+LGDC.faith0+'</b>과 성물함을 보존했다 · 연쇄 마력 '+LGDC.cm0+' 유지</div>'
+    +'<div class="lgdRow" style="border-top:1px solid #3a3352;padding-top:6px;"><b>현재 전설 조건</b><br>· 파티 블랙잭 4인 ×4 (고정)<br>· 축복 A — 고요한 축적: 확정 시점 <b>신앙 '+LGDC.aTh+'+ 보존</b> → ×'+LGDC.aMul+'<br>· 축복 B — 결단의 봉헌: <b>적의 틈 동안 🕯'+LGDC.bCost+' 봉헌</b> → ×'+LGDC.bMul+' (전투당 1회)<br>· <b>남은 조건: 적의 틈 + 전원 21</b></div>'
+    +'<div class="lgdRow"><b>보스의 질문</b> — 방벽 '+LGDC.wall+'을 종말('+LGDC.doom+'턴) 전에 부수면 적의 틈('+LGDC.gapTurns+'턴 · 받는 피해 ×'+LGDC.gapMul+')이 열린다. 틈은 저절로 열리지 않는다.</div>'
+    +'<div class="lgdRow lgdDim">9999는 보장되지 않는다 — 이 시작 상태는 "잘 플레이하면 9999에 접근할 가능성이 확보된 상태"다. 실패해도 보스전은 계속된다(9999는 필수 승리 조건이 아니다). 화면 위 ⚜ 칩 = 상세·재도전.</div>'
+    +'<div class="mrvRow" style="margin-top:8px;"><button id="lgdGo" style="font-size:13px;font-weight:900;padding:9px 14px;">⚔ 출정</button><button id="lgdJLab">DEV LAB으로</button></div>'
+    +'</div>';
+  document.body.appendChild(jn);
+  jn.querySelector("#lgdGo").addEventListener("click", ()=>jn.classList.add("hiddenOv"));
+  jn.querySelector("#lgdJLab").addEventListener("click", ()=>lgdGo("s"+LGD.seed+"xl"));
+  /* 뱃지·행 공통 스타일 */
+  const st=document.createElement("style");
+  st.textContent=".lgdBadge{display:inline-block;font-size:8.5px;color:#b08aa8;border:1px solid #4a3a52;border-radius:6px;padding:1px 5px;margin:0 3px 2px 0;letter-spacing:.4px;}"
+    +".lgdRow{margin:5px 0;} .lgdDim{color:#8f86a6;font-size:10px;} #lgdVow.lack{opacity:.45;}"
+    +".lgdRes{margin-top:10px;border-top:1px solid #4a3a52;padding-top:8px;font-size:11px;line-height:1.6;text-align:left;}";
+  document.head.appendChild(st);
+  lgdUi();
+}
+/* ── DEV LAB 입구: [전설 후보 보스 · 3-3 직행] ── */
+(function(){
+  const lab=document.getElementById("labOv"); if(!lab) return;
+  const host=lab.querySelector(".labIn")||lab.firstElementChild||lab;
+  const dv=document.createElement("div"); dv.id="lgdDev";
+  dv.innerHTML='<h3>⚜ 전설 후보 보스 · 3-3 직행 (LGD01B) · R&D 전용 · 수치 확정 아님</h3>'
+    +'<div style="font-size:9.5px;color:#8f86a6;line-height:1.5;">1·2구역 완주를 가정한 결정론 세이브포인트에서 최종 보스만 플레이한다. 9999 비보장 — 방벽을 부숴 틈을 열고, 신앙·성물함을 준비해 전원 21 · 합일 ×4를 틈 안에서 완성하라. PB 4인 ×4 고정(mb) · ×6 제품 경로 0.</div>'
+    +'<div class="mrvRow" style="margin-top:5px;"><label style="font-size:10px;">시드 <input id="lgdSeed" type="number" inputmode="numeric" value="'+LGDC.seed+'" style="width:74px;"></label>'
+    +'<button id="lgdBoot" style="font-weight:800;">⚜ 출정 [부팅]</button><span style="font-size:9px;color:#b08aa8;align-self:center;">기본 시드 '+LGDC.seed+' = 검증된 정답 경로 존재(§12)</span></div>';
+  host.appendChild(dv);
+  dv.querySelector("#lgdBoot").addEventListener("click", ()=>{
+    const sd=Math.max(1, Math.floor(+dv.querySelector("#lgdSeed").value||LGDC.seed));
+    lgdGo(lgdHash(sd));
+  });
+})();
+if(window.__LGD_PENDING===1) lgdSetup();
+
 
 </script>
 </body>
