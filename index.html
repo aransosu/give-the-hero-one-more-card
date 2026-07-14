@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v1H1VS1A1B · In-Game Parallel Myth Rhythm Slice 01 (Checkpoint A) · 부모 Parallel Myth Rhythm Lab 01(b74bc5f22da72f6d8740e7968445cb2d)에서 분기 · 랩에서 FUN PASS 받은 병렬 리듬을 실제 Combat Choice 전투 한 판에 AUTO 연결 — resolveTurn 파티 루프가 도는 실시간에 각 영웅 impact와 동시에 왼쪽 레일 누적, 루프 종료 시 중앙 결산 정확히 1회 · 계산·RNG·턴·수치 무변경(레일은 실제 피해 d를 읽어 표시만) · PRLIVE.on OFF=부모 동일 경로 · 순차 리플레이(MREV)는 기본 OFF 격리 유지 · 전면 입력차단 오버레이·닫기버튼·추가 대기 0 · 공식 승격 HOLD · commit/push 0 -->
+<!-- v1H1VS1A1B · Myth Rhythm Orchestration 01 · 부모 In-Game Parallel Myth Rhythm Slice 01(2f2f03d424a5e66f42abc69e8ada8073)에서 분기 · 병렬 리듬을 다섯 박자(DOWNBEAT 턴주제 1회/BEAT 영웅기여/CRESCENDO 피해누적/COUNTERPOINT 지원화음 분리/CADENCE 중앙결산 1회)로 편곡 · 모든 표시를 #stage 내부 좌표계에 수납(enemyZone 침범 0·전장 밖 유출 0·기존 로그와 이중표시 방지 위해 연주 중 #log 감쇄) · 계산·RNG·턴·수치 무변경(원장·실제 d를 읽어 표시만) · PRLIVE.on OFF=부모 동일 경로 · 공식 승격 HOLD · commit/push 0 -->
 <!-- v1H1VS1 · Combat Choice Vertical Slice 01 · 기회비용 보스(종말4턴+방벽300) × 다중 표적 × 강화 파티BJ(실험) · v1H1(0528301bf1e6017731c67d8ba32cabc6)에서 분기 · 모드 c=CONTROL(기준선) p/b/i · 공식 승격 HOLD · commit/push 0 -->
 <html lang="ko">
 <head>
@@ -781,34 +781,59 @@ body.reveal-lab-open{overflow:hidden !important;overscroll-behavior:none;}
 #prlStage.prlShake{animation:prlShake .3s ease;}
 @keyframes prlShake{0%,100%{transform:none;}25%{transform:translate(2px,-2px);}55%{transform:translate(-2px,2px);}}
 @media (max-width:400px){ .prlFinN{font-size:30px;} #prlFinale.prlDrama .prlFinN{font-size:36px;} }
-/* ═══ ✦ IGPRL01: 인게임 병렬 리듬 — 실전 전장 위 왼쪽 레일 + 중앙 결산 (입력 차단 0 · pointer-events:none) ═══ */
+/* ═══ ✦ ORCH01: 신화 리듬 오케스트레이션 — 전부 #stage 내부 좌표계 · 입력 차단 0 ═══ */
+#orWrap{position:absolute;left:6px;top:38px;bottom:8px;width:47%;max-width:158px;z-index:5;
+  display:flex;flex-direction:column;justify-content:flex-end;gap:2px;pointer-events:none;overflow:hidden;}
+.orLn{opacity:0;transform:translateX(-7px);transition:opacity .13s ease,transform .13s ease;
+  overflow-wrap:anywhere;text-shadow:0 1px 3px rgba(0,0,0,.9);pointer-events:none;}
+.orLn.show{opacity:1;transform:none;}
+.orLn.fade{opacity:0 !important;transition:opacity 1s ease;}
+.orTheme{font-size:11px;font-weight:900;color:#ffb3d5;letter-spacing:.5px;
+  border-bottom:1px solid rgba(255,179,213,.35);padding-bottom:2px;margin-bottom:2px;}
+.orBeat{font-size:12.5px;font-weight:800;color:#ffe9b0;}
+.orBig{font-size:11.5px;font-weight:900;color:#9fe0ff;}
+.orSup{font-size:10.5px;font-weight:700;color:#a8ffca;padding-left:6px;border-left:2px solid rgba(140,230,180,.45);}
+.orSup.guard{color:#a8d8ff;border-left-color:rgba(150,200,255,.45);}
+#orCum{position:absolute;right:8px;bottom:10px;z-index:5;pointer-events:none;text-align:right;
+  opacity:0;transition:opacity .15s ease;}
+#orCum.show{opacity:1;}
+#orCum .cl{font-size:9px;color:#8f86a6;letter-spacing:1.5px;}
+#orCum .cv{font-size:19px;font-weight:900;color:#ffd27a;white-space:nowrap;
+  text-shadow:0 0 10px rgba(255,190,90,.4),0 1px 3px rgba(0,0,0,.8);transition:transform .12s ease;display:inline-block;}
+#orCum.bump .cv{transform:scale(1.22);}
+#orFin{position:absolute;left:50%;top:56%;transform:translate(-50%,-50%) scale(.72);z-index:6;text-align:center;
+  pointer-events:none;opacity:0;transition:opacity .2s ease,transform .2s ease;max-width:92%;}
+#orFin.on{opacity:1;transform:translate(-50%,-50%) scale(1);}
+#orFin.fade{opacity:0;transition:opacity .9s ease;}
+.orFinPre{font-size:11px;color:#ffb3d5;font-weight:800;letter-spacing:1px;margin-bottom:1px;}
+.orFinH{font-size:12.5px;color:#ffd27a;letter-spacing:2.5px;font-weight:800;text-shadow:0 1px 4px rgba(0,0,0,.85);}
+.orFinN{font-size:33px;font-weight:900;color:#fff;white-space:nowrap;
+  text-shadow:0 0 16px rgba(255,200,100,.55),0 2px 6px rgba(0,0,0,.75);}
+.orFinS{font-size:11px;color:#ffb3d5;font-weight:800;margin-top:2px;text-shadow:0 1px 3px rgba(0,0,0,.8);}
+#orFin.orDrama .orFinN{font-size:41px;text-shadow:0 0 26px rgba(255,180,80,.95),0 0 60px rgba(255,120,60,.5);animation:orKoong .5s ease;}
+@keyframes orKoong{0%{transform:scale(1.55);}55%{transform:scale(.95);}100%{transform:scale(1);}}
+#stage.orShake{animation:orShakeK .3s ease;}
+@keyframes orShakeK{0%,100%{transform:none;}25%{transform:translate(2px,-2px);}55%{transform:translate(-2px,2px);}}
+#log.orchQuiet{opacity:.10;transition:opacity .25s ease;}
+@media (max-width:400px){ .orFinN{font-size:29px;} #orFin.orDrama .orFinN{font-size:35px;} #orWrap{max-width:45vw;} }
+/* 단편형(Dev 비교 전용) — 구 IGPRL 최소 보존 */
 #igRail{position:fixed;left:6px;top:calc(8px + env(safe-area-inset-top));width:44%;max-width:150px;z-index:8500;
   display:flex;flex-direction:column;gap:3px;pointer-events:none;}
-.igLn{font-size:11.5px;line-height:1.34;color:#e8f4ef;opacity:0;transform:translateX(-8px);
-  transition:opacity .13s ease, transform .13s ease;overflow-wrap:anywhere;text-shadow:0 1px 3px rgba(0,0,0,.85);}
-.igLn.show{opacity:1;transform:none;}
-.igLn.igChip{font-size:10px;color:#bcd0c8;}
-.igLn.igPb{color:#ffb3d5;font-weight:800;}
-.igLn.igBig{font-size:11.5px;color:#9fe0ff;font-weight:800;}
-.igLn.igHit{font-size:13.5px;font-weight:800;color:#ffe9b0;}
-.igLn.igHeal{color:#a8ffca;font-weight:700;}
-.igLn.igGuard{color:#a8d8ff;font-weight:700;}
-.igLn.fade{opacity:0;transition:opacity 1s ease;}
-#igFin{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%) scale(.7);z-index:8600;text-align:center;
-  pointer-events:none;opacity:0;transition:opacity .2s ease, transform .2s ease;}
-#igFin.on{opacity:1;transform:translate(-50%,-50%) scale(1);}
-#igFin.fade{opacity:0;transition:opacity .85s ease;}
-.igFinH{font-size:12.5px;color:#ffd27a;letter-spacing:2px;font-weight:800;text-shadow:0 1px 4px rgba(0,0,0,.8);}
-.igFinN{font-size:32px;font-weight:900;color:#fff;text-shadow:0 0 16px rgba(255,200,100,.55),0 2px 6px rgba(0,0,0,.7);white-space:nowrap;}
-.igFinS{font-size:11px;color:#ffb3d5;font-weight:800;margin-top:1px;text-shadow:0 1px 3px rgba(0,0,0,.8);}
-#igFin.igDrama .igFinN{font-size:40px;text-shadow:0 0 26px rgba(255,180,80,.95),0 0 60px rgba(255,120,60,.5);animation:igKoong .5s ease;}
-#igFin.igDrama .igFinH{font-size:14.5px;}
-@keyframes igKoong{0%{transform:scale(1.55);}55%{transform:scale(.95);}100%{transform:scale(1);}}
-@media (max-width:400px){ .igFinN{font-size:28px;} #igFin.igDrama .igFinN{font-size:34px;} #igRail{max-width:44vw;} }
-/* IGPRL Dev 토글 (전투 화면 상단 소형) */
+.igLn{font-size:11.5px;color:#e8f4ef;opacity:0;transition:opacity .13s ease;overflow-wrap:anywhere;text-shadow:0 1px 3px rgba(0,0,0,.85);}
+.igLn.show{opacity:1;} .igLn.igHit{font-size:13.5px;font-weight:800;color:#ffe9b0;} .igLn.igHeal{color:#a8ffca;} .igLn.igGuard{color:#a8d8ff;} .igLn.igPb{color:#ffb3d5;font-weight:800;} .igLn.igBig{color:#9fe0ff;font-weight:800;} .igLn.igChip{font-size:10px;color:#bcd0c8;}
 #igToggle{position:fixed;right:6px;top:calc(6px + env(safe-area-inset-top));z-index:8700;
   font-size:10px;padding:3px 7px;background:rgba(20,32,28,.82);color:#8ae0c8;border:1px solid #3a7060;border-radius:6px;}
 #igToggle.off{color:#8a8a8a;border-color:#555;}
+/* ORCH Dev 패널 */
+#orchDev{margin-top:10px;padding:9px;border:1px dashed #5a3a58;border-radius:9px;background:rgba(26,15,26,.5);}
+#orchDev h3{font-size:11.5px;color:#ff9dd0;margin:0 0 6px;}
+#orchDev .mrvRow{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;}
+#orchDev button{font-size:10px;padding:4px 7px;background:#341c30;color:#ffb8de;border:1px solid #703a60;border-radius:5px;}
+#orchDev button.on{background:#5c2c50;color:#ffe9f4;border-color:#c05ca0;}
+#orchStage{position:relative;height:240px;border:1px solid #442a40;border-radius:9px;overflow:hidden;
+  background:radial-gradient(70% 55% at 50% 14%, rgba(120,55,90,.18), transparent 65%), #100a12;}
+#orchStage .demoMon{position:absolute;left:50%;top:12%;transform:translateX(-50%);font-size:34px;}
+#orchInfo{font-size:9.5px;color:#b08aa8;line-height:1.55;margin-top:6px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:150px;overflow:auto;}
 </style>
 </head>
 <body>
@@ -2334,6 +2359,7 @@ async function resolveTurn(){
       if(act.txt==="완벽 방어"){
         if(a.cards.length===2){ figFx(id,"bjCharge",320); await wait(280); }   /* ✦ v1D1: 2장 BJ = 숨 고름… 쾅!! */
         S.perfectGuard=true; flash("gold"); SFX.miracle(); S.stats.m21++; dl1Tick(id);
+        PRLIVE.impactGuard("perfect");   /* ✦ ORCH01: 지원 화음 — 완벽 방어 선언 (표시만) */
         figFx(id,"miracle21",950);
         flt(id,"완벽 방어!","f-gold");
         log(`${nm}: 완벽 방어! 이번 턴 적의 행동 무효`, "l-gold");
@@ -2487,7 +2513,7 @@ async function resolveTurn(){
           healedHp:_mHealed, overheal:ovSum, shieldGranted:(has("c1")?shSum:0), cleansed:_mCleansed });
       }
       if(DL) await dlProcs(id, act, a.cards);   /* ✦ v1F: 성직자 — 은총(A/C) · 성역 여운(B) */
-      PRLIVE.impactHeal(id, act, h, _mHealed, ovSum, shSum);   /* ✦ IGPRL01: 실제 회복·보호막을 레일에 (표시만) */
+      PRLIVE.impactHeal(id, act, h, _mHealed, ovSum, shSum, _mCleansed);   /* ✦ ORCH01: 실제 회복·보호막·정화를 지원 화음으로 (표시만) */
     }
   }
 
@@ -4335,111 +4361,197 @@ window.__PRL = PRL;
     .observe(lab,{attributes:true,attributeFilter:["class"]});
   document.addEventListener("visibilitychange",()=>{ if(document.hidden) PRL.stop(); });
 })();
-/* ═══════════ ✦ IGPRL01: In-Game Parallel Myth Rhythm (PRLIVE) ═══════════
-   랩(PRL)의 병렬 문법을 실제 resolveTurn 파티 루프에 연결. 루프가 도는 실시간에 각 영웅 impact와
-   동시에 왼쪽 레일이 누적되고(Hook impact/impactHeal), 루프 종료 시 중앙 결산 1회(Hook finale).
-   AUTO 정책 = 기존 __MREV_SELECT 재사용(랩과 동일 결정론). 계산·RNG·턴·수치 무접촉 — 레일은 실제
-   확정 피해 d·회복 h를 "읽어" 표시만 한다. PRLIVE.on=false면 begin/impact/finale 전부 무동작 = 부모 동일 경로.
-   전면 입력차단 오버레이·닫기 버튼 없음(레일·결산 pointer-events:none). 결산 잔상은 다음 턴 입력을 막지 않는다. */
+/* ═══════════ ✦ ORCH01: Myth Rhythm Orchestration (PRLIVE 2.0) ═══════════
+   다섯 박자 문법 — DOWNBEAT(턴 주제 1회) → BEAT(영웅 기여, 실제 impact 동기) → CRESCENDO(피해 누적)
+   → COUNTERPOINT(지원 화음: 방어·회복·정화 — 피해 합계와 분리) → CADENCE(중앙 결산 턴당 1회, 단위 명시).
+   전 표시 = #stage 내부 좌표계(absolute·overflow:hidden 클리핑) — enemyZone 침범 0·전장 밖 유출 0.
+   연주 중 기존 #log 는 orchQuiet 감쇄(이중 표시 방지·복원됨·표시만). 침묵도 연주 — 생략 사건은 omitted에 이유와 함께 기록.
+   계산·RNG·턴 무접촉: 실제 확정값 d/h를 읽어 표시만. PRLIVE.on=false → 전 진입점 무동작 = 부모 동일 경로.
+   입력 차단 오버레이·닫기 버튼·추가 대기 0. 수치·문구 전부 R&D 후보. */
 const PRLIVE = {
-  on:true,                       /* Dev 토글 · 기본 ON, 즉시 OFF 가능 (§DEV) */
-  gen:0, rail:null, finEl:null, items:[], acc:{dmg:0,heal:0,shield:0}, fadeT:[], lastSel:null,
+  on:true,
+  style:"orchestra",   /* "orchestra"(신규 악보형) | "fragment"(구 단편형 · Dev 비교 전용) */
+  cumStyle:"B",        /* CRESCENDO 후보 — A: 행동마다 누적 줄 / B: 고정 누적 숫자 증가 (기본 B, Dev 토글) */
+  gen:0, fadeT:[], lastSel:null,
+  theme:null, themeShown:false, cum:0, beats:[], support:[], omitted:[], cadenceCount:0,
+  _eHpBefore:0, _wallBefore:null, _wallAbsorbed:0, _doomBefore:false, _healSum:0, _cleanseSum:0, _prevented:false,
   EMO:{hero:"\u2694",war:"\uD83D\uDEE1",mage:"\uD83D\uDD2E",cleric:"\u2728"},
   NM:{hero:"\uC6A9\uC0AC",war:"\uC804\uC0AC",mage:"\uB9C8\uBC95\uC0AC",cleric:"\uC131\uC9C1\uC790"},
-  _ensure(){
-    if(!this.rail){ this.rail=document.createElement("div"); this.rail.id="igRail"; document.body.appendChild(this.rail); }
-    if(!this.finEl){ this.finEl=document.createElement("div"); this.finEl.id="igFin"; document.body.appendChild(this.finEl); }
-  },
+  _stage(){ return document.getElementById("stage"); },
+  _log(){ return document.getElementById("log"); },
   _clearFade(){ for(const t of this.fadeT) clearTimeout(t); this.fadeT=[]; },
+  _rm(id){ const e=document.getElementById(id); if(e) e.remove(); },
+  _ensure(){
+    const st=this._stage(); if(!st) return false;
+    if(!document.getElementById("orWrap")){ const w=document.createElement("div"); w.id="orWrap"; st.appendChild(w); }
+    if(!document.getElementById("orCum")){ const c=document.createElement("div"); c.id="orCum";
+      c.innerHTML='<div class="cl">\uB204\uC801 \uD53C\uD574</div><div class="cv">0</div>'; st.appendChild(c); }
+    if(!document.getElementById("orFin")){ const f=document.createElement("div"); f.id="orFin"; st.appendChild(f); }
+    return true;
+  },
+  /* ── 시작: 스냅샷·주제 결정·기존 로그 감쇄 ── */
   begin(){
     if(!this.on) return;
-    this.gen++; this._clearFade(); this._ensure();
-    this.rail.innerHTML=""; this.finEl.className=""; this.finEl.innerHTML="";
-    this.items=[]; this.acc={dmg:0,heal:0,shield:0}; this.lastSel=null;
-    this._wallBefore = (typeof VS==="object"&&VS&&VS.active)?VS.wall:null;
-    this._doomBefore = !!(typeof VS==="object"&&VS&&VS.active&&VS.doomActive);
-  },
-  _push(txt,cls){ if(!this.on||!this.rail) return; const g=this.gen;
-    const d=document.createElement("div"); d.className="igLn "+cls; d.textContent=txt; this.rail.appendChild(d);
-    requestAnimationFrame(()=>{ if(g===this.gen) d.classList.add("show"); });
-    while(this.rail.children.length>13) this.rail.removeChild(this.rail.firstChild);
-  },
-  /* 공격 impact — 실제 피해 d를 그 자리에서 (RV/원장 재조립 없이 인자로 직접 수령) */
-  impact(id, act, d){
-    if(!this.on) return;
-    const pb = (act && act.k==="m" && S.pbCount>=2);
-    if(pb) this._push("\u2726\u2726 \uD569\uC77C \u00D7"+S.pbMult, "igChip igPb");
-    if(d>0){ this.acc.dmg += d; this._push((this.EMO[id]||"\u2022")+" "+(this.NM[id]||id)+"  "+d, "igHit"); }
-    /* 방벽/틈/이월은 이 시점 VS 상태 변화를 읽어 표시 (계산 무접촉) */
-    if(typeof VS==="object" && VS && VS.active){
-      if(this._wallBefore!=null && VS.wall<this._wallBefore){
-        const absorbed=this._wallBefore-VS.wall;
-        if(VS.wall<=0 && this._wallBefore>0) this._push("\uD83D\uDCA5 \uC640\uC7A5\uCC3D!! \uBC29\uBCBD \uBD95\uAD34", "igBig");
-        else this._push("\uD83D\uDEE1 \uBC29\uBCBD "+absorbed, "igChip");
-        this._wallBefore=VS.wall;
-      }
-      if(this._doomBefore && !VS.doomActive){ this._push("\u23F3 \uC885\uB9D0 \uCDE8\uC18C", "igBig"); this._doomBefore=false; }
+    this.gen++; this._clearFade();
+    this.theme=null; this.themeShown=false; this.cum=0;
+    this.beats=[]; this.support=[]; this.omitted=[];
+    this._eHpBefore=S.eHp; this._healSum=0; this._cleanseSum=0; this._prevented=false;
+    const vs=(typeof VS==="object"&&VS&&VS.active)?VS:null;
+    this._wallBefore=vs?vs.wall:null; this._wallAbsorbed=0; this._doomBefore=!!(vs&&vs.doomActive);
+    /* 상태 차분 관측 기준점 — 표시 총합을 원장과 일치시키는 유일한 정직한 방법 (본체+방벽 감소량 = damageTotal) */
+    this._obs={eHp:S.eHp, wall:vs?vs.wall:0, aux:(vs&&vs.aux)?vs.aux.reduce((a,x)=>a+Math.max(0,x.hp),0):0};
+    /* DOWNBEAT — 턴 전체를 지배하는 원인 1개 (없으면 침묵) */
+    if(S.pbCount>=2) this.theme=(S.pbCount===4?"\uC804\uC6D0 21 \u00B7 ":"")+"\uD569\uC77C \u00D7"+S.pbMult;
+    else if(vs && vs.groggy>0) this.theme="\uC801\uC758 \uD2C8";
+    else { const bj=UI_ORDER.some(id=>{const a=S.allies[id]; return !a.dead&&a.cards&&a.cards.length===2&&bestTotal(a.cards)===21;});
+           if(bj) this.theme="\uC790\uC5F0 \uBE14\uB799\uC7AD"; }
+    if(this.style==="orchestra"){
+      if(!this._ensure()) return;
+      document.getElementById("orWrap").innerHTML="";
+      const cum=document.getElementById("orCum"); cum.classList.remove("show"); cum.querySelector(".cv").textContent="0";
+      const fin=document.getElementById("orFin"); fin.className=""; fin.innerHTML="";
+      const lg=this._log(); if(lg) lg.classList.add("orchQuiet");
+    } else { /* fragment 비교용 */
+      if(!this.railF){ this.railF=document.createElement("div"); this.railF.id="igRail"; document.body.appendChild(this.railF); }
+      this.railF.innerHTML="";
     }
   },
-  impactHeal(id, act, h, healed, ov, sh){
+  _line(txt,cls){
+    const g=this.gen;
+    if(this.style==="fragment"){ if(!this.railF) return; const d=document.createElement("div");
+      d.className="igLn "+cls; d.textContent=txt; this.railF.appendChild(d);
+      requestAnimationFrame(()=>{ if(g===this.gen) d.classList.add("show"); });
+      while(this.railF.children.length>13) this.railF.removeChild(this.railF.firstChild); return d; }
+    const w=document.getElementById("orWrap"); if(!w) return null;
+    const d=document.createElement("div"); d.className="orLn "+cls; d.textContent=txt; w.appendChild(d);
+    requestAnimationFrame(()=>{ if(g===this.gen) d.classList.add("show"); });
+    while(w.children.length>11) w.removeChild(w.firstChild);
+    return d;
+  },
+  _downbeatOnce(){
+    if(this.themeShown||!this.theme) return;
+    this.themeShown=true;
+    this._line(this.theme, this.style==="fragment"?"igPb":"orTheme");
+  },
+  _bumpCum(){
+    if(this.style!=="orchestra") return;
+    const c=document.getElementById("orCum"); if(!c) return;
+    c.classList.add("show"); c.querySelector(".cv").textContent=String(this.cum);
+    c.classList.remove("bump"); void c.offsetWidth; c.classList.add("bump");
+  },
+  /* ── BEAT: 공격 impact — 실제 확정 피해 d (dmgEnemy 직후 · 표시만) ── */
+  impact(id, act, d){
     if(!this.on) return;
-    if(act && act.k==="m" && S.pbCount>=2) this._push("\u2726\u2726 \uD569\uC77C \u00D7"+S.pbMult, "igChip igPb");
-    if(healed>0 || h>0){ this.acc.heal += (healed>0?healed:h); this._push("\u2728 "+(this.NM[id]||id)+"  +"+(healed>0?healed:h), "igHit igHeal"); }
-    if(sh>0){ this.acc.shield += sh; this._push("\uD83D\uDEE1 \uBCF4\uD638\uB9C9 +"+sh, "igChip"); }
+    this._downbeatOnce();
+    /* 실제 기여 = (본체HP+방벽) 감소량 차분 관측 — AoE 이월·법칙 여파 포함, 원장 damageTotal과 동일 기준 */
+    const vs=(typeof VS==="object"&&VS&&VS.active)?VS:null;
+    const eNow=S.eHp, wNow=vs?vs.wall:0, aNow=(vs&&vs.aux)?vs.aux.reduce((a,x)=>a+Math.max(0,x.hp),0):0;
+    const delivered=Math.max(0,this._obs.eHp-eNow)+Math.max(0,this._obs.wall-wNow);
+    const auxHit=Math.max(0,this._obs.aux-aNow);
+    this._obs={eHp:eNow, wall:wNow, aux:aNow};
+    if(delivered>0){
+      this.cum+=delivered;
+      const name=(act&&act.txt)?act.txt:(this.NM[id]||id);
+      this.beats.push({id,name,d:delivered,cum:this.cum});
+      this._line((this.EMO[id]||"\u2022")+" "+name+" +"+delivered, this.style==="fragment"?"igHit":"orBeat");
+      if(this.cumStyle==="A") this._line("\uB204\uC801 "+this.cum, this.style==="fragment"?"igChip":"orSup");
+      else this._bumpCum();
+    } else this.omitted.push({ev:"impact:"+id, reason:"\uBCF8\uCCB4 \uAE30\uC5EC 0 \u2014 \uBB34\uC758\uBBF8 \uC0DD\uB7B5"});
+    if(auxHit>0 && vs && vs.aux && vs.aux.every(x=>x.hp<=0) && this._obs.aux===0 && !this._auxGone){
+      this._auxGone=true; this._line("\uD83D\uDD2E \uCD09\uC218 \uC18C\uBA78", this.style==="fragment"?"igChip":"orSup");
+    } else if(auxHit>0) this.omitted.push({ev:"aux:"+auxHit, reason:"\uCD09\uC218 \uD53C\uD574 \u2014 \uBCF8\uCCB4 \uB204\uC801\uACFC \uBD84\uB9AC(\uC6D0\uC7A5 \uAE30\uC900), \uAC1C\uBCC4 \uC904 \uC0DD\uB7B5"});
+    /* 결과 사건 — 방벽/종말은 VS 상태 차분 관측 (계산 무접촉) */
+    if(vs && this._wallBefore!=null && vs.wall<this._wallBefore){
+      const abs=this._wallBefore-vs.wall; this._wallAbsorbed+=abs;
+      if(vs.wall<=0 && this._wallBefore>0) this._line("\uD83D\uDCA5 \uC640\uC7A5\uCC3D!! \uBC29\uBCBD \uBD95\uAD34", this.style==="fragment"?"igBig":"orBig");
+      else this.omitted.push({ev:"absorb:"+abs, reason:"\uBD80\uBD84 \uD761\uC218 \u2014 \uB204\uC801\uC5D0 \uD3EC\uD568\uB428, \uAC1C\uBCC4 \uC904 \uC0DD\uB7B5"});
+      this._wallBefore=vs.wall;
+    }
+    if(vs && this._doomBefore && !vs.doomActive){ this._line("\u23F3 \uC885\uB9D0 \uCDE8\uC18C", this.style==="fragment"?"igBig":"orBig"); this._doomBefore=false; }
   },
-  /* 방어(전사) 훅 — dlProcs/방어 분기에서 부를 수 있게 공개 (완벽 방어·반사) */
-  impactGuard(kind, val){
+  /* ── COUNTERPOINT: 지원 화음 — 피해 누적과 분리 ── */
+  impactGuard(kind){
     if(!this.on) return;
-    if(kind==="prevent") this._push("\uD83D\uDEE1 \uC644\uBCBD \uBC29\uC5B4 \u00B7 \uBB34\uD6A8 "+val, "igHit igGuard");
-    else if(kind==="reduce") this._push("\uD83D\uDEE1 \uBC29\uC5B4 "+val, "igHit igGuard");
-    else if(kind==="reflect") this._push("\u2726 \uBC18\uC0AC "+val, "igChip");
+    this._downbeatOnce();
+    if(kind==="perfect"){ this._prevented=true; this.support.push({t:"\uC644\uBCBD \uBC29\uC5B4"});
+      this._line("\uD83D\uDEE1 \uC644\uBCBD \uBC29\uC5B4", this.style==="fragment"?"igGuard":"orSup guard"); }
   },
-  /* AUTO 리듬 선택 — 실전 신호로 __MREV_SELECT 재사용 (없으면 인원수 폴백) */
-  _auto(){
-    const sig = {
-      partyBlackjackCount:S.pbCount||0, naturalBlackjackCount:0, triggeredLawCount:0,
-      magnitudeTier:(this.acc.dmg>=1000?4:this.acc.dmg>=100?3:this.acc.dmg>=10?2:1),
-      barrierBroken:(this._wallBefore===0), targetKilled:(S.eHp<=0),
-      battleEnded:(S.eHp<=0), bossKilled:(S.eHp<=0 && !!(VS&&VS.active))||null,
-      overkillAmount:null, doomCanceled:!this._doomBefore && !!(VS&&VS.active),
-      openingCreated:false, damagePrevented:0
-    };
-    let sel;
-    try { sel = window.__MREV_SELECT ? window.__MREV_SELECT(sig) : null; } catch(e){ sel=null; }
-    if(!sel){ const lv = S.pbCount>=4?3:S.pbCount>=3?2:S.pbCount>=2?1:0;
-      sel={ level:lv, rhythm: lv>=2?"rhythm":"fast", reasons:["fallback:pb"+(S.pbCount||0)] }; }
-    this.lastSel=sel; return sel;
+  impactHeal(id, act, h, healed, ov, sh, cl){
+    if(!this.on) return;
+    this._downbeatOnce();
+    const real=(healed>0?healed:0);
+    if(real>0||sh>0||cl>0){
+      let t="\u2728 "+((act&&act.k==="m")?"\uC131\uC5ED":"\uD68C\uBCF5")+(real>0?" +"+real:"");
+      if(cl>0) t+=" \u00B7 \uB3C5 \uC815\uD654";
+      this._healSum+=real; this._cleanseSum+=(cl||0);
+      this.support.push({t,heal:real,cleanse:cl||0});
+      this._line(t, this.style==="fragment"?"igHeal":"orSup");
+      if(sh>0){ this.support.push({t:"\uBCF4\uD638\uB9C9 +"+sh}); this._line("\uD83D\uDEE1 \uBCF4\uD638\uB9C9 +"+sh, this.style==="fragment"?"igChip":"orSup"); }
+    } else this.omitted.push({ev:"heal:"+id, reason:"\uC2E4\uC81C \uD68C\uBCF5 0 \u00B7 \uBCF4\uC870 \uC131\uACFC \uC5C6\uC74C \u2014 \uC0DD\uB7B5"});
   },
+  /* ── CADENCE: 중앙 최종 결산 — 턴당 정확히 1회 · 단위 명시 ── */
   finale(){
     return new Promise(resolve=>{
       if(!this.on){ resolve(); return; }
-      const g=this.gen; this._ensure();
-      const sel=this._auto();
-      const drama = sel.rhythm==="dramatic";
-      /* 대표 결산 1개 (§3) — 우선순위: 보스킬>처치>완벽방어>회복>방벽붕괴>피해 */
-      let h,n,sub=null;
-      const killedBoss=(S.eHp<=0 && !!(VS&&VS.active));
-      if(killedBoss){ h="\uBCF4\uC2A4 \uCC98\uCE58!"; n=this.acc.dmg; }
-      else if(S.eHp<=0){ h="\uC801 \uCC98\uCE58!"; n=this.acc.dmg; }
-      else if(this.acc.dmg===0 && this._doomBefore===false && (VS&&VS.active)){ h="\uC644\uBCBD \uBC29\uC5B4"; n="\uD53C\uD574 0"; }
-      else if(this.acc.dmg===0 && this.acc.heal>0){ h="\uC2E0\uC131 \uD68C\uBCF5"; n="+"+this.acc.heal; if(this.acc.shield>0) sub="\uBCF4\uD638\uB9C9 +"+this.acc.shield; }
-      else if(this._wallBefore===0){ h="\uBC29\uBCBD \uBD95\uAD34"; n=this.acc.dmg; sub="\uC885\uB9D0 \uCDE8\uC18C"; }
-      else { h="\uCD5C\uC885 \uD53C\uD574"; n=this.acc.dmg; }
-      this.finEl.innerHTML='<div class="igFinH">'+h+'</div><div class="igFinN">'+n+'</div>'+(sub?('<div class="igFinS">'+sub+'</div>'):"");
-      this.finEl.className="on"+(drama?" igDrama":"");
-      /* 결산 표시 시간 = 기존 wait(480) 안에서 흡수. 추가 대기 없음 — 곧바로 resolve. 잔상은 비동기 fade */
-      const linger = drama?900:520;
-      this.fadeT.push(setTimeout(()=>{ if(g===this.gen && this.finEl){ this.finEl.classList.add("fade");
-        for(const c of this.rail.children) c.classList.add("fade"); } }, linger));
-      resolve();   /* ✦ 다음 턴 입력을 잔상 제거까지 기다리지 않는다 (§3-4) */
+      const g=this.gen;
+      /* AUTO 편곡 — 사건 중요도 + 행동 수 (기존 정책 재사용) */
+      const acted=this.beats.length+this.support.length;
+      const killed=S.eHp<=0, vs=(typeof VS==="object"&&VS&&VS.active)?VS:null;
+      const sig={ partyBlackjackCount:S.pbCount||0, naturalBlackjackCount:(this.theme==="\uC790\uC5F0 \uBE14\uB799\uC7AD")?1:0,
+        triggeredLawCount:0, magnitudeTier:(this.cum>=1000?4:this.cum>=100?3:this.cum>=10?2:1),
+        barrierBroken:(this._wallBefore===0&&this._wallAbsorbed>0), targetKilled:killed, battleEnded:killed,
+        bossKilled:(killed&&!!vs)||null, overkillAmount:null,
+        doomCanceled:(!this._doomBefore&&!!vs&&this._prevented)||undefined,
+        openingCreated:false, damagePrevented:this._prevented?1:0, partyRevivedFromNearWipe:false };
+      /* 최종 총합 재확정 — impact 훅 이후 법칙 여파(dlProcs 등)까지 차분으로 흡수 */
+      const vsF=(typeof VS==="object"&&VS&&VS.active)?VS:null;
+      const cumFinal=Math.max(0,this._eHpBefore-S.eHp)+Math.max(0,(this._wallBefore!=null?this._wallBefore:0)-(vsF?vsF.wall:0));
+      if(cumFinal>this.cum){ const echo=cumFinal-this.cum; this.cum=cumFinal;
+        this._line("\u2726 \uBA54\uC544\uB9AC +"+echo, this.style==="fragment"?"igChip":"orSup"); this._bumpCum(); }
+      sig.magnitudeTier=(this.cum>=1000?4:this.cum>=100?3:this.cum>=10?2:1);
+      let sel; try{ sel=window.__MREV_SELECT?window.__MREV_SELECT(sig):null; }catch(e){ sel=null; }
+      if(!sel){ const lv=S.pbCount>=4?3:S.pbCount>=3?2:S.pbCount>=2?1:0; sel={level:lv,rhythm:lv>=2?"rhythm":"fast",reasons:["fallback"]}; }
+      if(acted<=1 && !killed && sel.rhythm==="rhythm") sel={...sel, rhythm:"fast", reasons:[...sel.reasons,"fewActions"]};
+      this.lastSel=sel;
+      const drama=sel.rhythm==="dramatic";
+      /* 대표 결산 — 주인공 1 + 보조. 단위 명시 (총 피해/총 회복/피해 0) */
+      let pre=null,h,n,sub=null;
+      const ovk = killed ? Math.max(0, this.cum - this._wallAbsorbed - this._eHpBefore) : 0;
+      if(this.cum>0){
+        h="\uCD1D \uD53C\uD574"; n=String(this.cum);
+        if(killed){ sub="\uC801 \uCC98\uCE58"+(ovk>0?" \u00B7 OVERKILL +"+ovk:""); }
+        else if(this._wallBefore===0&&this._wallAbsorbed>0){ sub="\uBC29\uBCBD \uBD95\uAD34 \u00B7 \uC885\uB9D0 \uCDE8\uC18C"; }
+        if(drama && S.chainLock && killed) pre="\u2726 \uAE30\uC801 \uC5F0\uC1C4 \uC644\uC8FC \u2726";
+      }
+      else if(this._prevented){ h="\uC644\uBCBD \uBC29\uC5B4"; n="\uD53C\uD574 0"; }
+      else if(this._healSum>0){ h="\uCD1D \uD68C\uBCF5"; n="+"+this._healSum; if(this._cleanseSum>0) sub="\uB3C5 \uC815\uD654"; }
+      else { this.omitted.push({ev:"cadence",reason:"\uD53C\uD574\u00B7\uBC29\uC5B4\u00B7\uD68C\uBCF5 \uC804\uBB34 0 \u2014 \uACB0\uC0B0 \uC0DD\uB7B5(\uCE68\uBB35)"}); resolve(); return; }
+      const fin=(this.style==="orchestra")?document.getElementById("orFin"):null;
+      if(fin){
+        fin.innerHTML=(pre?('<div class="orFinPre">'+pre+'</div>'):"")
+          +'<div class="orFinH">'+h+'</div><div class="orFinN">'+n+'</div>'+(sub?('<div class="orFinS">'+sub+'</div>'):"");
+        fin.className="on"+(drama?" orDrama":"");
+        if(drama){ const st=this._stage(); if(st){ st.classList.remove("orShake"); void st.offsetWidth; st.classList.add("orShake"); } }
+      } else if(this.railF){ this._line("\u2605 "+h+" "+n+(sub?(" \u00B7 "+sub):""), "igHit"); }
+      this.cadenceCount++;
+      const linger=drama?950:540;
+      this.fadeT.push(setTimeout(()=>{ if(g!==this.gen) return;
+        if(fin) fin.classList.add("fade");
+        const w=document.getElementById("orWrap"); if(w) for(const c of w.children) c.classList.add("fade"),c.style.opacity=0;
+        const cum=document.getElementById("orCum"); if(cum) cum.classList.remove("show");
+        const lg=this._log(); if(lg) lg.classList.remove("orchQuiet");   /* 로그 복원 */
+      }, linger));
+      resolve();   /* ✦ 즉시 resolve — 다음 턴이 잔상 종료를 기다리지 않는다 */
     });
   },
   teardown(){ this.gen++; this._clearFade();
-    if(this.rail){ this.rail.remove(); this.rail=null; }
-    if(this.finEl){ this.finEl.remove(); this.finEl=null; } }
+    this._rm("orWrap"); this._rm("orCum"); this._rm("orFin");
+    if(this.railF){ this.railF.remove(); this.railF=null; }
+    const lg=this._log(); if(lg) lg.classList.remove("orchQuiet"); }
 };
 window.__PRLIVE = PRLIVE;
-/* 전투 화면 Dev 토글 (AUTO ON / OFF) */
+
+/* ── 전투 화면 Dev 토글 (⚡ 병렬 ON/OFF) ── */
 (function(){
   const btn=document.createElement("button"); btn.id="igToggle"; btn.textContent="\u26A1 \uBCD1\uB82C ON";
   btn.addEventListener("click",()=>{ PRLIVE.on=!PRLIVE.on; btn.textContent=PRLIVE.on?"\u26A1 \uBCD1\uB82C ON":"\u26A1 \uBCD1\uB82C OFF";
@@ -4447,6 +4559,99 @@ window.__PRLIVE = PRLIVE;
   document.body.appendChild(btn);
   document.addEventListener("visibilitychange",()=>{ if(document.hidden) PRLIVE._clearFade(); });
 })();
+
+/* ═══ ✦ ORCH01 Dev Lab — ORCHESTRATION 비교 모드 (기준 장면 3종 · 단편형 vs 악보형 · DEV 정보) ═══
+   기준 장면 = 나라님 스크린샷 실측값 고정 픽스처. 표시 문법 검증용 — 엔진 무접촉, 같은 렌더러 함수를 샌드박스에 연주. */
+(function(){
+  const SCENES=[
+    {id:"S-A",n:"\uD3C9\uBC94\uD55C \uD134", theme:null, mode:"fast",
+      beats:[{id:"hero",name:"\uC77C\uACA9",d:14}], support:[], kill:false, eHp:60},
+    {id:"S-B",n:"3\uC778 \uD569\uC77C 108", theme:"\uD569\uC77C \u00D72", mode:"dramatic",
+      beats:[{id:"hero",name:"\uC131\uAC80 \uD574\uBC29",d:60},{id:"mage",name:"\uC544\uCF00\uC778 \uB178\uBC14",d:48}],
+      support:[], kill:true, eHp:60, pre:null},
+    {id:"S-C",n:"4\uC778 \uD569\uC77C 296", theme:"\uC804\uC6D0 21 \u00B7 \uD569\uC77C \u00D74", mode:"dramatic",
+      beats:[{id:"hero",name:"\uC131\uAC80 \uD574\uBC29",d:120},{id:"mage",name:"\uC544\uCF00\uC778 \uB178\uBC14",d:176}],
+      support:[{t:"\uD83D\uDEE1 \uC644\uBCBD \uBC29\uC5B4",guard:true},{t:"\u2728 \uC131\uC5ED +48 \u00B7 \uB3C5 \uC815\uD654"}],
+      kill:true, eHp:60, pre:"\u2726 \uAE30\uC801 \uC5F0\uC1C4 \uC644\uC8FC \u2726"},
+  ];
+  window.__ORCH_SCENES=SCENES;
+  const lab=document.getElementById("labOv"); if(!lab) return;
+  const host=lab.querySelector(".labIn")||lab.firstElementChild||lab;
+  const dv=document.createElement("div"); dv.id="orchDev";
+  dv.innerHTML='<h3>\uD83C\uDFBC ORCHESTRATION (ORCH01) \u00B7 \uAE30\uC900 \uC7A5\uBA74 \uBE44\uAD50</h3>'
+    +'<div class="mrvRow" id="orchStyle"></div><div class="mrvRow" id="orchCumSt"></div><div class="mrvRow" id="orchSc"></div>'
+    +'<div id="orchStage"><div class="demoMon">\uD83D\uDC3A</div></div>'
+    +'<div id="orchInfo">\uC7A5\uBA74\uC744 \uB204\uB974\uBA74 \uC7AC\uC0DD \u2014 \uC67C\uCABD \uC545\uBCF4\uAC00 \uBC15\uC790\uB300\uB85C \uC313\uC774\uACE0 \uB9C8\uC9C0\uB9C9\uC5D0 \uC911\uC559 \uACB0\uC0B0 1\uD68C. \uC2E4\uC804\uC740 \uADF8\uB0E5 \uC804\uD22C\uD558\uBA74 \uB3D9\uC77C \uBB38\uBC95.</div>';
+  host.appendChild(dv);
+  let mode="orchestra", cumSt="B", gen=0, timers=[];
+  const clear=()=>{ for(const t of timers) clearTimeout(t); timers=[]; };
+  const D=(ms,g)=>new Promise(r=>{ const t=setTimeout(()=>{ if(g===gen) r(); },ms); timers.push(t); });
+  async function play(sc){
+    clear(); const g=++gen;
+    const st=dv.querySelector("#orchStage");
+    st.querySelectorAll("#orWrapD,#orCumD,#orFinD,#igRailD").forEach(e=>e.remove());
+    const info=dv.querySelector("#orchInfo");
+    const rail=document.createElement("div");
+    if(mode==="orchestra"){ rail.id="orWrapD"; rail.style.cssText="position:absolute;left:6px;top:34px;bottom:8px;width:47%;max-width:158px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;pointer-events:none;overflow:hidden;"; }
+    else { rail.id="igRailD"; rail.style.cssText="position:absolute;left:4px;top:4px;width:46%;display:flex;flex-direction:column;gap:3px;pointer-events:none;"; }
+    st.appendChild(rail);
+    const cumEl=document.createElement("div"); cumEl.id="orCumD";
+    cumEl.style.cssText="position:absolute;right:8px;bottom:10px;text-align:right;opacity:0;transition:opacity .15s;";
+    cumEl.innerHTML='<div class="cl" style="font-size:9px;color:#8f86a6;letter-spacing:1.5px;">\uB204\uC801 \uD53C\uD574</div><div class="cv" style="font-size:19px;font-weight:900;color:#ffd27a;">0</div>';
+    st.appendChild(cumEl);
+    const line=(txt,cls)=>{ const d=document.createElement("div");
+      d.className=(mode==="orchestra"?("orLn "+cls):("igLn "+cls)); d.textContent=txt; rail.appendChild(d);
+      requestAnimationFrame(()=>d.classList.add("show")); };
+    const tm=sc.mode==="dramatic"?{beat:430,chip:180,fin:520}:sc.mode==="rhythm"?{beat:320,chip:140,fin:420}:{beat:210,chip:100,fin:300};
+    let cum=0; const beatsLog=[];
+    if(mode==="orchestra"&&sc.theme){ line(sc.theme,"orTheme"); await D(tm.chip,g); if(g!==gen)return; }
+    // COUNTERPOINT 선행(전사 방어 = ORDER 첫 행동)
+    for(const s of sc.support.filter(x=>x.guard)){ line(s.t.replace("\uD83D\uDEE1 ",""), mode==="orchestra"?"orSup guard":"igGuard");
+      if(mode==="fragment") rail.lastChild.textContent=s.t; await D(tm.chip,g); if(g!==gen)return; }
+    for(const b of sc.beats){
+      if(mode==="fragment"&&sc.theme) line("\u2726\u2726 "+sc.theme.replace("\uC804\uC6D0 21 \u00B7 ",""),"igPb");  /* 단편형 = 반복 재현 */
+      const EMO={hero:"\u2694",mage:"\uD83D\uDD2E"}[b.id]||"\u2022";
+      line(EMO+" "+b.name+" +"+b.d, mode==="orchestra"?"orBeat":"igHit");
+      cum+=b.d; beatsLog.push(b.name+"+"+b.d+"\u2192\uB204\uC801"+cum);
+      if(mode==="orchestra"){ if(cumSt==="A") line("\uB204\uC801 "+cum,"orSup");
+        else { cumEl.style.opacity=1; cumEl.querySelector(".cv").textContent=String(cum); } }
+      await D(tm.beat,g); if(g!==gen)return;
+    }
+    for(const s of sc.support.filter(x=>!x.guard)){ line(s.t, mode==="orchestra"?"orSup":"igHeal"); await D(tm.chip,g); if(g!==gen)return; }
+    await D(tm.fin,g); if(g!==gen)return;
+    const fin=document.createElement("div"); fin.id="orFinD";
+    fin.style.cssText="position:absolute;left:50%;top:56%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;";
+    const ovk=sc.kill?Math.max(0,cum-sc.eHp):0;
+    const sub=sc.kill?("\uC801 \uCC98\uCE58"+(ovk>0?" \u00B7 OVERKILL +"+ovk:"")):null;
+    fin.innerHTML=(mode==="orchestra"&&sc.pre?('<div class="orFinPre">'+sc.pre+'</div>'):"")
+      +(mode==="orchestra"
+        ? '<div class="orFinH">\uCD1D \uD53C\uD574</div><div class="orFinN" style="font-size:'+(sc.mode==="dramatic"?38:30)+'px;">'+cum+'</div>'+(sub?('<div class="orFinS">'+sub+'</div>'):"")
+        : '<div class="igLn igHit show" style="font-size:22px;">\uC801 \uCC98\uCE58! '+cum+'</div>');
+    st.appendChild(fin);
+    /* DEV 정보 — AUTO/주제/기여/누적/지원/대표/생략 */
+    info.textContent="["+sc.id+" "+sc.n+"] AUTO="+sc.mode.toUpperCase()
+      +"\n\uC8FC\uC81C: "+(sc.theme||"(\uC5C6\uC74C\u2014\uCE68\uBB35)")
+      +"\n\uAE30\uC5EC: "+beatsLog.join(" / ")
+      +"\n\uC9C0\uC6D0: "+(sc.support.map(s=>s.t).join(" / ")||"(\uC5C6\uC74C)")
+      +"\n\uC911\uC559: \uCD1D \uD53C\uD574 "+cum+(sub?(" \u00B7 "+sub):"")
+      +"\n\uC0DD\uB7B5: "+(sc.id==="S-A"?"\uD569\uC77C \uC120\uC5B8 \uC5C6\uC74C(\uC870\uAC74 \uBBF8\uCDA9\uC871) \u00B7 \uC9C0\uC6D0 \uC5C6\uC74C \u2014 \uCE68\uBB35\uB3C4 \uC5F0\uC8FC":"\uBB34\uC758\uBBF8 +0 \uC0AC\uAC74 \uC0DD\uB7B5 \uADDC\uCE59 \uC801\uC6A9\uB428");
+  }
+  const re=()=>{
+    dv.querySelector("#orchStyle").innerHTML=["orchestra","fragment"].map(m=>'<button data-m="'+m+'" class="'+(mode===m?"on":"")+'">'+(m==="orchestra"?"\uC0C8 \uC545\uBCF4\uD615":"\uAD6C \uB2E8\uD3B8\uD615")+'</button>').join("")
+      +'<span style="font-size:9px;color:#8f86a6;align-self:center;">\uC2E4\uC804 \uC2A4\uD0C0\uC77C: </span>'
+      +'<button id="orchApply">'+(PRLIVE.style==="orchestra"?"\uC545\uBCF4\uD615 \uC801\uC6A9\uC911":"\uB2E8\uD3B8\uD615 \uC801\uC6A9\uC911")+'</button>';
+    dv.querySelector("#orchCumSt").innerHTML='<span style="font-size:9px;color:#8f86a6;align-self:center;">\uB204\uC801 \uD45C\uC2DC: </span>'+["A","B"].map(x=>'<button data-c="'+x+'" class="'+(cumSt===x?"on":"")+'">'+(x==="A"?"A \uC904\uCD94\uAC00":"B \uACE0\uC815\uC99D\uAC00")+'</button>').join("");
+    dv.querySelector("#orchSc").innerHTML=SCENES.map((s,i)=>'<button data-s="'+i+'">'+s.id+" "+s.n+'</button>').join("");
+    dv.querySelector("#orchStyle").querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{ mode=b.dataset.m; re(); });
+    dv.querySelector("#orchApply").onclick=()=>{ PRLIVE.style=(PRLIVE.style==="orchestra"?"fragment":"orchestra"); PRLIVE.teardown(); re(); };
+    dv.querySelector("#orchCumSt").querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{ cumSt=b.dataset.c; PRLIVE.cumStyle=b.dataset.c; re(); });
+    dv.querySelector("#orchSc").querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{ play(SCENES[+b.dataset.s]); });
+  };
+  re();
+  new MutationObserver(()=>{ if(lab.classList.contains("hiddenOv")){ clear(); gen++; } })
+    .observe(lab,{attributes:true,attributeFilter:["class"]});
+})();
+
 </script>
 </body>
 </html>
