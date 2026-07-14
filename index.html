@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v1H1VS1A1B · Myth Damage Rhythm Close 01 (R&D 마감 슬라이스) · 부모 Myth Rhythm Orchestration 01(148e5714f0c5e49a69398930a62874d6)에서 분기 · 피해 선율 단일화: 전투 영역 왼쪽 중앙 고정 앵커(top:50%+translateY)로 영웅별 실제 피해가 행동 박자에 쌓이고 묶음이 위아래로 확장, 누적은 묶음 안 한 줄, 중앙 총 피해 1회로 종지 · 지원(방어·회복·정화)·우측 독립 누적은 제품 표시 격리(원장·데이터 보존, DEV/fragment에만) · AUTO는 피해 사건만으로 편곡 · 계산·RNG·턴·수치 무변경(상태 차분 관측·표시만) · PRLIVE.on OFF=부모 동일 경로 · 공식 승격 HOLD · commit/push 0 -->
+<!-- v1H1VS1A1B · Myth Damage Ceiling Lab 01A · 부모 Myth Damage Rhythm Close 01(b9ab58a525afaa5209cdc7dc3409566a)에서 분기 · 공격형 신화 공식의 9999 도달 가능성 감사(R&D 전용·수치 확정 아님) · Dev 전용 레버(전투 체급=공격 고점 가설·축복A/B·틈 ×2)를 실제 파이프라인 기초/축복 단계에 원장 이벤트와 함께 주입, CEIL.on 기본 false=CURRENT 무영향·부모 동일 경로 · 최종 피해 직접 입력 금지(네 층 공식 결과만) · 9999 캡 없음·다섯 자리 쉼표 표시 · 계산 무변경 원칙 유지 · 공식 v1D2 무접촉·승격 HOLD · commit/push 0 -->
 <!-- v1H1VS1 · Combat Choice Vertical Slice 01 · 기회비용 보스(종말4턴+방벽300) × 다중 표적 × 강화 파티BJ(실험) · v1H1(0528301bf1e6017731c67d8ba32cabc6)에서 분기 · 모드 c=CONTROL(기준선) p/b/i · 공식 승격 HOLD · commit/push 0 -->
 <html lang="ko">
 <head>
@@ -834,6 +834,12 @@ body.reveal-lab-open{overflow:hidden !important;overscroll-behavior:none;}
   background:radial-gradient(70% 55% at 50% 14%, rgba(120,55,90,.18), transparent 65%), #100a12;}
 #orchStage .demoMon{position:absolute;left:50%;top:12%;transform:translateX(-50%);font-size:34px;}
 #orchInfo{font-size:9.5px;color:#b08aa8;line-height:1.55;margin-top:6px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:150px;overflow:auto;}
+#ceilDev{margin-top:10px;padding:9px;border:1px dashed #6a5a2a;border-radius:9px;background:rgba(30,26,12,.5);}
+#ceilDev h3{font-size:11.5px;color:#ffd27a;margin:0 0 6px;}
+#ceilDev .mrvRow{display:flex;flex-wrap:wrap;gap:4px;}
+#ceilDev button{font-size:9.5px;padding:3px 6px;background:#342c14;color:#ffe2a0;border:1px solid #705c2a;border-radius:5px;}
+#ceilInfo,#ceilLast{font-size:9.5px;color:#b0a68a;line-height:1.55;margin:5px 0;overflow-wrap:anywhere;}
+#ceilMatrix{max-height:220px;overflow:auto;color:#d8cfae;}
 </style>
 </head>
 <body>
@@ -2152,7 +2158,7 @@ function aliveIds(){ return UI_ORDER.filter(id=>!S.allies[id].dead); }
 function dmgEnemy(n){
   if(VS.active){   /* ✦ VS1: 그로기 증폭 → 방벽 흡수 → 초과 본체 (기준선 모드에서는 이 블록 미진입) */
     RV.hit(n);
-    if(VS.groggy>0 && n>0){ const nn=Math.round(n*1.5); if(nn>n){ flt("enemy","😵 ×1.5","f-pb"); n=nn; RV.groggy(n); } }
+    if(VS.groggy>0 && n>0){ const gm=(typeof CEIL!=="undefined"&&CEIL.on&&CEIL.gap===2)?2:1.5; const nn=Math.round(n*gm); if(nn>n){ flt("enemy","\uD83D\uDE35 \u00D7"+gm,"f-pb"); n=nn; RV.groggy(n); } }   /* ✦ CEIL01A: \uD2C8 \u00D72\uB294 Dev \uD6C4\uBCF4 \u00B7 \uAE30\uBCF8 1.5 \uBD88\uBCC0 */
     if(VS.wall>0 && n>0){
       const w = Math.min(VS.wall, n);
       VS.wall -= w; VSTM.wallDmg += w; n -= w;
@@ -2393,6 +2399,8 @@ async function resolveTurn(){
 
     if(act.dmg){
       let d = act.dmg + lawFlat(id, act, a.cards, "dmg");   /* ✦ v1H1: nn2 짝수 +4 · dl1 개화 21+5 — L3 가산(배율 앞) */
+      if(typeof CEIL!=="undefined"&&CEIL.on&&CEIL.zone>1){ const b0=d; d=Math.round(d*CEIL.zone);
+        CEIL.ev("heroMiracle","zonePower","\uC804\uD22C \uCCB4\uAE09 \u00D7"+CEIL.zone+" (\uACF5\uACA9 \uACE0\uC810 \uAC00\uC124)",b0,CEIL.zone,d); RV.at("zonePower", d); }   /* ✦ CEIL01A: Dev \uC804\uC6A9 \uB808\uBC84 */
       RV.actor(id);   /* ✦ 01A: 이 공격의 주체 확정 (비-21 포함) — 읽기 전용, 계산 무변경 */
       /* ✦ v1D: 직업 액션 문법 — 카드 수 = 연격 수, 2장 21 = 슝~솨삭 (수치 무변경) */
       if(id==="hero"){
@@ -2428,6 +2436,10 @@ async function resolveTurn(){
         if(S.pbMult>1){ const nd=Math.round(d*S.pbMult); S.stats.pbDmg += nd-d; d=nd; flt(id,"✦"+pbTag(),"f-pb"); RV.pb(S.pbMult, d); }
         if(has("m1")){ const inc=d; d*=2; procB("m1","d",inc,"비전 ×2",id); RV.at("m1", d); }
         if(d > S.stats.mage21Max) S.stats.mage21Max = d;
+      }
+      if(typeof CEIL!=="undefined"&&CEIL.on){   /* ✦ CEIL01A: 축복 A/B — Dev 전용 · 신의 축복 층 후단(합일 뒤·틈 앞) */
+        if(CEIL.bA>1){ const b0=d; d=Math.round(d*CEIL.bA); CEIL.ev("divineBlessing","blessA","\uCD95\uBCF5 A \u00D7"+CEIL.bA,b0,CEIL.bA,d); RV.at("blessA", d); flt(id,"\u2727A \u00D7"+CEIL.bA,"f-bless"); }
+        if(CEIL.bB>1){ const b0=d; d=Math.round(d*CEIL.bB); CEIL.ev("divineBlessing","blessB","\uCD95\uBCF5 B \u00D7"+CEIL.bB,b0,CEIL.bB,d); RV.at("blessB", d); flt(id,"\u2727B \u00D7"+CEIL.bB,"f-bless"); }
       }
       if(CI_MODE==="A"){   /* ✦ v1E-A: 행운의 7 — 파이프라인 최후단 ×1.5 (성물함 경유 ×2, 전투당 1회) */
         const mlt = ciLuckyMult(id, d>0);
@@ -4442,7 +4454,7 @@ const PRLIVE = {
     /* CLOSE01: 누적 = 묶음 안 한 줄 갱신 (오른쪽 독립 UI 아님). 개별 피해보다 작게 = 주인공 아님 */
     let el=w.querySelector(".orCumIn");
     if(!el){ el=document.createElement("div"); el.className="orLn orCumIn show"; w.appendChild(el); }
-    el.textContent="\uB204\uC801 \uD53C\uD574 "+this.cum;
+    el.textContent="\uB204\uC801 \uD53C\uD574 "+Number(this.cum).toLocaleString("en-US");
     el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump");
     /* 누적 줄은 항상 묶음 최하단 유지 */
     w.appendChild(el);
@@ -4532,8 +4544,9 @@ const PRLIVE = {
         this.omitted.push({ev:"cadence",reason:"\uD53C\uD574 0 \u2014 CLOSE01\uC740 \uD53C\uD574 \uC120\uC728\uB9CC \u00B7 \uC9C0\uC6D0 \uACB0\uC0B0\uC740 \uD6C4\uC18D \uACFC\uC81C"}); resolve(); return; }
       const fin=(this.style==="orchestra")?document.getElementById("orFin"):null;
       if(fin){
+        const nFmt=(/^\d+$/.test(String(n)))?Number(n).toLocaleString("en-US"):n;   /* ✦ CEIL01A: 9999 초과 다섯 자리 쉼표 (표시만) */
         fin.innerHTML=(pre?('<div class="orFinPre">'+pre+'</div>'):"")
-          +'<div class="orFinH">'+h+'</div><div class="orFinN">'+n+'</div>'+(sub?('<div class="orFinS">'+sub+'</div>'):"");
+          +'<div class="orFinH">'+h+'</div><div class="orFinN">'+nFmt+'</div>'+(sub?('<div class="orFinS">'+(String(sub).replace(/\+(\d{4,})/,(m,g)=>"+"+Number(g).toLocaleString("en-US")))+'</div>'):"");
         fin.className="on"+(drama?" orDrama":"");
         const w0=document.getElementById("orWrap"); if(w0) w0.classList.add("recede");   /* §5·§6: 중앙 등장 → 왼쪽 즉시 물러남 */
         if(drama){ const st=this._stage(); if(st){ st.classList.remove("orShake"); void st.offsetWidth; st.classList.add("orShake"); } }
@@ -4654,6 +4667,104 @@ window.__PRLIVE = PRLIVE;
   re();
   new MutationObserver(()=>{ if(lab.classList.contains("hiddenOv")){ clear(); gen++; } })
     .observe(lab,{attributes:true,attributeFilter:["class"]});
+})();
+
+/* ═══════════ ✦ CEIL01A: Myth Damage Ceiling Lab — 9999 도달 감사 (Dev 전용) ═══════════
+   질문: "공격형 신화 공식은 얼마나 큰 신화를 연주할 수 있는가". 레버는 실제 파이프라인의 정의된
+   단계(기초=zonePower·축복층=blessA/B·틈=gap)에만 곱하고 원장 이벤트(before/factor/delta/after)를 남긴다.
+   CEIL.on 기본 false = CURRENT 완전 무영향(부모 동일 경로). 최종 피해 직접 입력·화면 위조 금지 —
+   모든 숫자는 네 층 공식과 실제 HP 감소의 결과다. zone 계수는 "공격 고점 가설"이며 제품 공통 배율이
+   아니다(수비·반사·회복 빌드의 낮은 직접 피해는 실패가 아니다 — 유키 정정). 수치 확정 아님·승격 HOLD. */
+const CEIL = {
+  on:false, zone:1, bA:1, bB:1, gap:1.5, badge:"CURRENT", ledger:[], lastRun:null,
+  ev(layer,srcId,label,before,factor,after){ this.ledger.push({layer,sourceId:srcId,sourceLabel:label,before,factor,delta:after-before,after}); },
+  reset(){ this.ledger=[]; }
+};
+window.__CEIL = CEIL;
+/* ── 파이프라인 시뮬(예측 전용 · 실측과 대조되는 §19 반올림 고정 검증 대상) ──
+   실측 순서 복제: base(+법칙가산) → zone(round) → ×PB(round) → ×A(round) → ×B(round) → ×틈(round) */
+function ceilSim({zone=1,bA=1,bB=1,pb=4,gap=1.5,cm=0,h1=true,bloom=true}={}){
+  const step=(v,f)=>Math.round(v*f);
+  /* 실측 순서(§3B 확정): (base + L3가산[dl1개화5]) ×zone → +h1 20/+연쇄 cm 가산 → ×합일 → ×A → ×B → ×틈 */
+  const run=(base,latePlus)=>{ let d=base+(bloom?5:0); if(zone>1)d=step(d,zone); d+=latePlus;
+    if(pb>1)d=step(d,pb); if(bA>1)d=step(d,bA); if(bB>1)d=step(d,bB); if(gap>1)d=step(d,gap); return d; };
+  const hero=run(30,(h1?20:0));
+  const mage=run(24,cm);
+  return {hero,mage,total:hero+mage};
+}
+window.__CEIL_SIM = ceilSim;
+/* ── 프리셋 (라벨의 수치는 본 랩 실측값 · §11 "목표값을 거짓으로 박지 않는다") ── */
+const CEIL_P = [
+ {id:"P0",badge:"CURRENT",  n:"\uC791\uC740 \uD134 \u00B7 \uC2E4\uCE21 27",           h:"s7i8qnn2", cards:{hero:["10","6"],mage:["8","6"],war:["5","3"],cleric:["5","3"]}, lv:{}, note:"nn2 \uC9DD\uC218+4 \u00B7 \uD604\uC7AC 38 \uAC10\uC815 \uAE30\uC900\uC810"},
+ {id:"P1",badge:"CURRENT",  n:"\uD604\uC7AC \uC790\uC5F0BJ \u00B7 \uC2E4\uCE21 34", h:"s7i8", cards:{hero:["A","10"],mage:["2","3"],war:["5","5"],cleric:["5","5"]}, lv:{}, note:"\uD55C \uC601\uC6C5 21 \u00B7 \uAE30\uBCF8 \uACE0\uC810"},
+ {id:"P2",badge:"CURRENT",  n:"\uD604\uC7AC \uC804\uC6D0\uD569\uC77C\u00D74 \u00B7 \uC2E4\uCE21 216", h:"s7i8", cards:"A10", lv:{}, note:"\uAE30\uC900\uC120 \u00D74 \u00B7 \uCD95\uBCF5\u00B7\uD2C8 \uC5C6\uC74C"},
+ {id:"P3",badge:"CURRENT",  n:"\uD604\uC7AC \uCD5C\uAC15 \u00B7 \uC2E4\uCE21 1,116",     h:"s7i8qh1.m3.dl1mi", cards:"A10", cm:40, gapOn:true, bloom:true, lv:{}, note:"\uD604\uC7AC \uCF54\uB4DC \uC790\uC0B0\uB9CC(\uAC15\uD654\u00D76\u00B7h1\u00B7m3 cm40\u00B7dl1\uAC1C\uD654\u00B7\uD2C8) \u00B7 encounter-limited"},
+ {id:"P4",badge:"FUTURE",   n:"2\uAD6C\uC5ED \uACE0\uC810 \u00B7 \uC2E4\uCE21 1,392", h:"s7i8qh1.m3.dl1mb", cards:"A10", cm:20, gapOn:true, bloom:true, lv:{zone:3}, note:"\uCCB4\uAE09 \u00D73 \uAC00\uC124"},
+ {id:"P5",badge:"FUTURE",   n:"3\uAD6C\uC5ED \uACE0\uC810 \u00B7 \uC2E4\uCE21 4,416", h:"s7i8qh1.m3.dl1", cards:"A10", cm:20, bloom:true, lv:{zone:8,bA:2}, note:"\uCCB4\uAE09 \u00D78 + \uCD95\uBCF5A\u00D72 \u00B7 \uD2C8 \uC5C6\uC74C"},
+ {id:"P6",badge:"FUTURE",   n:"\uC2E0\uD654\uC758 \uACBD\uACC4 \u00B7 \uC2E4\uCE21 9,936 (\u00D74 \uC720\uC9C0)",       h:"s7i8qh1.m3.dl1mb", cards:"A10", cm:20, gapOn:true, bloom:true, lv:{zone:8,bA:2,bB:1.5}, note:"9000~9999 \uADFC\uC811 \uD0D0\uC0C9"},
+ {id:"P7",badge:"FUTURE",   n:"\uC2E0\uD654 \uB3CC\uD30C \u00B7 \uC2E4\uCE21 13,248",           h:"s7i8qh1.m3.dl1mb", cards:"A10", cm:20, gapOn:true, bloom:true, lv:{zone:8,bA:2,bB:2}, note:"10000+ \uB2E4\uC12F \uC790\uB9AC \u00B7 \uC27C\uD45C"},
+ {id:"P8",badge:"OVERDRIVE",n:"\uACFC\uC789 \uD1B5\uC81C\uAD70 \u00B7 \uC2E4\uCE21 33,600",       h:"s7i8qh1.m3.dl1mi", cards:"A10", cm:40, gapOn:true, bloom:true, lv:{zone:10,bA:2,bB:2,gap:2}, note:"20000~40000 \u00B7 \uC81C\uD488 \uBAA9\uD45C \uC544\uB2D8 \u00B7 \uACFC\uC789 \uACBD\uACC4 \uD0D0\uC0C9"},
+];
+window.__CEIL_P = CEIL_P;
+(function(){
+  const lab=document.getElementById("labOv"); if(!lab) return;
+  const host=lab.querySelector(".labIn")||lab.firstElementChild||lab;
+  const dv=document.createElement("div"); dv.id="ceilDev";
+  dv.innerHTML='<h3>\uD83C\uDFDB 9999 \uCC9C\uC7A5 \uB7A9 (CEIL01A) \u00B7 R&D \uC804\uC6A9 \u00B7 \uC218\uCE58 \uD655\uC815 \uC544\uB2D8</h3>'
+    +'<div class="mrvRow" id="ceilPre"></div>'
+    +'<div id="ceilInfo">[\uBD80\uD305] = \uD574\uB2F9 \uC2DC\uB4DC\uB85C \uC7AC\uC2DC\uC791 \u2192 \uB2E4\uC2DC DEV LAB\uC5D0\uC11C [\u25B6] = \uCE21\uC815\uCCB4(HP 99,999)\uC5D0 \uC2E4\uC81C \uC5F0\uC8FC. zone \uACC4\uC218\uB294 \uACF5\uACA9 \uACE0\uC810 \uAC00\uC124\uC77C \uBFD0 \uC81C\uD488 \uACF5\uD1B5 \uBC30\uC728\uC774 \uC544\uB2D9\uB2C8\uB2E4(\uC218\uBE44\u00B7\uD68C\uBCF5 \uBE4C\uB4DC\uC758 \uB0AE\uC740 \uD53C\uD574\uB294 \uC2E4\uD328\uAC00 \uC544\uB2D8).</div>'
+    +'<div id="ceilLast"></div>'
+    +'<div class="mrvRow" style="margin-top:6px;"><button id="ceilMx">\uB3C4\uB2EC \uC870\uD569 \uD45C \uD1B4\uAE00</button><button id="ceilExp">\uB9C8\uC9C0\uB9C9 \uC7AC\uC0DD \uC6D0\uC7A5 export(\uCF58\uC194)</button></div>'
+    +'<div id="ceilMatrix" style="display:none;"></div>';
+  host.appendChild(dv);
+  const fixture=(gapOn)=>{ S.eHp=99999;
+    if(typeof VS==="object"&&VS.active){ VS.wall=0; VS.aux=[]; VS.doomActive=false; VS.groggy=gapOn?2:0; } };
+  function apply(p){
+    CEIL.reset(); CEIL.zone=p.lv.zone||1; CEIL.bA=p.lv.bA||1; CEIL.bB=p.lv.bB||1; CEIL.gap=p.lv.gap||1.5;
+    CEIL.on=(p.badge!=="CURRENT"); CEIL.badge=p.badge;
+    fixture(!!p.gapOn);
+    const cards=(p.cards==="A10")?{hero:["A","10"],war:["A","10"],mage:["A","10"],cleric:["A","10"]}:p.cards;
+    for(const id in cards) S.allies[id].cards=cards[id];
+    if(p.cm) S.chainMagic=p.cm;
+    if(p.bloom && typeof RUN==="object" && RUN.lawRT && RUN.lawRT.dl1) RUN.lawRT.dl1.bloom=true;
+    document.getElementById("confirmBtn").click();
+    setTimeout(()=>{ const PL=window.__PRLIVE;
+      CEIL.lastRun={preset:p.id,badge:p.badge,levers:{zone:CEIL.zone,bA:CEIL.bA,bB:CEIL.bB,gap:CEIL.gap,pb:S.pbMult,cm:p.cm||0},
+        beats:PL.beats.map(b=>({name:b.name,d:b.d})),cum:PL.cum,eHpAfter:S.eHp,ceilLedger:CEIL.ledger.slice()};
+      const el=dv.querySelector("#ceilLast");
+      el.innerHTML='<b>['+p.badge+'] '+p.id+'</b> \uCD1D \uD53C\uD574 <b>'+Number(PL.cum).toLocaleString("en-US")+'</b> \u00B7 '
+        +PL.beats.map(b=>b.name+" +"+Number(b.d).toLocaleString("en-US")).join(" / ")
+        +' \u00B7 pb\u00D7'+S.pbMult+(CEIL.on?(" \u00B7 zone\u00D7"+CEIL.zone+" A\u00D7"+CEIL.bA+" B\u00D7"+CEIL.bB+" \uD2C8\u00D7"+CEIL.gap):" \u00B7 \uD604\uD589 \uADDC\uCE59\uB9CC");
+    }, 9000);
+  }
+  function re(){
+    dv.querySelector("#ceilPre").innerHTML=CEIL_P.map((p,i)=>
+      '<span style="display:inline-flex;gap:2px;margin:1px;"><button data-b="'+i+'" title="'+p.note+'">'+p.id+' '+p.n+' [\uBD80\uD305]</button><button data-r="'+i+'">\u25B6</button></span>').join("");
+    dv.querySelector("#ceilPre").querySelectorAll("[data-b]").forEach(b=>b.onclick=()=>{ const p=CEIL_P[+b.dataset.b];
+      sessionStorage.setItem("ceilPending",b.dataset.b); location.hash=p.h; location.reload(); });
+    dv.querySelector("#ceilPre").querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>apply(CEIL_P[+b.dataset.r]));
+  }
+  re();
+  dv.querySelector("#ceilExp").onclick=()=>{ console.log("CEIL lastRun =", JSON.stringify(CEIL.lastRun,null,1)); dv.querySelector("#ceilLast").insertAdjacentHTML("beforeend","<div style='font-size:9px;color:#8f86a6;'>\u2192 \uCF58\uC194\uC5D0 \uCD9C\uB825\uB428</div>"); };
+  dv.querySelector("#ceilMx").onclick=()=>{ const m=dv.querySelector("#ceilMatrix");
+    if(m.style.display!=="none"){ m.style.display="none"; return; }
+    const targets=[1000,3000,5000,9000,9999,10000,15000,30000];
+    const Z=[1,3,6,8,10],A=[1,1.5,2],B=[1,1.5,2],PB=[4,6],G=[1,1.5,2],CM=[0,20,40];
+    let rows="";
+    for(const t of targets){ let best=null;
+      for(const z of Z)for(const a of A)for(const b of B)for(const pb of PB)for(const g of G)for(const cm of CM){
+        const r=ceilSim({zone:z,bA:a,bB:b,pb,gap:g,cm});
+        if(r.total>=t){ const lev=(z>1)+(a>1)+(b>1)+(pb===6)+(g===2);
+          if(!best||lev<best.lev||(lev===best.lev&&r.total<best.total)) best={z,a,b,pb,g,cm,total:r.total,lev}; } }
+      rows+="<tr><td>"+t.toLocaleString("en-US")+"</td>"+(best
+        ? "<td>\u2713</td><td>\u00D7"+best.z+"</td><td>"+best.a+"</td><td>"+best.b+"</td><td>\u00D7"+best.pb+"</td><td>\u00D7"+best.g+"</td><td>"+best.cm+"</td><td>"+best.total.toLocaleString("en-US")+"</td><td>"+best.lev+"</td>"
+        : "<td colspan=9>\uB3C4\uB2EC \uBD88\uAC00(\uD604 \uB808\uBC84 \uBC94\uC704)</td>")+"</tr>"; }
+    m.innerHTML='<div style="font-size:9px;color:#b08aa8;margin:4px 0;">\uC608\uCE21=\uC2E4\uCE21 \uD30C\uC774\uD504\uB77C\uC778 \uC21C\uC11C\u00B7\uBC18\uC62C\uB9BC \uBCF5\uC81C(ceilSim) \u00B7 \uAC80\uC0AC #19\uC5D0\uC11C \uC2E4\uCE21\uACFC \uB300\uC870 \u00B7 cm=\uC5F0\uC1C4(encounter-limited \uC790\uC6D0, \uB808\uBC84 \uC544\uB2D8)</div>'
+      +'<table style="font-size:9.5px;border-collapse:collapse;" border=1 cellpadding=3><tr><th>\uBAA9\uD45C</th><th>\uB3C4\uB2EC</th><th>\uCCB4\uAE09</th><th>A</th><th>B</th><th>\uD569\uC77C</th><th>\uD2C8</th><th>cm</th><th>\uCD5C\uC885(\uC608\uCE21)</th><th>\uB808\uBC84\uC218</th></tr>'+rows+'</table>';
+    m.style.display="block"; };
+  const pend=sessionStorage.getItem("ceilPending");
+  if(pend!==null){ sessionStorage.removeItem("ceilPending");
+    dv.querySelector("#ceilInfo").insertAdjacentHTML("afterbegin",'<b style="color:#ffd27a;">'+CEIL_P[+pend].id+' \uBD80\uD305\uB428 \u2014 [\u25B6] \uB204\uB974\uBA74 \uCE21\uC815\uCCB4\uC5D0 \uC5F0\uC8FC</b><br>'); }
 })();
 
 </script>
