@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<!-- v1H1VS1A1B · Myth Damage Ceiling Lab 01B — Chapter 3 Legendary Candidate Slice · Checkpoint A (전설 후보 보스 직행) · 부모 Myth Damage Ceiling Lab 01A 핫픽스본(1322b0852513e8ae83e616269325c12d)에서 분기 · "앞선 공격 빌드가 완성됐다고 가정하고, 보스의 틈과 4인 합일을 실제 플레이로 조립할 수 있는가" · 전설 후보 시작 상태=결정론(g1 부트) · 축복 A=축적형(신앙 보존 조건·×2)/B=결단형(틈 안 봉헌·×1.5·전투당 1회) — 전부 R&D 가칭·수치 확정 아님 · 적의 틈 ×1.5(제품 후보)·×2 미구현 · 파티 블랙잭 4인 ×4 고정(mb)·×6 제품 경로 0 · 9999 비보장(잘 플레이하면 접근 가능한 상태) · 최종 피해 직접 입력 0(네 층 공식 결과만) · LGD 미부트 시 부모 동일 경로 · 공식 v1D2 무접촉·승격 HOLD · commit/push/deploy 0 -->
+<!-- v1H1VS1A1B · Battle Closure Grammar 01 — Defensive Victory Slice (수비의 결착 핵심 증명) · 부모 Myth Damage Ceiling Lab 01B Checkpoint A STRONG FINAL PASS본(4ce57b4b79b2d375d974e8a3e6bbe4ff)에서 분기 · "큰 공격을 잘 막아낸 일이 단순한 생존이 아니라, 보스를 무너뜨리는 비가역 진전과 결착으로 이어지는가" · 수비 R&D(g2 부트) 미부트 시 부모와 동일 경로 · 01B 공격형 전설 보스 경로(g1) 보존 · 보스=공성 거신(가칭): 조준→공성 일격 주기, 완벽 방어(전사 21)만 공성핵 비가역 파손(2단계)+위세 영구 감소, 부분 방어(전사 17~20)는 막은 만큼만 반향 일부, 반격 자원(수호의 반향·가칭)=실제 막아낸 피해×변환율(완벽 1.0/부분 0.5, 원장 기록) · 결착의 틈에서 플레이어가 [⚡ 반향 반환]을 직접 확정 · 최종 피해 상수 입력 0 · 보스 HP 강제 0 금지 · 공성핵 횟수 자동 처치 금지 · PB 4인 ×4 유지 · ×6 제품 경로 0 · 공식 v1D2 무접촉 · 승격 HOLD · commit/push/deploy 0 -->
+<!-- (부모 01B 배너 보존) v1H1VS1A1B · Myth Damage Ceiling Lab 01B — Chapter 3 Legendary Candidate Slice · Checkpoint A (전설 후보 보스 직행) · 부모 Myth Damage Ceiling Lab 01A 핫픽스본(1322b0852513e8ae83e616269325c12d)에서 분기 · "앞선 공격 빌드가 완성됐다고 가정하고, 보스의 틈과 4인 합일을 실제 플레이로 조립할 수 있는가" · 전설 후보 시작 상태=결정론(g1 부트) · 축복 A=축적형(신앙 보존 조건·×2)/B=결단형(틈 안 봉헌·×1.5·전투당 1회) — 전부 R&D 가칭·수치 확정 아님 · 적의 틈 ×1.5(제품 후보)·×2 미구현 · 파티 블랙잭 4인 ×4 고정(mb)·×6 제품 경로 0 · 9999 비보장(잘 플레이하면 접근 가능한 상태) · 최종 피해 직접 입력 0(네 층 공식 결과만) · LGD 미부트 시 부모 동일 경로 · 공식 v1D2 무접촉·승격 HOLD · commit/push/deploy 0 -->
 <!-- (부모 01A 배너 보존) v1H1VS1A1B · Myth Damage Ceiling Lab 01A · 부모 Myth Damage Rhythm Close 01(b9ab58a525afaa5209cdc7dc3409566a)에서 분기 · 공격형 신화 공식의 9999 도달 가능성 감사(R&D 전용·수치 확정 아님) · Dev 전용 레버(전투 체급=공격 고점 가설·축복A/B·틈 ×2)를 실제 파이프라인 기초/축복 단계에 원장 이벤트와 함께 주입, CEIL.on 기본 false=CURRENT 무영향·부모 동일 경로 · 최종 피해 직접 입력 금지(네 층 공식 결과만) · 9999 캡 없음·다섯 자리 쉼표 표시 · 계산 무변경 원칙 유지 · 공식 v1D2 무접촉·승격 HOLD · [핫픽스 01A-h1: Dev 랩 [▶] 실전 연주 시 labOv 오버레이를 먼저 닫아 랩 페이지 잔류 해결 · sessionStorage 접근 try/catch 방어] · commit/push 0 -->
 <!-- v1H1VS1 · Combat Choice Vertical Slice 01 · 기회비용 보스(종말4턴+방벽300) × 다중 표적 × 강화 파티BJ(실험) · v1H1(0528301bf1e6017731c67d8ba32cabc6)에서 분기 · 모드 c=CONTROL(기준선) p/b/i · 공식 승격 HOLD · commit/push 0 -->
 <html lang="ko">
@@ -5004,6 +5005,248 @@ function lgdSetup(){
   });
 })();
 if(window.__LGD_PENDING===1) lgdSetup();
+
+/* ═══════════ ✦ DVS-BCG01: Battle Closure Grammar 01 — Defensive Victory Slice (Dev 전용) ═══════════
+   유키 카드 §2: "버텨서 살아남은 게 아니다. 내가 잘 막았기 때문에 이겼다."
+   질문: 큰 공격을 잘 막아낸 일이 → 비가역 진전(공성핵 파손·위세 영구 감소) → 반격 자원(수호의 반향) →
+   결착의 틈 → 플레이어가 직접 확정하는 [⚡ 반향 반환] → 실제 HP 감소로 이어지는가.
+   설계 원칙: DVS 미부트(g2 없음) = 아래 래퍼 전부 순수 통과 → 부모(01B) 동일 경로 · LGD(g1) 경로 무접촉.
+   판정은 실제 계산·원장 기준: 원래 피해 = 의도 dmg×대상수, 막힌 피해 = dmgAlly(들어온−실제 HP)·완벽 방어는 전액,
+   반향 = 막은 피해 × 변환율(완벽 1.0 / 부분 0.5, Math.round 1회 — 순서 원장 기록). 상수 지급·HP 강제 0·자동 처치 없음.
+   전부 R&D 가칭 · 수치 확정 아님 · 공식 v1D2 무접촉 · PB 4인 ×4 · ×6 경로 0. */
+const DVSC = { seed:12, faith0:9, bossHp:380, aimDmg:8, siegeDmg:26, siegeSteps:[26,20,14],
+               rPerfect:1.0, rPartial:0.5, coreMax:2 };   /* 전부 R&D 후보 수치 — 공식 잠금 아님 */
+const DVS = {
+  on:false, seed:null,
+  core:0, might:0, echo:0,            /* 공성핵 파손 0~2 · 위세 영구 감소 단계 · 수호의 반향(가칭) */
+  gapOpen:false, returned:false,
+  ledger:[], hist:[],                 /* 수비 판정 이력 {t,tier,original,blocked,hp,echoGain} */
+  _watch:false, _hits:[], resultShown:false,
+};
+window.__DVS = DVS; window.__DVSC = DVSC;
+function dvsHash(seed){ return "s"+seed+"i8qw1.w2.c1f"+DVSC.faith0+"g2xb"; }
+function dvsEv(ev,detail){ DVS.ledger.push(Object.assign({ev, turn:S.turn}, detail)); }
+function dvsSiegeTxt(){ return "파티 전체 <b>"+S.enemy.intents[1].dmg+"</b> 피해"; }
+function dvsIntentSync(){   /* 위세 감소를 의도 수치·문구·화면에 반영 (영구 · 원장 기록) */
+  S.enemy.intents[1].dmg = DVSC.siegeSteps[Math.min(DVS.core, DVSC.siegeSteps.length-1)];
+  S.enemy.intents[1].txt = dvsSiegeTxt();
+  renderEnemy();
+}
+/* ── 상태 칩·상세·반환 버튼 (표시 전용) ── */
+function dvsUi(){
+  if(!DVS.on) return;
+  const chip=$("dvsChip"); if(!chip) return;
+  chip.innerHTML = "🛡 <b>결착 후보</b> · 공성핵 <b>"+DVS.core+"/"+DVSC.coreMax+"</b> · 위세 -"+DVS.might
+    +" · 반향 <b>"+DVS.echo+"</b>"
+    + (DVS.gapOpen ? (DVS.returned?" · 결착 완료":" · <b style='color:#ffd27a'>결착의 틈 열림!</b>") : "")
+    + " <span style='color:#8f86a6'>(탭=상세)</span>";
+  const dt=$("dvsDetail");
+  if(dt && !dt.classList.contains("hiddenOv")) dvsDetailRender();
+  const btn=$("dvsReturn");
+  if(btn){
+    const can = DVS.gapOpen && !DVS.returned && DVS.echo>0 && !S.busy && !S.over;
+    btn.style.display = can ? "block" : "none";
+    btn.textContent = "⚡ 반향 반환 ["+DVS.echo+"]";
+  }
+}
+function dvsDetailRender(){
+  const dt=$("dvsDetail"); if(!dt) return;
+  const tk=v=>v?"✓":"□";
+  const histTx = DVS.hist.length? DVS.hist.map(h=>"T"+h.t+" "+(h.tier==="A"?"완벽":h.tier==="B"?"부분":"실패")+" — 원래 "+h.original+" · 막음 "+h.blocked+" · HP "+h.hp+" · 반향 +"+h.echoGain).join("<br>") : "아직 공성 일격을 받지 않았다";
+  dt.querySelector(".dvsDIn").innerHTML =
+    '<h3 style="margin:0 0 6px;color:#8fd3ff;">🛡 수비의 결착 <span class="lgdBadge">R&D 가칭</span><span class="lgdBadge">제품 확정 아님</span></h3>'
+    +'<div class="lgdRow">'+tk(true)+' <b>방벽 체급</b> — 전사의 방벽 기반 (블록 · 철벽 +4)</div>'
+    +'<div class="lgdRow">'+tk(true)+' <b>완벽 방어 수단</b> — 공성 일격 턴에 전사 21 = 전액 무효 · <b>공성핵 비가역 파손</b></div>'
+    +'<div class="lgdRow">'+tk(true)+' <b>반격 변환 준비</b> — 수호의 반향(가칭) = 실제 막아낸 피해 × 변환율(완벽 '+DVSC.rPerfect+' / 부분 '+DVSC.rPartial+')</div>'
+    +'<div class="lgdRow">'+tk(DVS.core>=DVSC.coreMax)+' <b>공성핵 파손</b> — '+DVS.core+'/'+DVSC.coreMax+' · 보스 위세 영구 -'+DVS.might+'단계 (일격 '+S.enemy.intents[1].dmg+')</div>'
+    +'<div class="lgdRow">'+tk(DVS.gapOpen)+' <b>결착의 틈</b> — '+(DVS.gapOpen?(DVS.returned?"반환 완료":"열림 · [⚡ 반향 반환]으로 직접 확정하라"):"공성핵을 완전히 부수면 열린다")+'</div>'
+    +'<div class="lgdRow" style="border-top:1px solid #3a3352;padding-top:5px;">수호의 반향: <b>'+DVS.echo+'</b> · 전사 합계는 일격 턴에 17+(부분)·21(완벽)이 기준 · 신앙 '+S.faith+' · 성물함 '+(S.vault?("["+S.vault+"]"):"비어 있음")+'</div>'
+    +'<div class="lgdRow lgdDim">수비 이력<br>'+histTx+'</div>'
+    +'<div class="mrvRow" style="margin-top:8px;">'
+      +'<button id="dvsDRetry">⟲ 같은 상태·같은 시드 재도전</button>'
+      +'<button id="dvsDLab">DEV LAB</button>'
+      +'<button id="dvsDTitle">타이틀</button>'
+      +'<button id="dvsDClose">닫기</button>'
+    +'</div>';
+  dt.querySelector("#dvsDRetry").onclick=()=>lgdGo(dvsHash(DVS.seed));
+  dt.querySelector("#dvsDLab").onclick=()=>lgdGo("s"+DVS.seed+"xl");
+  dt.querySelector("#dvsDTitle").onclick=()=>lgdGo("s"+DVS.seed+"xt");
+  dt.querySelector("#dvsDClose").onclick=()=>dt.classList.add("hiddenOv");
+}
+/* ── 수비 판정 (실측: dmgAlly 들어온/실제 + 완벽 방어 무효 전액) ── */
+const _dvs_dmgAlly = dmgAlly;
+dmgAlly = function(id, n, pierce){
+  const applied = _dvs_dmgAlly(id, n, pierce);
+  if(DVS.on && DVS._watch && !pierce) DVS._hits.push({id, incoming:n, applied});
+  return applied;
+};
+function dvsJudge(){
+  if(!DVS.on || !DVS._watch) return;
+  DVS._watch=false;
+  const t=DVS._watchTurn;   /* 판정 대상 = 일격이 있었던 턴 (startTurn 시점엔 S.turn이 +1) */
+  const it=S.enemy.intents[1];
+  let tier, original, blocked, hp;
+  if(S.perfectGuard){
+    tier="A"; original=(it.dmg||0)*aliveIds().length; blocked=original; hp=0;
+  } else {
+    original=DVS._hits.reduce((a,h)=>a+h.incoming,0);
+    hp=DVS._hits.reduce((a,h)=>a+h.applied,0);
+    blocked=original-hp;
+    tier=(!S.allies.war.dead && S.warTotal>=17 && S.warTotal<=20) ? "B" : "C";
+    if(tier==="B" && blocked<=0) tier="C";   /* 막은 게 없으면 부분 방어 아님 */
+  }
+  const rate = tier==="A"?DVSC.rPerfect : tier==="B"?DVSC.rPartial : 0;
+  const gain = Math.round(blocked*rate);   /* 반올림 1회 — 순서: (막은 피해)×율 → round */
+  const before=DVS.echo; DVS.echo+=gain;
+  dvsEv("defenseJudge",{turnJudged:t, tier, original, blocked, hp, rate, echoBefore:before, echoGain:gain, echoAfter:DVS.echo, warTotal:S.warTotal, perfect:!!S.perfectGuard});
+  DVS.hist.push({t, tier, original, blocked, hp, echoGain:gain});
+  if(tier==="A"){
+    if(DVS.core<DVSC.coreMax){
+      DVS.core++; DVS.might++;
+      dvsEv("coreCrack",{stage:DVS.core, of:DVSC.coreMax, mightDown:DVS.might, siegeBefore:it.dmg, siegeAfter:DVSC.siegeSteps[Math.min(DVS.core,DVSC.siegeSteps.length-1)]});
+      dvsIntentSync();
+      vsFlash(DVS.core>=DVSC.coreMax?"공성핵 파손!!":"공성핵 균열!", "#8fd3ff");
+      log("🛡 완벽 방어! 막아낸 피해 "+blocked+" — 수호의 반향 +"+gain+" (R&D 가칭)", "l-gold");
+      log("💠 공성핵 "+(DVS.core>=DVSC.coreMax?"완전 파손 "+DVS.core+"/"+DVSC.coreMax:"균열 "+DVS.core+"/"+DVSC.coreMax)+" · 보스 위세 영구 감소 (일격 "+it.dmg+") — 되돌아오지 않는다", "l-gold");
+      if(DVS.core>=DVSC.coreMax && !DVS.gapOpen){
+        DVS.gapOpen=true;
+        dvsEv("closureOpen",{echo:DVS.echo});
+        vsFlash("결착의 틈", "#ffd27a");
+        log("⚡ 결착의 틈이 열렸다 — 받아낸 힘("+DVS.echo+")을 [⚡ 반향 반환]으로 되돌려라", "l-gold");
+      }
+    } else {
+      log("🛡 완벽 방어! 막아낸 피해 "+blocked+" — 수호의 반향 +"+gain, "l-gold");
+    }
+  } else if(tier==="B"){
+    log("🛡 부분 방어 — 원래 "+original+" 중 "+blocked+" 을 막았다 (HP "+hp+") · 반향 +"+gain+" · 공성핵 진전은 완벽 방어만", "l-sys");
+  } else {
+    log("💥 방어 실패 — 공성 일격 "+hp+" 이 그대로 박혔다 · 진전 없음 · 같은 상태로 빠르게 재도전 가능(🛡 칩)", "l-hit");
+  }
+  DVS._hits=[]; dvsUi();
+}
+/* ── 반향 반환 — 플레이어가 직접 확정하는 마지막 행동 (전투 영역에서 목격) ── */
+async function dvsReturn(){
+  if(!DVS.on || !DVS.gapOpen || DVS.returned || S.busy || S.over) return;
+  if(DVS.echo<=0){ $("guide").textContent="반향이 없다 — 막아낸 피해가 반향이 된다"; return; }
+  DVS.returned=true; S.busy=true;
+  const amt=DVS.echo, eB=S.eHp;
+  $("guide").textContent="받아낸 힘을 되돌린다…";
+  log("⚡ 반향 반환!! 용사가 수호의 반향 "+amt+" 을 검에 싣는다 (실제 막아낸 피해의 총합 — 상수 아님)", "l-gold");
+  figFx("hero","miracle21",900); flash("gold"); SFX.miracle(); shake();
+  RV.actor("hero");
+  await wait(320);
+  dmgEnemy(amt);   /* 유일한 반환 전달 — w2 반사(dmgEnemy) 선례와 동일 리듬 */
+  dvsEv("echoReturn",{amount:amt, eHpBefore:eB, eHpAfter:S.eHp});
+  DVS.echo=0;
+  S.busy=false; dvsUi();
+  if(S.eHp<=0){ await wait(400); await onVictory(); }
+}
+/* ── 래퍼 — DVS.on=false면 순수 통과 ── */
+const _dvs_resolveTurn = resolveTurn;
+resolveTurn = async function(){
+  if(DVS.on){
+    DVS._hits=[];
+    DVS._watch = (S.intentIdx===1);   /* 이번 턴 적 행동 = 공성 일격이면 관측 */
+    DVS._watchTurn = S.turn;
+    await _dvs_resolveTurn();
+  } else await _dvs_resolveTurn();
+};
+const _dvs_startTurn = startTurn;
+startTurn = function(){ if(DVS.on) dvsJudge(); _dvs_startTurn(); if(DVS.on) dvsUi(); };
+const _dvs_onVictory = onVictory;
+onVictory = async function(){ if(DVS.on) dvsJudge(); await _dvs_onVictory(); if(DVS.on) setTimeout(dvsAttachResult, 60); };
+const _dvs_onDefeat = onDefeat;
+onDefeat = async function(){ if(DVS.on) dvsJudge(); await _dvs_onDefeat(); if(DVS.on) setTimeout(dvsAttachResult, 60); };
+const _dvs_renderFaith = renderFaith;
+renderFaith = function(){ _dvs_renderFaith(); if(DVS.on) dvsUi(); };
+function dvsResultHtml(){
+  const perf=DVS.hist.filter(h=>h.tier==="A").length, part=DVS.hist.filter(h=>h.tier==="B").length, fail=DVS.hist.filter(h=>h.tier==="C").length;
+  const ret=DVS.ledger.find(e=>e.ev==="echoReturn");
+  return '<div class="lgdRes"><div style="color:#8fd3ff;font-weight:900;letter-spacing:1px;">🛡 수비의 결착 기록 <span class="lgdBadge">R&D · 제품 확정 아님</span></div>'
+    +'<div>완벽 방어 <b>'+perf+'</b> · 부분 방어 '+part+' · 실패 '+fail+' · 공성핵 <b>'+DVS.core+'/'+DVSC.coreMax+'</b> · 위세 영구 -'+DVS.might+'</div>'
+    +'<div>'+(ret?('반향 반환 <b>'+Number(ret.amount).toLocaleString("en-US")+'</b> — 실제 막아낸 피해에서 태어난 결착')
+              :(DVS.gapOpen?'결착의 틈이 열렸으나 반환 전':'결착의 틈 미개방 — 완벽 방어 '+DVSC.coreMax+'회가 열쇠'))+'</div>'
+    +'<div class="lgdDim">시드 '+DVS.seed+' · 시작: 신앙 '+DVSC.faith0+' · 보스 HP '+DVSC.bossHp+' · 일격 '+DVSC.siegeSteps.join("→")+' (위세 단계) · 변환율 완벽 '+DVSC.rPerfect+' / 부분 '+DVSC.rPartial+'</div>'
+    +'<div class="mrvRow" style="margin-top:6px;">'
+      +'<button id="dvsRRetry">⟲ 같은 상태로 보스 재도전</button>'
+      +'<button id="dvsRSeed1">⟲ 같은 시드 · 턴1부터</button>'
+      +'<button id="dvsRLab">DEV LAB으로</button>'
+      +'<button id="dvsRTitle">타이틀로</button>'
+    +'</div>'
+    +'<div class="lgdDim">두 재도전 버튼은 모두 최초 시작 상태(같은 시드 · 턴1)로 완전 복원한다 — 공성핵·위세·반향·원장·FX 잔존 0.</div></div>';
+}
+function dvsAttachResult(){
+  if(!DVS.on || DVS.resultShown) return;
+  const ovs=[...document.querySelectorAll(".overlay")].filter(o=>!o.classList.contains("hiddenOv")&&!["lgdDetail","lgdJourney","dvsDetail","dvsJourney"].includes(o.id));
+  const host=ovs.length?ovs[ovs.length-1]:null; if(!host) return;
+  DVS.resultShown=true;
+  const box=document.createElement("div"); box.innerHTML=dvsResultHtml();
+  (host.firstElementChild||host).appendChild(box);
+  box.querySelector("#dvsRRetry").onclick=()=>lgdGo(dvsHash(DVS.seed));
+  box.querySelector("#dvsRSeed1").onclick=()=>lgdGo(dvsHash(DVS.seed));
+  box.querySelector("#dvsRLab").onclick=()=>lgdGo("s"+DVS.seed+"xl");
+  box.querySelector("#dvsRTitle").onclick=()=>lgdGo("s"+DVS.seed+"xt");
+}
+/* ── 셋업 (g2 부트에서만 · RNG 무소비) ── */
+function dvsSetup(){
+  DVS.on=true; DVS.seed=SEED;
+  S.enemy = Object.assign({}, S.enemy, { name:"공성 거신 — 결착 후보", hp:DVSC.bossHp, intents:[
+    {n:"공성 조준", txt:"HP 가장 높은 아군에게 <b>"+DVSC.aimDmg+"</b> 피해", hint:"다음 턴, 파티 전체에 공성 일격이 온다 — 전사를 준비하라", type:"highest", dmg:DVSC.aimDmg},
+    {n:"공성 일격", txt:"파티 전체 <b>"+DVSC.siegeDmg+"</b> 피해", hint:"전사 21=전액 무효+공성핵 파손 · 17+=블록으로 일부 · 실패=그대로 박힌다", type:"aoe", dmg:DVSC.siegeDmg},
+  ]});
+  S.eHp = DVSC.bossHp;   /* 시작 상태 픽스처 — 최종 피해 직접 입력 아님 */
+  renderEnemy(); renderFaith();
+  log("🛡 결착 후보 세이브포인트 (R&D 가칭) — 수비·반사 빌드가 완성됐다고 가정한 최종 보스 직행", "l-gold");
+  log("공성 거신의 주기: 조준 → 일격. 일격을 완벽 방어(전사 21)하면 공성핵이 비가역으로 부서진다 ("+DVSC.coreMax+"회 = 결착)", "l-sys");
+  const chip=document.createElement("div"); chip.id="dvsChip";
+  chip.style.cssText="font-size:10px;font-weight:700;color:#a9d8ff;text-align:center;padding:2px 4px;letter-spacing:.3px;cursor:pointer;";
+  $("nextIntent").after(chip);
+  chip.addEventListener("click", ()=>{ const dt=$("dvsDetail"); dt.classList.remove("hiddenOv"); dvsDetailRender(); });
+  const btn=document.createElement("button"); btn.id="dvsReturn";
+  btn.style.cssText="display:none;position:absolute;right:8px;bottom:96px;z-index:44;border:1px solid #2a5a7a;background:#102028;color:#8fd3ff;border-radius:9px;padding:7px 10px;font-size:11px;font-weight:800;font-family:inherit;box-shadow:0 3px 14px rgba(0,0,0,.55);";
+  $("app").appendChild(btn);
+  btn.addEventListener("click", dvsReturn);
+  const dt=document.createElement("div"); dt.id="dvsDetail"; dt.className="overlay hiddenOv";
+  dt.innerHTML='<div class="dvsDIn" style="max-width:360px;margin:8vh auto 0;background:#101a26;border:1px solid #2a5a7a;border-radius:14px;padding:12px;font-size:11px;line-height:1.55;color:#cfe2f0;max-height:80vh;overflow:auto;"></div>';
+  document.body.appendChild(dt);
+  const jn=document.createElement("div"); jn.id="dvsJourney"; jn.className="overlay";
+  jn.innerHTML='<div style="max-width:370px;margin:5vh auto 0;background:#0e1622;border:1px solid #2a5a7a;border-radius:16px;padding:14px;font-size:11.5px;line-height:1.6;color:#cfe2f0;max-height:88vh;overflow:auto;">'
+    +'<h2 style="margin:0 0 4px;color:#8fd3ff;font-size:15px;">📜 앞선 여정의 기록 — 수비의 길</h2>'
+    +'<div><span class="lgdBadge">R&D 가칭</span><span class="lgdBadge">결착 후보 세이브포인트</span><span class="lgdBadge">제품 확정 아님</span></div>'
+    +'<div class="lgdRow"><b>1구역</b> — 전사의 방벽 기반을 성장시켰다(철벽 +4) · 막아낸 피해를 되돌리는 <b>수비 축복</b>(반격의 성좌)을 얻었다</div>'
+    +'<div class="lgdRow"><b>2구역</b> — 완벽 방어를 강화했다 · <b>반격 자원 변환</b>(수호의 반향 · 가칭)을 준비했다 · 자비의 축복(초과 회복→보호막) · 신앙 '+DVSC.faith0+'과 성물함을 보존했다</div>'
+    +'<div class="lgdRow" style="border-top:1px solid #23384a;padding-top:6px;"><b>현재 결착 조건</b><br>✓ 방벽 체급 · ✓ 완벽 방어 수단 · ✓ 반격 변환 준비<br>□ <b>공성핵 파손 '+DVSC.coreMax+'회</b> (완벽 방어만 · 비가역) · □ <b>결착의 틈</b></div>'
+    +'<div class="lgdRow"><b>보스의 질문</b> — 공성 거신은 조준한 다음 턴에 파티 전체 일격을 내리친다. 일격 턴에 전사 21을 세우면 전액 무효 + 공성핵이 영구히 부서진다. 부분 방어(전사 17+)도 막은 만큼 반향이 되지만, 진전은 완벽 방어만 만든다.</div>'
+    +'<div class="lgdRow lgdDim">승리가 보장된 상태가 아니다 — 예고를 읽고 방어를 조립해야 한다. 실패해도 같은 상태로 빠르게 재도전할 수 있다(🛡 칩). 이 판의 목표는 숫자의 크기가 아니라, 막아낸 힘이 결착으로 돌아가는 것.</div>'
+    +'<div class="mrvRow" style="margin-top:8px;"><button id="dvsGo" style="font-size:13px;font-weight:900;padding:9px 14px;">🛡 출정</button><button id="dvsJLab">DEV LAB으로</button></div>'
+    +'</div>';
+  document.body.appendChild(jn);
+  jn.querySelector("#dvsGo").addEventListener("click", ()=>jn.classList.add("hiddenOv"));
+  jn.querySelector("#dvsJLab").addEventListener("click", ()=>lgdGo("s"+DVS.seed+"xl"));
+  dvsUi();
+}
+/* ── DEV LAB 입구: [수비의 결착 · 공성 거신] + 비교군 ── */
+(function(){
+  const lab=document.getElementById("labOv"); if(!lab) return;
+  const host=lab.querySelector(".labIn")||lab.firstElementChild||lab;
+  const dv=document.createElement("div"); dv.id="dvsDev";
+  dv.innerHTML='<h3>🛡 수비의 결착 · 공성 거신 (BCG01) · R&D 전용 · 수치 확정 아님</h3>'
+    +'<div style="font-size:9.5px;color:#8f86a6;line-height:1.5;">수비·반사 빌드 완성을 가정한 최종 보스 직행. 공성 일격을 완벽 방어(전사 21)하면 공성핵이 비가역으로 부서지고(2회=결착의 틈), 실제 막아낸 피해가 수호의 반향이 되어 [⚡ 반향 반환]으로 되돌아간다. PB 4인 ×4 · ×6 경로 0.</div>'
+    +'<div class="mrvRow" style="margin-top:5px;"><label style="font-size:10px;">시드 <input id="dvsSeed" type="number" inputmode="numeric" value="'+DVSC.seed+'" style="width:74px;"></label>'
+    +'<button id="dvsBoot" style="font-weight:800;">🛡 출정 [부팅]</button></div>'
+    +'<div class="mrvRow" style="margin-top:3px;font-size:9px;">'
+    +'<button id="dvsCmpA">완벽 방어 후보 시드 '+DVSC.seed+'</button>'
+    +'<button id="dvsCmpB">부분 방어 통제군 (같은 시드 · 일격 턴 전사 17~20만)</button>'
+    +'<button id="dvsCmpC">방어 실패 통제군 (같은 시드 · 전사 준비 없음)</button></div>'
+    +'<div style="font-size:8.5px;color:#8f86a6;">통제군은 같은 결정론 시드에서 플레이 방식만 바꾼 비교 기준 — 검사기가 스크립트로 재현·대조한다 (§12 #28~30)</div>';
+  host.appendChild(dv);
+  const bootSeed=()=>{ const sd=Math.max(1, Math.floor(+dv.querySelector("#dvsSeed").value||DVSC.seed)); lgdGo(dvsHash(sd)); };
+  dv.querySelector("#dvsBoot").addEventListener("click", bootSeed);
+  dv.querySelector("#dvsCmpA").addEventListener("click", ()=>lgdGo(dvsHash(DVSC.seed)));
+  dv.querySelector("#dvsCmpB").addEventListener("click", ()=>lgdGo(dvsHash(DVSC.seed)));
+  dv.querySelector("#dvsCmpC").addEventListener("click", ()=>lgdGo(dvsHash(DVSC.seed)));
+})();
+if(window.__LGD_PENDING===2) dvsSetup();
 
 
 </script>
